@@ -1,95 +1,11 @@
+import 'package:egytravel_app/feature/splash/logic/controller/splash_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class SplashScreen extends StatefulWidget {
+
+class SplashScreen extends GetView<SplashController> {
   const SplashScreen({super.key});
 
-  @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen>
-    with TickerProviderStateMixin {
-  late AnimationController _mainController;
-  late AnimationController _pulseController;
-  late AnimationController _rotateController;
-
-  late Animation<double> _fadeInAnimation;
-  late Animation<double> _scaleAnimation;
-  late Animation<double> _slideAnimation;
-  late Animation<double> _pulseAnimation;
-  late Animation<double> _rotateAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Main animation controller
-    _mainController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
-      vsync: this,
-    );
-
-    // Pulse animation for logo glow effect
-    _pulseController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
-      vsync: this,
-    )..repeat(reverse: true);
-
-    // Subtle rotation for decorative elements
-    _rotateController = AnimationController(
-      duration: const Duration(seconds: 20),
-      vsync: this,
-    )..repeat();
-
-    _fadeInAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _mainController,
-        curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
-      ),
-    );
-
-    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _mainController,
-        curve: const Interval(0.2, 0.7, curve: Curves.easeOutBack),
-      ),
-    );
-
-    _slideAnimation = Tween<double>(begin: 100.0, end: 0.0).animate(
-      CurvedAnimation(
-        parent: _mainController,
-        curve: const Interval(0.5, 1.0, curve: Curves.easeOut),
-      ),
-    );
-
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.15).animate(
-      CurvedAnimation(
-        parent: _pulseController,
-        curve: Curves.easeInOut,
-      ),
-    );
-
-    _rotateAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      _rotateController,
-    );
-
-    // Start animation
-    _mainController.forward();
-
-    // Navigate after delay
-    Future.delayed(const Duration(seconds: 10), () {
-      Get.off(() => const Scaffold());
-    });
-  }
-
-  @override
-  void dispose() {
-    _mainController.dispose();
-    _pulseController.dispose();
-    _rotateController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,11 +17,7 @@ class _SplashScreenState extends State<SplashScreen>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFFFDF2E0),
-              Color(0xFFF5E6D3),
-              Color(0xFFEDD5B8),
-            ],
+            colors: [Color(0xFFFDF2E0), Color(0xFFF5E6D3), Color(0xFFEDD5B8)],
           ),
         ),
         child: Stack(
@@ -113,13 +25,13 @@ class _SplashScreenState extends State<SplashScreen>
             // Decorative rotating circles
             ...List.generate(3, (index) {
               return AnimatedBuilder(
-                animation: _rotateAnimation,
+                animation: controller.rotateAnimation,
                 builder: (context, child) {
                   return Positioned(
                     top: 100 + (index * 200.0),
                     right: -50 + (index * 30.0),
                     child: Transform.rotate(
-                      angle: (_rotateAnimation.value + index * 0.3) * 6.28,
+                      angle: (controller.rotateAnimation.value + index * 0.3) * 6.28,
                       child: Container(
                         width: 150 - (index * 30.0),
                         height: 150 - (index * 30.0),
@@ -140,19 +52,19 @@ class _SplashScreenState extends State<SplashScreen>
             // Main content
             Center(
               child: AnimatedBuilder(
-                animation: _mainController,
+                animation:controller.mainController,
                 builder: (context, child) {
                   return FadeTransition(
-                    opacity: _fadeInAnimation,
+                    opacity: controller.fadeInAnimation,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         // Logo with pulsing glow
                         AnimatedBuilder(
-                          animation: _pulseAnimation,
+                          animation: controller.pulseAnimation,
                           builder: (context, child) {
                             return Transform.scale(
-                              scale: _scaleAnimation.value,
+                              scale: controller.scaleAnimation.value,
                               child: Container(
                                 width: 160,
                                 height: 160,
@@ -160,9 +72,12 @@ class _SplashScreenState extends State<SplashScreen>
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFF8B6F47).withOpacity(0.3 * _pulseAnimation.value),
-                                      blurRadius: 40 * _pulseAnimation.value,
-                                      spreadRadius: 10 * _pulseAnimation.value,
+                                      color: const Color(0xFF8B6F47)
+                                          .withOpacity(
+                                            0.3 * controller.pulseAnimation.value,
+                                          ),
+                                      blurRadius: 40 * controller.pulseAnimation.value,
+                                      spreadRadius: 10 * controller.pulseAnimation.value,
                                     ),
                                   ],
                                 ),
@@ -194,7 +109,7 @@ class _SplashScreenState extends State<SplashScreen>
 
                         // App name with slide animation
                         Transform.translate(
-                          offset: Offset(0, _slideAnimation.value),
+                          offset: Offset(0, controller.slideAnimation.value),
                           child: Column(
                             children: [
                               const Text(
@@ -230,7 +145,9 @@ class _SplashScreenState extends State<SplashScreen>
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
                                   fontFamily: 'Poppins',
-                                  color: const Color(0xFF2C1810).withOpacity(0.7),
+                                  color: const Color(
+                                    0xFF2C1810,
+                                  ).withOpacity(0.7),
                                   letterSpacing: 2,
                                 ),
                               ),
@@ -250,10 +167,10 @@ class _SplashScreenState extends State<SplashScreen>
               left: 0,
               right: 0,
               child: AnimatedBuilder(
-                animation: _fadeInAnimation,
+                animation: controller.fadeInAnimation,
                 builder: (context, child) {
                   return FadeTransition(
-                    opacity: _fadeInAnimation,
+                    opacity: controller.fadeInAnimation,
                     child: Column(
                       children: [
                         SizedBox(
