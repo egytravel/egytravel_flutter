@@ -14,9 +14,7 @@ class OnboardingController extends GetxController {
         curve: Curves.easeInOut,
       );
     } else {
-      // Navigate to home screen
       // Get.offAllNamed('/home'); // or
-      // Get.offAll(() => HomeScreen());
     }
   }
 
