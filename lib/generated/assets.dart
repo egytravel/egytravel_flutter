@@ -3,5 +3,8 @@ class Assets {
   Assets._();
 
   static const String imageLogo = 'assets/image/logo.png';
+  static const String imageOnboarding1 = 'assets/image/onboarding1.png';
+  static const String imageOnboarding2 = 'assets/image/onboarding2.png';
+  static const String imageOnboarding3 = 'assets/image/onboarding3.png';
 
 }
