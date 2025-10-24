@@ -1,0 +1,9 @@
+import 'package:egytravel_app/feature/authentacition/logic/controller/login_controller.dart';
+import 'package:get/get.dart';
+
+class LoginBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut(() => LoginController());
+  }
+}

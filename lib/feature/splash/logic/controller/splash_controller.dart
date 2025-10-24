@@ -89,7 +89,7 @@ class SplashController extends GetxController with GetTickerProviderStateMixin {
   }
 
   void navigateToHome() {
-    // Replace with your home screen route
+    // Replace with your home screens route
     Get.offAll(() => const Scaffold(
       body: Center(
         child: Text('Home Screen'),
