@@ -25,7 +25,7 @@ class OnboardingScreenBody extends StatelessWidget {
                 title: 'Life is short and the world is ',
                 highlightedText: 'wide',
                 description:
-                    'At EgyTravel, we design trusted and memorable educational and travel experiences to the most beautiful destinations around the world.',
+                    'At EgyTravel, we design trusted and memorable educational and travel experiences to the most beautiful destinations around the Egypt.',
                 imagePath: Assets.imageOnboarding3,
                 pageNumber: 1,
               ),

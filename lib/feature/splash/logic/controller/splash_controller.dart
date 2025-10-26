@@ -90,7 +90,7 @@ class SplashController extends GetxController with GetTickerProviderStateMixin {
   }
 
   void navigateToHome() {
-
+    Get.offAllNamed(Routes.onboardingScreen);
   }
 
   @override

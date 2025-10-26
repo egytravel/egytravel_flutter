@@ -1,4 +1,5 @@
 import 'package:egytravel_app/core/routes/app_pages.dart';
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/splash/ui/screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,14 +17,22 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'EgyTravel',
-     theme:  ThemeData(
-        scaffoldBackgroundColor: const Color(0xFFF4E6C3), // soft beige background
-        primaryColor: const Color(0xFFD97B29), // warm orange accent
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Color(0xFF2C2C2C), fontSize: 16),
-          bodyMedium: TextStyle(color: Color(0xFF3A3A3A)),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColor.primaryColor,
+          primary: AppColor.primaryColor,
         ),
+        useMaterial3: true,
       ),
+
+      // theme:  ThemeData(
+     //    scaffoldBackgroundColor: const Color(0xFFF4E6C3), // soft beige background
+     //    primaryColor: const Color(0xFFD97B29), // warm orange accent
+     //    textTheme: const TextTheme(
+     //      bodyLarge: TextStyle(color: Color(0xFF2C2C2C), fontSize: 16),
+     //      bodyMedium: TextStyle(color: Color(0xFF3A3A3A)),
+     //    ),
+     //  ),
       initialRoute: AppPages.initial,
       getPages: AppPages.appPages(),
 

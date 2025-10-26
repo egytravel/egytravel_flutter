@@ -47,11 +47,11 @@ flutter:
 
 #native splash
 flutter_native_splash:
-  color: "#F4E6C3"
+  color: "#E09A1E"
   branding_bottom_padding: 24
-  color_dark: "#F4E6C3"
+  color_dark: "#E09A1E"
 
 
   android_12:
-    icon_background_color: "#F4E6C3"
-    icon_background_color_dark: "#F4E6C3"
+    icon_background_color: "#E09A1E"
+    icon_background_color_dark: "#E09A1E"
