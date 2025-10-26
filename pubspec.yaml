@@ -13,7 +13,7 @@ dependencies:
     sdk: flutter
   flutter_native_splash: ^2.4.7
   get: ^4.7.2
-
+  smooth_page_indicator: ^1.2.1
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
@@ -47,11 +47,11 @@ flutter:
 
 #native splash
 flutter_native_splash:
-  color: "#FAF2DF"
+  color: "#F4E6C3"
   branding_bottom_padding: 24
-  color_dark: "#FAF2DF"
+  color_dark: "#F4E6C3"
 
 
   android_12:
-    icon_background_color: "#FAF2DF"
-    icon_background_color_dark: "#FAF2DF"
+    icon_background_color: "#F4E6C3"
+    icon_background_color_dark: "#F4E6C3"

@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/routes/app_routes.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
@@ -89,12 +90,7 @@ class SplashController extends GetxController with GetTickerProviderStateMixin {
   }
 
   void navigateToHome() {
-    // Replace with your home screens route
-    Get.offAll(() => const Scaffold(
-      body: Center(
-        child: Text('Home Screen'),
-      ),
-    ));
+
   }
 
   @override

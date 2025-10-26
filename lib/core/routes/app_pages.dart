@@ -1,6 +1,5 @@
 import 'package:egytravel_app/core/routes/app_routes.dart';
-import 'package:egytravel_app/feature/authentacition/logic/binding/login_binding.dart';
-import 'package:egytravel_app/feature/authentacition/presentation/screens/login_view.dart';
+
 import 'package:egytravel_app/feature/splash/logic/binding/splash_binding.dart';
 import 'package:egytravel_app/feature/splash/ui/screen/splash_screen.dart';
 import 'package:get/get.dart';
@@ -17,7 +16,6 @@ class AppPages {
     GetPage(
       name: Routes.loginView,
       page: () => const LoginScreen(),
-      binding: LoginBinding(),
-    ),
+
   ];
 }
