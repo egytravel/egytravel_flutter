@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,7 +15,7 @@ class OnboardingController extends GetxController {
         curve: Curves.easeInOut,
       );
     } else {
-      // Get.offAllNamed('/home'); // or
+      Get.offAllNamed(Routes.loginView); // or
     }
   }
 

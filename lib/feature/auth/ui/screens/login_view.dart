@@ -1,7 +1,10 @@
 import 'package:egytravel_app/core/theme/app_color.dart';
+import 'package:egytravel_app/feature/auth/logic/binding/register_binding.dart';
+import 'package:egytravel_app/feature/auth/ui/screens/forget_password_view.dart';
+import 'package:egytravel_app/feature/auth/ui/screens/register_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:egytravel_app/feature/authentacition/logic/controller/login_controller.dart';
+import 'package:egytravel_app/feature/auth/logic/controller/login_controller.dart';
 
 class LoginScreen extends GetView<LoginController> {
   const LoginScreen({super.key});
@@ -33,11 +36,11 @@ class LoginScreen extends GetView<LoginController> {
                       EmailInput(controller: controller.emailController),
                       const SizedBox(height: 16),
                       Obx(
-                            () => PasswordInput(
+                        () => PasswordInput(
                           controller: controller.passwordController,
                           obscurePassword: controller.obscurePassword.value,
                           onToggleVisibility:
-                          controller.togglePasswordVisibility,
+                              controller.togglePasswordVisibility,
                         ),
                       ),
                     ],
@@ -45,26 +48,26 @@ class LoginScreen extends GetView<LoginController> {
                 ),
                 const SizedBox(height: 16),
                 Obx(
-                      () => RememberMeRow(
+                  () => RememberMeRow(
                     value: controller.rememberMe.value,
                     onChanged: controller.setRememberMe,
                   ),
                 ),
                 const SizedBox(height: 24),
                 Obx(
-                      () => LoginButton(
+                  () => LoginButton(
                     onPressed: controller.isButtonEnabled.value
                         ? controller.login
                         : () {
-                      Get.snackbar(
-                        'Warning',
-                        'Please fill in both email and password',
-                        backgroundColor: Colors.orangeAccent,
-                        colorText: Colors.white,
-                        snackPosition: SnackPosition.BOTTOM,
-                        margin: const EdgeInsets.all(12),
-                      );
-                    },
+                            Get.snackbar(
+                              'Warning',
+                              'Please fill in both email and password',
+                              backgroundColor: Colors.orangeAccent,
+                              colorText: Colors.white,
+                              snackPosition: SnackPosition.BOTTOM,
+                              margin: const EdgeInsets.all(12),
+                            );
+                          },
                     enabled: controller.isButtonEnabled.value,
                   ),
                 ),
@@ -188,7 +191,7 @@ class SocialButton extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(imageName, width: sizeImage,),
+          Image.asset(imageName, width: sizeImage),
           const SizedBox(width: 14),
           Text(
             label,
@@ -232,8 +235,10 @@ class EmailInput extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Email Address',
-            style: TextStyle(fontSize: 14, color: Colors.grey)),
+        const Text(
+          'Email Address',
+          style: TextStyle(fontSize: 14, color: Colors.grey),
+        ),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
@@ -247,8 +252,10 @@ class EmailInput extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide.none,
             ),
-            contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
           ),
         ),
       ],
@@ -273,8 +280,10 @@ class PasswordInput extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Password',
-            style: TextStyle(fontSize: 14, color: Colors.grey)),
+        const Text(
+          'Password',
+          style: TextStyle(fontSize: 14, color: Colors.grey),
+        ),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
@@ -288,8 +297,10 @@ class PasswordInput extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide.none,
             ),
-            contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
             suffixIcon: IconButton(
               icon: Icon(
                 obscurePassword ? Icons.visibility_off : Icons.visibility,
@@ -330,7 +341,9 @@ class RememberMeRow extends StatelessWidget {
           ],
         ),
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Get.to(() => const ForgotPasswordScreen());
+          },
           child: const Text(
             'Forgot Password?',
             style: TextStyle(color: Color(0xFF6C5CE7), fontSize: 14),
@@ -345,13 +358,15 @@ class LoginButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool enabled;
 
-  const LoginButton({super.key, required this.onPressed, required this.enabled});
+  const LoginButton({
+    super.key,
+    required this.onPressed,
+    required this.enabled,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final buttonColor = enabled
-        ? AppColor.primary
-        : Colors.grey[300];
+    final buttonColor = enabled ? AppColor.primary : Colors.grey[300];
 
     final textColor = enabled ? Colors.white : Colors.grey[600];
 
@@ -393,10 +408,11 @@ class RegisterPrompt extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text("Don't have an account? ",
-              style: TextStyle(fontSize: 14)),
+          const Text("Don't have an account? ", style: TextStyle(fontSize: 14)),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Get.to(() => const RegisterScreen(), binding: RegisterBinding());
+            },
             child: const Text(
               'Register Now',
               style: TextStyle(

@@ -1,4 +1,4 @@
-import 'package:egytravel_app/feature/authentacition/logic/controller/login_controller.dart';
+import 'package:egytravel_app/feature/auth/logic/controller/login_controller.dart';
 import 'package:get/get.dart';
 
 class LoginBinding extends Bindings {

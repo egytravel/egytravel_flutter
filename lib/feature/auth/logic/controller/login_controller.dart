@@ -8,9 +8,9 @@ class LoginController extends GetxController {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  var obscurePassword = true.obs;
-  var rememberMe = false.obs;
-  var isButtonEnabled = false.obs;
+  final obscurePassword = true.obs;
+  final rememberMe = false.obs;
+  final isButtonEnabled = false.obs;
 
   void togglePasswordVisibility() {
     obscurePassword.value = !obscurePassword.value;
@@ -20,64 +20,60 @@ class LoginController extends GetxController {
     rememberMe.value = value ?? false;
   }
 
-  // ✅ دالة التحقق من صحة الإيميل
   bool _isValidEmail(String email) {
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     return emailRegex.hasMatch(email);
   }
 
-  // ✅ التحقق من صحة البيانات قبل تسجيل الدخول
   void login() {
+    if (!formKey.currentState!.validate()) return;
+
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      Get.snackbar(
+      _showSnack(
         'Error',
         'Please enter both email and password',
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-        margin: const EdgeInsets.all(12),
       );
       return;
     }
 
     if (!_isValidEmail(email)) {
-      Get.snackbar(
+      _showSnack(
         'Invalid Email',
         'Please enter a valid email address',
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-        margin: const EdgeInsets.all(12),
       );
       return;
     }
 
     if (password.length < 8) {
-      Get.snackbar(
+      _showSnack(
         'Weak Password',
         'Password must be at least 8 characters long',
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-        margin: const EdgeInsets.all(12),
       );
       return;
     }
 
-
-    Get.snackbar(
+    _showSnack(
       'Login Successful',
       'Welcome back, $email 👋',
-      backgroundColor: AppColor.primary,
-      colorText: Colors.white,
-      snackPosition: SnackPosition.BOTTOM,
-      margin: const EdgeInsets.all(12),
+      success: true,
     );
+  }
 
-
+  void _showSnack(String title, String message, {bool success = false}) {
+    Get.snackbar(
+      title,
+      message,
+      backgroundColor:
+      success ? AppColor.primary : Colors.redAccent.withValues( alpha:  0.9),
+      colorText: Colors.white,
+      snackPosition: SnackPosition.TOP,
+      margin: const EdgeInsets.all(12),
+      borderRadius: 10,
+      duration: const Duration(seconds: 2),
+    );
   }
 
   @override
