@@ -1,4 +1,4 @@
-import 'package:egytravel_app/feature/onboarding/ui/screen/onboarding_screen.dart';
+import 'package:egytravel_app/core/routes/app_routes.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
@@ -67,14 +67,16 @@ class SplashController extends GetxController with GetTickerProviderStateMixin {
 
     // Pulse animation
     pulseAnimation = Tween<double>(begin: 1.0, end: 1.15).animate(
-      CurvedAnimation(parent: pulseController, curve: Curves.easeInOut),
+      CurvedAnimation(
+        parent: pulseController,
+        curve: Curves.easeInOut,
+      ),
     );
 
     // Rotate animation
-    rotateAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(rotateController);
+    rotateAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      rotateController,
+    );
   }
 
   void _startAnimationSequence() {
@@ -88,8 +90,13 @@ class SplashController extends GetxController with GetTickerProviderStateMixin {
   }
 
   void navigateToHome() {
+    Get.offAllNamed(Routes.onboarding);
     // Replace with your home screen route
-    Get.offAll(() => const OnboardingScreen());
+    // Get.offAll(() => const Scaffold(
+    //   body: Center(
+    //     child: Text('Home Screen'),
+    //   ),
+    // ));
   }
 
   @override
