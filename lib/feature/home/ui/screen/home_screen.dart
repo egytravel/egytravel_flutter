@@ -17,7 +17,10 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: CurvedNavigationBar(
-        buttonBackgroundColor: AppColor.primary,
+
+        color: AppColor.primary,
+        backgroundColor: Colors.transparent,
+        buttonBackgroundColor: AppColor.primary.withValues(alpha: 0.5),
         items: [
           CurvedNavigationBarItem(
             child: SizedBox(
