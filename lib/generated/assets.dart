@@ -2,9 +2,15 @@
 class Assets {
   Assets._();
 
+  static const String imageEnterPassword = 'assets/image/enter_password.jpeg';
+  static const String imageFacebook = 'assets/image/facebook.png';
+  static const String imageForgetPassword = 'assets/image/forget-password.jpeg';
   static const String imageLogo = 'assets/image/logo.png';
+  static const String imageLogoFacebook = 'assets/image/logo_facebook-.png';
+  static const String imageLogoGoogle = 'assets/image/logo_google-.png';
   static const String imageOnboarding1 = 'assets/image/onboarding1.png';
   static const String imageOnboarding2 = 'assets/image/onboarding2.png';
   static const String imageOnboarding3 = 'assets/image/onboarding3.png';
+  static const String imageOtpImage = 'assets/image/otp_image.jpeg';
 
 }

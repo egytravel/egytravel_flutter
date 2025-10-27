@@ -15,7 +15,7 @@ class OnboardingController extends GetxController {
         curve: Curves.easeInOut,
       );
     } else {
-      Get.offAllNamed(Routes.loginView); // or
+      Get.offAllNamed(Routes.loginScreen); // or
     }
   }
 

@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/splash/logic/controller/splash_controller.dart';
 import 'package:egytravel_app/feature/splash/ui/widgets/bottom_loading.dart';
 import 'package:egytravel_app/feature/splash/ui/widgets/decorative_circles.dart';
@@ -18,7 +19,12 @@ class SplashScreenBody extends GetView<SplashController> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFFFDF2E0), Color(0xFFF5E6D3), Color(0xFFEDD5B8)],
+            colors: [
+              AppColor.backgroundGradientStart,
+              AppColor.backgroundGradientMiddle,
+              AppColor.backgroundGradientEnd,
+            ],
+            // colors: [Color(0xFFFDF2E0), Color(0xFFF5E6D3), Color(0xFFEDD5B8)],
           ),
         ),
         child: Stack(

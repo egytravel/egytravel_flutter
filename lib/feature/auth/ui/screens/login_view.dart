@@ -2,6 +2,7 @@ import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/auth/logic/binding/register_binding.dart';
 import 'package:egytravel_app/feature/auth/ui/screens/forget_password_view.dart';
 import 'package:egytravel_app/feature/auth/ui/screens/register_view.dart';
+import 'package:egytravel_app/generated/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:egytravel_app/feature/auth/logic/controller/login_controller.dart';
@@ -92,13 +93,26 @@ class TravoLogo extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Image.asset('assets/image/logo.png', width: 100),
+        Container(
+          padding: EdgeInsets.zero,
+          width: 200,
+          height: 150,
+          decoration: const BoxDecoration(
+            image: DecorationImage(image: AssetImage(Assets.imageLogo)),
+          ),
+        ),
+        // Image.asset(
+        //   Assets.imageLogo,
+        //   width: 100,
+        //   height: 100,
+        //   fit: BoxFit.fill,
+        // ),
         const Text(
           'EgyTravel',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF6C5CE7),
+            color: AppColor.primary,
             letterSpacing: 2,
           ),
         ),
