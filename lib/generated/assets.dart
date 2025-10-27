@@ -2,6 +2,11 @@
 class Assets {
   Assets._();
 
+  static const String iconsExplore = 'assets/icons/explore.png';
+  static const String iconsHome = 'assets/icons/home.png';
+  static const String iconsMessage = 'assets/icons/message.png';
+  static const String iconsProfile = 'assets/icons/profile.png';
+  static const String iconsSearch = 'assets/icons/search.png';
   static const String imageEnterPassword = 'assets/image/enter_password.jpeg';
   static const String imageFacebook = 'assets/image/facebook.png';
   static const String imageForgetPassword = 'assets/image/forget-password.jpeg';
