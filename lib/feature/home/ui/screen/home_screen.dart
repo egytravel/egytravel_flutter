@@ -1,8 +1,8 @@
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/generated/assets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: CurvedNavigationBar(
-        height: 75,
+        buttonBackgroundColor: AppColor.primary,
         items: [
           CurvedNavigationBarItem(
             child: SizedBox(
