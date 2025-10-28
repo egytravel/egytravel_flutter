@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
@@ -335,7 +334,15 @@ class TraveliteHomeScreen extends StatelessWidget {
                     ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
-           
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Categories
           SliverToBoxAdapter(
             child: Container(
               color: Colors.grey[900],
