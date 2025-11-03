@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
 
-      home: TraveliteHomeScreen(),
+      home: HomeScreen(),
      //  initialRoute: AppPages.initial,
      //  getPages: AppPages.appPages(),
 
