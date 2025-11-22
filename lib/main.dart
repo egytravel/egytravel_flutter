@@ -2,6 +2,7 @@ import 'package:egytravel_app/core/routes/app_pages.dart';
 import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/home/ui/screen/home_screen.dart';
 import 'package:egytravel_app/feature/splash/ui/screen/splash_screen.dart';
+import 'package:egytravel_app/feature/trip_planner/ui/screen/trip_planner_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

@@ -5,10 +5,12 @@ import 'package:egytravel_app/feature/onboarding/ui/screen/onboarding_screen.dar
 
 import 'package:egytravel_app/feature/splash/logic/binding/splash_binding.dart';
 import 'package:egytravel_app/feature/splash/ui/screen/splash_screen.dart';
+import 'package:egytravel_app/feature/trip_planner/logic/binding/trip_planner_binding.dart';
+import 'package:egytravel_app/feature/trip_planner/ui/screen/trip_planner_screen.dart';
 import 'package:get/get.dart';
 
 class AppPages {
-  static const initial = Routes.splashScreen;
+  static const initial = Routes.tripPlanner;
 
   static List<GetPage> appPages() => [
     GetPage(
@@ -25,6 +27,11 @@ class AppPages {
       name: Routes.onboardingScreen,
       page: () => const OnboardingScreen(),
       // binding: OnboardingBinding(),
+    ),
+    GetPage(
+      name: Routes.tripPlanner,
+      page: () => const TripPlannerScreen(),
+       binding: TripPlannerBinding(),
     ),
   ];
 }
