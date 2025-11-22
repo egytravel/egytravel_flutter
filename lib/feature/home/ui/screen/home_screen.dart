@@ -578,43 +578,37 @@ class TraveliteHomeScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-
-                    // Popular Places Section
-                    Container(
-                      padding: const EdgeInsets.only(top: 24, bottom: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  'Popular Places',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF2D3748),
-                                    letterSpacing: -0.5,
-                                  ),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Get.to(
-                                      () => const SaintMoritzDetailScreen(),
-                                    );
-                                  },
-                                  child: const Text(
-                                    'See All',
-                                    style: TextStyle(
-                                      color: Color(0xFFFF6B35),
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Categories
+          SliverToBoxAdapter(
+            child: Container(
+              color: Colors.grey[900],
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Obx(() => Row(
+                  children: controller.categories.map((category) {
+                    final isSelected =
+                        controller.selectedCategory.value == category;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: GestureDetector(
+                        onTap: () =>
+                        controller.selectedCategory.value = category,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
                           ),
                           const SizedBox(height: 16),
                           SingleChildScrollView(
