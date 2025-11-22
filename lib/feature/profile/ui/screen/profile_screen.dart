@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 class ProfileController extends GetxController {
   final scrollController = ScrollController();
   final isScrolled = false.obs;
+  final scrollOpacity = 0.0.obs;
 
   @override
   void onInit() {
@@ -15,9 +16,13 @@ class ProfileController extends GetxController {
   }
 
   void _scrollListener() {
-    if (scrollController.offset > 50 && !isScrolled.value) {
+    // Calculate opacity based on scroll position (0-200 pixels)
+    final offset = scrollController.offset;
+    scrollOpacity.value = (offset / 200).clamp(0.0, 1.0);
+
+    if (offset > 200 && !isScrolled.value) {
       isScrolled.value = true;
-    } else if (scrollController.offset <= 50 && isScrolled.value) {
+    } else if (offset <= 200 && isScrolled.value) {
       isScrolled.value = false;
     }
   }
@@ -39,254 +44,328 @@ class ProfileScreen extends StatelessWidget {
     final controller = Get.put(ProfileController());
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: const Color(0xFFF5F7FA),
       body: CustomScrollView(
         controller: controller.scrollController,
         slivers: [
-          // App Bar with Profile Header
-          SliverAppBar(
-            expandedHeight: 280,
-            floating: false,
-            pinned: true,
-            elevation: 0,
-            backgroundColor: const Color(0xFFFF6B35),
-            leading: IconButton(
-              onPressed: () => Get.back(),
-              icon: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+          // Dynamic App Bar with Profile Header
+          Obx(() {
+            final opacity = controller.scrollOpacity.value;
+            final isFullyScrolled = controller.isScrolled.value;
+
+            return SliverAppBar(
+              expandedHeight: 320,
+              floating: false,
+              pinned: true,
+              elevation: isFullyScrolled ? 1 : 0,
+              backgroundColor: Color.lerp(
+                Colors.transparent,
+                Colors.white,
+                opacity,
               ),
-            ),
-            actions: [
-              IconButton(
-                onPressed: () {},
-                icon: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.settings_rounded, color: Colors.white),
+              surfaceTintColor: Colors.transparent,
+              // Show name in app bar when fully scrolled
+              title: AnimatedOpacity(
+                opacity: isFullyScrolled ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 200),
+                child: Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: const Color(0xFF6366F1),
+                          width: 2,
+                        ),
+                      ),
+                      child: const CircleAvatar(
+                        radius: 16,
+                        backgroundImage: AssetImage(Assets.iconsProfile),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'John Traveler',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF1E293B),
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Color(0xFFFF6B35), Color(0xFFFF8E53)],
+              flexibleSpace: FlexibleSpaceBar(
+                background: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0xFF6366F1),
+                        Color(0xFF8B5CF6),
+                        Color(0xFFA855F7),
+                      ],
+                    ),
                   ),
-                ),
-                child: SafeArea(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Profile Image
-                      Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 4),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 20,
-                              offset: const Offset(0, 8),
+                  child: SafeArea(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Profile Image with Online Badge
+                        Stack(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.white, width: 4),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 10),
+                                  ),
+                                ],
+                              ),
+                              child: const CircleAvatar(
+                                radius: 55,
+                                backgroundImage: AssetImage(Assets.iconsProfile),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 8,
+                              right: 8,
+                              child: Container(
+                                padding: const EdgeInsets.all(3),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      blurRadius: 8,
+                                    ),
+                                  ],
+                                ),
+                                child: Container(
+                                  width: 16,
+                                  height: 16,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFF10B981),
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
                         ),
-                        child: CircleAvatar(
-                          radius: 50,
-                          backgroundImage: AssetImage(Assets.iconsProfile),
-                          onBackgroundImageError: (_, __) {},
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white.withOpacity(0.3),
-                            ),
-                            child: const Icon(Icons.person, color: Colors.white, size: 50),
+                        const SizedBox(height: 6),
+                        const Text(
+                          'John Traveler',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: -0.5,
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'John Traveler',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: -0.5,
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.email_outlined,
+                                color: Colors.white,
+                                size: 14,
+                              ),
+                              SizedBox(width: 6),
+                              Text(
+                                'user@example.com',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        'user@example.com',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 15,
+                        const SizedBox(height: 16),
+                        // Stats Row
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 24),
+                          padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 20),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.3),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _buildStatItem('12', 'Trips'),
+                              _buildDivider(),
+                              _buildStatItem('24', 'Reviews'),
+                              _buildDivider(),
+                              _buildStatItem('8', 'Favorites'),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      // Stats Row
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _buildStatItem('12', 'Trips'),
-                          _buildDivider(),
-                          _buildStatItem('24', 'Reviews'),
-                          _buildDivider(),
-                          _buildStatItem('8', 'Favorites'),
-                        ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
+            );
+          }),
 
           // Content Section
           SliverToBoxAdapter(
             child: Column(
               children: [
-                const SizedBox(height: 24),
-
-                // Quick Actions
+                const SizedBox(height: 20),
+                // Quick Actions Grid
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Quick Actions',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF2D3748),
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Wrap(
+                        spacing: 12,
+                        runSpacing: 12,
                         children: [
-                          Expanded(
+                          SizedBox(
+                            width: (constraints.maxWidth - 12) / 2,
                             child: _buildQuickActionCard(
-                              Icons.edit_rounded,
+                              Icons.edit_outlined,
                               'Edit Profile',
                               const Color(0xFF3B82F6),
+                              const Color(0xFFDEEBFF),
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
+                          SizedBox(
+                            width: (constraints.maxWidth - 12) / 2,
                             child: _buildQuickActionCard(
-                              Icons.share_rounded,
-                              'Share Profile',
+                              Icons.share_outlined,
+                              'Share',
                               const Color(0xFF8B5CF6),
+                              const Color(0xFFF3E8FF),
+                            ),
+                          ),
+                          SizedBox(
+                            width: (constraints.maxWidth - 12) / 2,
+                            child: _buildQuickActionCard(
+                              Icons.wallet_outlined,
+                              'Wallet',
+                              const Color(0xFF10B981),
+                              const Color(0xFFD1FAE5),
+                            ),
+                          ),
+                          SizedBox(
+                            width: (constraints.maxWidth - 12) / 2,
+                            child: _buildQuickActionCard(
+                              Icons.support_agent_outlined,
+                              'Support',
+                              const Color(0xFFF59E0B),
+                              const Color(0xFFFEF3C7),
                             ),
                           ),
                         ],
-                      ),
-                    ],
+                      );
+                    },
                   ),
                 ),
 
-                const SizedBox(height: 32),
+                const SizedBox(height: 28),
 
-                // Account Section
+                // Menu Sections
                 _buildSection(
-                  'Account',
+                  'Account Settings',
+                  Icons.person_outline_rounded,
                   [
                     _buildMenuItem(
-                      Icons.person_outline_rounded,
+                      Icons.badge_outlined,
                       'Personal Information',
-                      'Update your details',
+                      'Manage your personal details',
                           () {},
                     ),
+                    _buildDividerLine(),
                     _buildMenuItem(
                       Icons.lock_outline_rounded,
-                      'Security & Privacy',
+                      'Security',
                       'Password and authentication',
                           () {},
                     ),
-                    _buildMenuItem(
-                      Icons.payment_rounded,
-                      'Payment Methods',
-                      'Manage your payment options',
-                          () {},
-                    ),
+                    _buildDividerLine(),
                     _buildMenuItem(
                       Icons.notifications_outlined,
                       'Notifications',
                       'Manage notification preferences',
                           () {},
+                      trailing: Switch(
+                        value: true,
+                        onChanged: (value) {},
+                        activeColor: const Color(0xFF6366F1),
+                      ),
                     ),
                   ],
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
 
-                // Travel Section
                 _buildSection(
-                  'Travel',
+                  'Travel & Bookings',
+                  Icons.flight_takeoff_rounded,
                   [
                     _buildMenuItem(
-                      Icons.bookmark_outline_rounded,
+                      Icons.calendar_today_outlined,
                       'My Bookings',
-                      'View your travel plans',
+                      'View your upcoming trips',
                           () {},
                     ),
+                    _buildDividerLine(),
                     _buildMenuItem(
                       Icons.favorite_outline_rounded,
-                      'Favorites',
+                      'Saved Places',
                       'Places you want to visit',
                           () {},
+                      badge: '8',
                     ),
+                    _buildDividerLine(),
                     _buildMenuItem(
                       Icons.history_rounded,
                       'Travel History',
-                      'Places you\'ve been',
+                      'Places you\'ve explored',
                           () {},
-                    ),
-                    _buildMenuItem(
-                      Icons.card_giftcard_rounded,
-                      'Rewards & Offers',
-                      'Special deals for you',
-                          () {},
-                      badge: '3',
                     ),
                   ],
                 ),
 
-                const SizedBox(height: 24),
-
-                // Support Section
+                const SizedBox(height: 16),
                 _buildSection(
-                  'Support',
+                  'Help & Legal',
+                  Icons.help_outline_rounded,
                   [
-                    _buildMenuItem(
-                      Icons.help_outline_rounded,
-                      'Help Center',
-                      'Get help and support',
-                          () {},
-                    ),
-                    _buildMenuItem(
-                      Icons.description_outlined,
-                      'Terms & Conditions',
-                      'Read our terms',
-                          () {},
-                    ),
-                    _buildMenuItem(
-                      Icons.privacy_tip_outlined,
-                      'Privacy Policy',
-                      'How we handle your data',
-                          () {},
-                    ),
                     _buildMenuItem(
                       Icons.info_outline_rounded,
                       'About',
@@ -300,15 +379,20 @@ class ProfileScreen extends StatelessWidget {
 
                 // Logout Button
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.red[400]!,
+                          Colors.red[600]!,
+                        ],
+                      ),
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 10,
+                          color: Colors.red.withOpacity(0.3),
+                          blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
                       ],
@@ -320,23 +404,23 @@ class ProfileScreen extends StatelessWidget {
                           _showLogoutDialog();
                         },
                         borderRadius: BorderRadius.circular(16),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
                                 Icons.logout_rounded,
-                                color: Colors.red[600],
+                                color: Colors.white,
                                 size: 22,
                               ),
-                              const SizedBox(width: 12),
+                              SizedBox(width: 12),
                               Text(
                                 'Logout',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.red[600],
+                                  color: Colors.white,
                                 ),
                               ),
                             ],
@@ -357,25 +441,26 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildStatItem(String value, String label) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+    return Flexible(
       child: Column(
         children: [
           Text(
             value,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 22,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(
-              color: Colors.white70,
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.9),
               fontSize: 13,
+              fontWeight: FontWeight.w500,
             ),
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -387,19 +472,21 @@ class ProfileScreen extends StatelessWidget {
       width: 1,
       height: 40,
       color: Colors.white.withOpacity(0.3),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
     );
   }
 
-  Widget _buildQuickActionCard(IconData icon, String label, Color color) {
+  Widget _buildQuickActionCard(
+      IconData icon, String label, Color color, Color bgColor) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 10,
-            offset: const Offset(0, 4),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -409,26 +496,30 @@ class ProfileScreen extends StatelessWidget {
           onTap: () {},
           borderRadius: BorderRadius.circular(16),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
+                    color: bgColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, color: color, size: 28),
+                  child: Icon(icon, color: color, size: 24),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 Text(
                   label,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF2D3748),
+                    color: Color(0xFF1E293B),
                   ),
                   textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -438,31 +529,42 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSection(String title, List<Widget> items) {
+  Widget _buildSection(String title, IconData icon, List<Widget> items) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF2D3748),
-              letterSpacing: -0.5,
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 12),
+            child: Row(
+              children: [
+                Icon(icon, size: 20, color: const Color(0xFF64748B)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1E293B),
+                      letterSpacing: -0.3,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 12),
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withOpacity(0.04),
                   blurRadius: 10,
-                  offset: const Offset(0, 4),
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
@@ -475,12 +577,23 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildDividerLine() {
+    return Divider(
+      height: 1,
+      thickness: 1,
+      color: Colors.grey[100],
+      indent: 16,
+      endIndent: 16,
+    );
+  }
+
   Widget _buildMenuItem(
       IconData icon,
       String title,
       String subtitle,
       VoidCallback onTap, {
         String? badge,
+        Widget? trailing,
       }) {
     return Material(
       color: Colors.transparent,
@@ -488,34 +601,37 @@ class ProfileScreen extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5F9),
+                  color: const Color(0xFFF8FAFC),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   icon,
                   color: const Color(0xFF64748B),
-                  size: 22,
+                  size: 20,
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Text(
-                          title,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF2D3748),
+                        Flexible(
+                          child: Text(
+                            title,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF1E293B),
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         if (badge != null) ...[
@@ -523,10 +639,12 @@ class ProfileScreen extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8,
-                              vertical: 2,
+                              vertical: 3,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFFF6B35),
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                              ),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
@@ -541,22 +659,26 @@ class ProfileScreen extends StatelessWidget {
                         ],
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 3),
                     Text(
                       subtitle,
                       style: const TextStyle(
-                        fontSize: 13,
+                        fontSize: 12,
                         color: Color(0xFF94A3B8),
                       ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   ],
                 ),
               ),
-              const Icon(
-                Icons.chevron_right_rounded,
-                color: Color(0xFF94A3B8),
-                size: 24,
-              ),
+              const SizedBox(width: 8),
+              trailing ??
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    color: Color(0xFFCBD5E1),
+                    size: 22,
+                  ),
             ],
           ),
         ),
@@ -568,32 +690,35 @@ class ProfileScreen extends StatelessWidget {
     Get.dialog(
       Dialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(28),
         ),
+        elevation: 8,
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(28),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  gradient: LinearGradient(
+                    colors: [Colors.red[400]!, Colors.red[600]!],
+                  ),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.logout_rounded,
-                  color: Colors.red[600],
+                  color: Colors.white,
                   size: 32,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               const Text(
-                'Logout',
+                'Logout Confirmation',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF2D3748),
+                  color: Color(0xFF1E293B),
                 ),
               ),
               const SizedBox(height: 12),
@@ -606,20 +731,20 @@ class ProfileScreen extends StatelessWidget {
                   height: 1.5,
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Get.back(),
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        side: const BorderSide(
-                          color: Color(0xFFE2E8F0),
-                          width: 2,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        side: BorderSide(
+                          color: Colors.grey[300]!,
+                          width: 1.5,
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(14),
                         ),
                       ),
                       child: const Text(
@@ -641,9 +766,9 @@ class ProfileScreen extends StatelessWidget {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red[600],
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(14),
                         ),
                         elevation: 0,
                       ),
