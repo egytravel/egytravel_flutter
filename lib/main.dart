@@ -1,7 +1,5 @@
-import 'package:egytravel_app/core/routes/app_pages.dart';
 import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/home/ui/screen/home_screen.dart';
-import 'package:egytravel_app/feature/splash/ui/screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -26,7 +24,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
 
-      home: TraveliteHomeScreen(),
+      home: HomeScreen(),
      //  initialRoute: AppPages.initial,
      //  getPages: AppPages.appPages(),
 

@@ -7,6 +7,8 @@ class Assets {
   static const String iconsMessage = 'assets/icons/message.png';
   static const String iconsProfile = 'assets/icons/profile.png';
   static const String iconsSearch = 'assets/icons/search.png';
+  static const String imageCard = 'assets/image/card.png';
+  static const String imageDetail = 'assets/image/Detail.png';
   static const String imageEnterPassword = 'assets/image/enter_password.jpeg';
   static const String imageFacebook = 'assets/image/facebook.png';
   static const String imageForgetPassword = 'assets/image/forget-password.jpeg';
@@ -17,5 +19,7 @@ class Assets {
   static const String imageOnboarding2 = 'assets/image/onboarding2.png';
   static const String imageOnboarding3 = 'assets/image/onboarding3.png';
   static const String imageOtpImage = 'assets/image/otp_image.jpeg';
+  static const String imageRectangle = 'assets/image/Rectangle.png';
+  static const String imageSplashScreen = 'assets/image/Splash_Screen.png';
 
 }

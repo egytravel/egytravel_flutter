@@ -17,7 +17,7 @@ dependencies:
   curved_labeled_navigation_bar: ^2.0.6
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.2.1
-
+  image_picker: ^1.0.4
 
 
 dev_dependencies:
