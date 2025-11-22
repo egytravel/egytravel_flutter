@@ -111,7 +111,7 @@ class PlaceCard extends StatelessWidget {
                   bottomRight: Radius.circular(20),
                   bottomLeft: Radius.circular(20),
                 ),
-                color: Colors.white.withValues(alpha: 0.9),
+                color: Colors.white.withValues(alpha: 0.75),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),

@@ -38,8 +38,8 @@ class HomeController extends GetxController {
   ];
 
   final destinations = [
-    Destination(image: 'assets/dest1.jpg', name: 'Cairo'),
-    Destination(image: 'assets/dest2.jpg', name: 'Luxor'),
+    Destination(image: Assets.imageCard, name: 'Cairo'),
+    Destination(image: Assets.imageCard, name: 'Luxor'),
   ];
 
   void openDrawer() {
