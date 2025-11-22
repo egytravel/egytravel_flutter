@@ -36,33 +36,33 @@ class HomeScreenBody extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 2),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.grey[300],
-              ),
-              child: IconButton(
-                onPressed: () {
-                  Get.to(() => const ProfileScreen());
-                },
-                icon: const Icon(Icons.person, color: Colors.white, size: 20),
-              ),
-            ),
-          ),
+          // leading: Container(
+          //   margin: const EdgeInsets.all(8),
+          //   decoration: BoxDecoration(
+          //     color: Colors.transparent,
+          //     shape: BoxShape.circle,
+          //     border: Border.all(color: Colors.white, width: 2),
+          //     boxShadow: [
+          //       BoxShadow(
+          //         color: Colors.black.withOpacity(0.15),
+          //         blurRadius: 8,
+          //         offset: const Offset(0, 2),
+          //       ),
+          //     ],
+          //   ),
+          //   child: Container(
+          //     decoration: BoxDecoration(
+          //       shape: BoxShape.circle,
+          //       color: Colors.grey[300],
+          //     ),
+          //     child: IconButton(
+          //       onPressed: () {
+          //         Get.to(() => const ProfileScreen());
+          //       },
+          //       icon: const Icon(Icons.person, color: Colors.white, size: 20),
+          //     ),
+          //   ),
+          // ),
           actions: [
             Container(
               margin: const EdgeInsets.all(8),
@@ -136,7 +136,7 @@ class HomeScreenBody extends StatelessWidget {
                             ),
                             // المحتوى
                             Positioned(
-                              bottom: 40,
+                              bottom: 80,
                               left: 24,
                               right: 24,
                               child: Column(
