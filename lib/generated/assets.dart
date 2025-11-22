@@ -19,6 +19,7 @@ class Assets {
   static const String imageOnboarding2 = 'assets/image/onboarding2.png';
   static const String imageOnboarding3 = 'assets/image/onboarding3.png';
   static const String imageOtpImage = 'assets/image/otp_image.jpeg';
-  static const String imageSplashScreen = 'assets/image/Splash Screen.png';
+  static const String imageRectangle = 'assets/image/Rectangle.png';
+  static const String imageSplashScreen = 'assets/image/Splash_Screen.png';
 
 }

@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
 
-      home: TripPlannerScreen(),
+      home: HomeScreen(),
      //  initialRoute: AppPages.initial,
      //  getPages: AppPages.appPages(),
 
