@@ -1,4 +1,9 @@
+import 'package:egytravel_app/core/error/api_error.dart';
+import 'package:egytravel_app/core/locale_storage/shared_preferences_helper.dart';
+import 'package:egytravel_app/core/routes/app_routes.dart';
 import 'package:egytravel_app/core/theme/app_color.dart';
+import 'package:egytravel_app/core/widgets/snak_bar.dart';
+import 'package:egytravel_app/feature/auth/data/repo/auth_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -7,10 +12,11 @@ class LoginController extends GetxController {
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-
+  final AuthRepo _authRepo = AuthRepo();
   final obscurePassword = true.obs;
   final rememberMe = false.obs;
   final isButtonEnabled = false.obs;
+  final isLoading = false.obs;
 
   void togglePasswordVisibility() {
     obscurePassword.value = !obscurePassword.value;
@@ -25,56 +31,67 @@ class LoginController extends GetxController {
     return emailRegex.hasMatch(email);
   }
 
-  void login() {
+  Future<void> login(BuildContext context) async {
     if (!formKey.currentState!.validate()) return;
 
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      _showSnack(
-        'Error',
-        'Please enter both email and password',
+      showTopGlassSnackBar(
+        context,
+        'Please fill in both email and password',
       );
       return;
     }
 
     if (!_isValidEmail(email)) {
-      _showSnack(
+      showTopGlassSnackBar(
+        context,
         'Invalid Email',
-        'Please enter a valid email address',
       );
       return;
     }
 
     if (password.length < 8) {
-      _showSnack(
-        'Weak Password',
-        'Password must be at least 8 characters long',
+      showTopGlassSnackBar(
+        context,
+        'Password must be at least 8 characters',
       );
       return;
     }
 
-    _showSnack(
-      'Login Successful',
-      'Welcome back, $email 👋',
-      success: true,
-    );
+    try {
+      isLoading.value = true;
+
+      final user = await _authRepo.login(email: email, password: password);
+
+      showTopGlassSnackBar(
+        context,
+        'Login Successful',
+        success: true,
+      );
+
+      Get.offAllNamed(Routes.home);
+
+    } on ApiError catch (e) {
+      showTopGlassSnackBar(
+        context,
+        e.message,
+      );
+      return;
+    } catch (e) {
+      showTopGlassSnackBar(
+        context,
+        'An error occurred during login',
+      );
+      return;
+    } finally {
+      isLoading.value = false;
+    }
   }
 
-  void _showSnack(String title, String message, {bool success = false}) {
-    Get.snackbar(
-      title,
-      message,
-      backgroundColor:
-      success ? AppColor.primary : Colors.redAccent.withValues( alpha:  0.9),
-      colorText: Colors.white,
-      snackPosition: SnackPosition.TOP,
-      margin: const EdgeInsets.all(12),
-      borderRadius: 10,
-      duration: const Duration(seconds: 2),
-    );
-  }
+
 
   @override
   void onInit() {
