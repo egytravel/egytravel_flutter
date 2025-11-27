@@ -1,4 +1,5 @@
 import 'package:egytravel_app/core/theme/app_color.dart';
+import 'package:egytravel_app/core/widgets/build_loading_overlay.dart';
 import 'package:egytravel_app/feature/auth/logic/binding/register_binding.dart';
 import 'package:egytravel_app/feature/auth/ui/screens/forget_password_view.dart';
 import 'package:egytravel_app/feature/auth/ui/screens/register_view.dart';
@@ -14,52 +15,59 @@ class LoginScreen extends GetView<LoginController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 20),
-                const TravoLogo(),
-                const SizedBox(height: 30),
-                const LoginHeader(),
-                const SizedBox(height: 22),
-                const SocialLoginButtons(),
-                const SizedBox(height: 16),
-                const OrDivider(),
-                const SizedBox(height: 16),
-                Form(
-                  key: controller.formKey,
+      body: Obx(
+        () => Stack(
+          children: [
+            AbsorbPointer(
+              absorbing: controller.isLoading.value,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      EmailInput(controller: controller.emailController),
+                      const SizedBox(height: 20),
+                      const TravoLogo(),
+                      const SizedBox(height: 30),
+                      const LoginHeader(),
+                      const SizedBox(height: 22),
+                      const SocialLoginButtons(),
                       const SizedBox(height: 16),
-                      Obx(
-                        () => PasswordInput(
-                          controller: controller.passwordController,
-                          obscurePassword: controller.obscurePassword.value,
-                          onToggleVisibility:
-                              controller.togglePasswordVisibility,
+                      const OrDivider(),
+                      const SizedBox(height: 16),
+                      Form(
+                        key: controller.formKey,
+                        child: Column(
+                          children: [
+                            EmailInput(
+                              controller: controller.emailController,
+                            ),
+                            const SizedBox(height: 16),
+                            Obx(
+                              () => PasswordInput(
+                                controller: controller.passwordController,
+                                obscurePassword:
+                                    controller.obscurePassword.value,
+                                onToggleVisibility:
+                                    controller.togglePasswordVisibility,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Obx(
-                  () => RememberMeRow(
-                    value: controller.rememberMe.value,
-                    onChanged: controller.setRememberMe,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Obx(
-                  () => LoginButton(
-                    onPressed: controller.isButtonEnabled.value
-                        ? controller.login
-                        : () {
+                      const SizedBox(height: 16),
+                      Obx(
+                        () => RememberMeRow(
+                          value: controller.rememberMe.value,
+                          onChanged: controller.setRememberMe,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Obx(
+                        () => LoginButton(
+                          onPressed: controller.isButtonEnabled.value
+                              ? () => controller.login(context)
+                              : () {
                             Get.snackbar(
                               'Warning',
                               'Please fill in both email and password',
@@ -69,16 +77,23 @@ class LoginScreen extends GetView<LoginController> {
                               margin: const EdgeInsets.all(12),
                             );
                           },
-                    enabled: controller.isButtonEnabled.value,
+
+                          enabled: controller.isButtonEnabled.value,
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+                      const RegisterPrompt(),
+                      const SizedBox(height: 40),
+                    ],
                   ),
                 ),
-
-                const SizedBox(height: 24),
-                const RegisterPrompt(),
-                const SizedBox(height: 40),
-              ],
+              ),
             ),
-          ),
+            // Loading Overlay
+            if (controller.isLoading.value)
+              buildLoadingOverlay(controller.isLoading.value, true),
+          ],
         ),
       ),
     );
@@ -254,9 +269,14 @@ class EmailInput extends StatelessWidget {
           style: TextStyle(fontSize: 14, color: Colors.grey),
         ),
         const SizedBox(height: 8),
-        TextField(
+        TextFormField(
           controller: controller,
           keyboardType: TextInputType.emailAddress,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter your email address';
+            }
+          },
           decoration: InputDecoration(
             hintText: 'Enter Email Address',
             hintStyle: const TextStyle(color: Colors.grey),
@@ -299,9 +319,14 @@ class PasswordInput extends StatelessWidget {
           style: TextStyle(fontSize: 14, color: Colors.grey),
         ),
         const SizedBox(height: 8),
-        TextField(
+        TextFormField(
           controller: controller,
           obscureText: obscurePassword,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter your password';
+            }
+          },
           decoration: InputDecoration(
             hintText: 'Enter Password',
             hintStyle: const TextStyle(color: Colors.grey),
