@@ -1,21 +1,26 @@
-import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/core/widgets/build_loading_overlay.dart';
-import 'package:egytravel_app/feature/auth/logic/binding/register_binding.dart';
-import 'package:egytravel_app/feature/auth/ui/screens/forget_password_view.dart';
-import 'package:egytravel_app/feature/auth/ui/screens/register_view.dart';
-import 'package:egytravel_app/generated/assets.dart';
+import 'package:egytravel_app/feature/auth/logic/controller/login_controller.dart';
+import 'package:egytravel_app/feature/auth/ui/widgets/auth_background.dart';
+import 'package:egytravel_app/feature/auth/ui/widgets/login/email_input.dart';
+import 'package:egytravel_app/feature/auth/ui/widgets/login/login_button.dart';
+import 'package:egytravel_app/feature/auth/ui/widgets/login/login_header.dart';
+import 'package:egytravel_app/feature/auth/ui/widgets/login/or_divider.dart';
+import 'package:egytravel_app/feature/auth/ui/widgets/login/password_input.dart';
+import 'package:egytravel_app/feature/auth/ui/widgets/login/register_prompt.dart';
+import 'package:egytravel_app/feature/auth/ui/widgets/login/remember_me_row.dart';
+import 'package:egytravel_app/feature/auth/ui/widgets/login/social_login_buttons.dart';
+import 'package:egytravel_app/feature/auth/ui/widgets/login/travo_logo.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:egytravel_app/feature/auth/logic/controller/login_controller.dart';
 
-class LoginScreen extends GetView<LoginController> {
+class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Obx(
+    final controller = Get.put(LoginController());
+    return AuthBackground(
+      child: Obx(
         () => Stack(
           children: [
             AbsorbPointer(
@@ -26,15 +31,9 @@ class LoginScreen extends GetView<LoginController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 20),
-                      const TravoLogo(),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 40),
                       const LoginHeader(),
-                      const SizedBox(height: 22),
-                      const SocialLoginButtons(),
-                      const SizedBox(height: 16),
-                      const OrDivider(),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 32),
                       Form(
                         key: controller.formKey,
                         child: Column(
@@ -81,7 +80,10 @@ class LoginScreen extends GetView<LoginController> {
                           enabled: controller.isButtonEnabled.value,
                         ),
                       ),
-
+                      const SizedBox(height: 24),
+                      const OrDivider(),
+                      const SizedBox(height: 16),
+                      const SocialLoginButtons(),
                       const SizedBox(height: 24),
                       const RegisterPrompt(),
                       const SizedBox(height: 40),
@@ -95,373 +97,6 @@ class LoginScreen extends GetView<LoginController> {
               buildLoadingOverlay(controller.isLoading.value, true),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class TravoLogo extends StatelessWidget {
-  const TravoLogo({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: EdgeInsets.zero,
-          width: 200,
-          height: 150,
-          decoration: const BoxDecoration(
-            image: DecorationImage(image: AssetImage(Assets.imageLogo)),
-          ),
-        ),
-        // Image.asset(
-        //   Assets.imageLogo,
-        //   width: 100,
-        //   height: 100,
-        //   fit: BoxFit.fill,
-        // ),
-        const Text(
-          'EgyTravel',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppColor.primary,
-            letterSpacing: 2,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class LoginHeader extends StatelessWidget {
-  const LoginHeader({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Let's get you Login!",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        SizedBox(height: 8),
-        Text(
-          'Enter your information below',
-          style: TextStyle(fontSize: 16, color: Colors.grey),
-        ),
-      ],
-    );
-  }
-}
-
-class SocialLoginButtons extends StatelessWidget {
-  const SocialLoginButtons({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: SocialButton(
-            imageName: 'assets/image/logo_google-.png',
-            label: 'Google',
-            sizeImage: 28,
-            onPressed: () {},
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: SocialButton(
-            imageName: 'assets/image/facebook.png',
-            sizeImage: 24,
-            label: 'Facebook',
-
-            onPressed: () {},
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class SocialButton extends StatelessWidget {
-  final String imageName;
-  final String label;
-  final double sizeImage;
-
-  final VoidCallback onPressed;
-
-  const SocialButton({
-    super.key,
-    required this.imageName,
-    required this.label,
-
-    required this.sizeImage,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return OutlinedButton(
-      onPressed: onPressed,
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        side: const BorderSide(color: Colors.grey, width: 1),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(imageName, width: sizeImage),
-          const SizedBox(width: 14),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class OrDivider extends StatelessWidget {
-  const OrDivider({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Row(
-      children: [
-        Expanded(child: Divider(color: Colors.grey)),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Text('Or Login With', style: TextStyle(color: Colors.grey)),
-        ),
-        Expanded(child: Divider(color: Colors.grey)),
-      ],
-    );
-  }
-}
-
-class EmailInput extends StatelessWidget {
-  final TextEditingController controller;
-
-  const EmailInput({super.key, required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Email Address',
-          style: TextStyle(fontSize: 14, color: Colors.grey),
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: controller,
-          keyboardType: TextInputType.emailAddress,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter your email address';
-            }
-          },
-          decoration: InputDecoration(
-            hintText: 'Enter Email Address',
-            hintStyle: const TextStyle(color: Colors.grey),
-            filled: true,
-            fillColor: Colors.grey[100],
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
-            ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 16,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class PasswordInput extends StatelessWidget {
-  final TextEditingController controller;
-  final bool obscurePassword;
-  final VoidCallback onToggleVisibility;
-
-  const PasswordInput({
-    super.key,
-    required this.controller,
-    required this.obscurePassword,
-    required this.onToggleVisibility,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Password',
-          style: TextStyle(fontSize: 14, color: Colors.grey),
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: controller,
-          obscureText: obscurePassword,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter your password';
-            }
-          },
-          decoration: InputDecoration(
-            hintText: 'Enter Password',
-            hintStyle: const TextStyle(color: Colors.grey),
-            filled: true,
-            fillColor: Colors.grey[100],
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
-            ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 16,
-            ),
-            suffixIcon: IconButton(
-              icon: Icon(
-                obscurePassword ? Icons.visibility_off : Icons.visibility,
-                color: Colors.grey,
-              ),
-              onPressed: onToggleVisibility,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class RememberMeRow extends StatelessWidget {
-  final bool value;
-  final ValueChanged<bool?> onChanged;
-
-  const RememberMeRow({
-    super.key,
-    required this.value,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            Checkbox(
-              value: value,
-              onChanged: onChanged,
-              activeColor: const Color(0xFF6C5CE7),
-            ),
-            const Text('Remember Me', style: TextStyle(fontSize: 14)),
-          ],
-        ),
-        TextButton(
-          onPressed: () {
-            Get.to(() => const ForgotPasswordScreen());
-          },
-          child: const Text(
-            'Forgot Password?',
-            style: TextStyle(color: Color(0xFF6C5CE7), fontSize: 14),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class LoginButton extends StatelessWidget {
-  final VoidCallback? onPressed;
-  final bool enabled;
-
-  const LoginButton({
-    super.key,
-    required this.onPressed,
-    required this.enabled,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final buttonColor = enabled ? AppColor.primary : Colors.grey[300];
-
-    final textColor = enabled ? Colors.white : Colors.grey[600];
-
-    return SizedBox(
-      width: double.infinity,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        child: ElevatedButton(
-          onPressed: onPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: buttonColor,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            elevation: 0,
-          ),
-          child: Text(
-            'Login',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: textColor,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class RegisterPrompt extends StatelessWidget {
-  const RegisterPrompt({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text("Don't have an account? ", style: TextStyle(fontSize: 14)),
-          TextButton(
-            onPressed: () {
-              Get.to(() => const RegisterScreen(), binding: RegisterBinding());
-            },
-            child: const Text(
-              'Register Now',
-              style: TextStyle(
-                color: Color(0xFF6C5CE7),
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
