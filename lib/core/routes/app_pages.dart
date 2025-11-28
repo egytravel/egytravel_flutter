@@ -1,4 +1,7 @@
 import 'package:egytravel_app/core/routes/app_routes.dart';
+import 'package:egytravel_app/feature/ai_trip_planner/logic/binding/trip_binding.dart';
+import 'package:egytravel_app/feature/ai_trip_planner/logic/controller/ai_trip_controller.dart';
+import 'package:egytravel_app/feature/ai_trip_planner/ui/screens/ai_trip_planner_screen.dart';
 import 'package:egytravel_app/feature/auth/logic/binding/login_binding.dart';
 import 'package:egytravel_app/feature/auth/ui/screens/login_view.dart';
 import 'package:egytravel_app/feature/home/ui/screen/home_screen.dart';
@@ -8,7 +11,7 @@ import 'package:egytravel_app/feature/splash/ui/screen/splash_screen.dart';
 import 'package:get/get.dart';
 
 class AppPages {
-  static const initial = Routes.splashScreen;
+  static const initial = Routes.home;
 
   static List<GetPage> appPages() => [
     GetPage(
@@ -28,8 +31,12 @@ class AppPages {
     ),
     GetPage(
       name: Routes.home,
-      page: () => const HomeScreen(),
+      page: () =>  HomeScreen(),
       // binding: OnboardingBinding(),
+    ),GetPage(
+      name: Routes.tripPlanner,
+      page: () =>  PlanTripScreen(),
+      binding: TripBinding(),
     ),
     // GetPage(
     //   name: Routes.tripPlanner,
