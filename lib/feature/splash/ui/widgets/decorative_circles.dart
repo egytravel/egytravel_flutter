@@ -23,8 +23,8 @@ class DecorativeCircles extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: Colors.brown.withValues(alpha: 0.05),
-                      width: 2,
+                      color: Colors.white.withOpacity(0.05),
+                      width: 1.5,
                     ),
                   ),
                 ),

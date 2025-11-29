@@ -1,4 +1,3 @@
-import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:flutter/material.dart';
 
 class BottomLoading extends StatelessWidget {
@@ -24,23 +23,30 @@ class BottomLoading extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: LinearProgressIndicator(
-                      backgroundColor: Colors.brown.withValues(alpha: 0.2),
-                      valueColor: const AlwaysStoppedAnimation<Color>(
-                        AppColor.primary,
+                      backgroundColor: Colors.white.withOpacity(0.2),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Colors.white.withOpacity(0.8),
                       ),
                       minHeight: 3,
                     ),
                   ),
                 ),
                 const SizedBox(height: 20),
-                Text(
+                const Text(
                   'Loading Experience...',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                     fontFamily: 'Poppins',
-                    color: Colors.black.withValues(alpha: 0.4),
+                    color: Colors.white60,
                     letterSpacing: 1.5,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black26,
+                        offset: Offset(0, 2),
+                        blurRadius: 8,
+                      ),
+                    ],
                   ),
                 ),
               ],

@@ -20,8 +20,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'EgyTravel',
       theme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: Colors.black,
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColor.primaryColor,
+          brightness: Brightness.dark,
           primary: AppColor.primaryColor,
         ),
         useMaterial3: true,
@@ -30,7 +33,6 @@ class MyApp extends StatelessWidget {
       // home: OnboardingScreen(),
       initialRoute: AppPages.initial,
       getPages: AppPages.appPages(),
-
     );
   }
 }
