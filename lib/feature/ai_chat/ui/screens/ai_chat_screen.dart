@@ -33,16 +33,8 @@ class AiChatScreen extends StatelessWidget {
               child: Obx(
                 () => ListView.builder(
                   controller: controller.scrollController,
-                  itemCount: controller.messages.length + (controller.isLoading.value ? 1 : 0),
+                  itemCount: controller.messages.length,
                   itemBuilder: (context, index) {
-                    if (index == controller.messages.length) {
-                      return const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Center(
-                          child: CircularProgressIndicator(color: Color(0xFF6C5CE7)),
-                        ),
-                      );
-                    }
                     return ChatBubble(message: controller.messages[index]);
                   },
                 ),

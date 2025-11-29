@@ -43,22 +43,27 @@ class DayInputCard extends StatelessWidget {
             child: Column(
               children: [
                 _buildTextField(
-                  label: 'Place',
+                  label: 'Title',
                   icon: Icons.place,
-                  onChanged: (value) => day.place = value,
+                  controller: day.placeController,
+                  onChanged: (value) => day.place.value = value,
                 ),
                 const SizedBox(height: 12),
                 _buildTextField(
-                  label: 'Address',
+                  label: 'Place',
                   icon: Icons.map,
-                  onChanged: (value) => day.address = value,
+                  controller: day.addressController,
+                  readOnly: true,
+                  onTap: () => _showPlaceSearchSheet(context),
+                  onChanged: (value) {}, // Managed by search sheet
                 ),
                 const SizedBox(height: 12),
                 _buildTextField(
                   label: 'Notes',
                   icon: Icons.note,
                   maxLines: 3,
-                  onChanged: (value) => day.notes = value,
+                  controller: day.notesController,
+                  onChanged: (value) => day.notes.value = value,
                 ),
               ],
             ),
@@ -74,10 +79,16 @@ class DayInputCard extends StatelessWidget {
     required IconData icon,
     required Function(String) onChanged,
     int maxLines = 1,
+    VoidCallback? onTap,
+    bool readOnly = false,
+    TextEditingController? controller,
   }) {
     return TextField(
+      controller: controller,
       onChanged: onChanged,
       maxLines: maxLines,
+      readOnly: readOnly,
+      onTap: onTap,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
@@ -93,6 +104,108 @@ class DayInputCard extends StatelessWidget {
         ),
         filled: true,
         fillColor: Colors.white.withOpacity(0.05),
+      ),
+    );
+  }
+
+  void _showPlaceSearchSheet(BuildContext context) {
+    final searchController = TextEditingController();
+    final List<String> popularPlaces = [
+      'Pyramids of Giza',
+      'Karnak Temple',
+      'Valley of the Kings',
+      'Abu Simbel',
+      'Egyptian Museum',
+      'Khan el-Khalili',
+      'Luxor Temple',
+      'Philae Temple',
+      'Siwa Oasis',
+      'White Desert',
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.9,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (_, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E1E1E).withOpacity(0.95),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border(
+              top: BorderSide(color: Colors.white.withOpacity(0.2)),
+            ),
+          ),
+          child: Column(
+            children: [
+              const SizedBox(height: 16),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: TextField(
+                  controller: searchController,
+                  autofocus: true,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: 'Search for a place...',
+                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                    prefixIcon: const Icon(Icons.search, color: Colors.orange),
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.1),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  onChanged: (value) {
+                    // Implement search logic here if needed
+                  },
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
+                  itemCount: popularPlaces.length,
+                  itemBuilder: (context, index) {
+                    final place = popularPlaces[index];
+                    return ListTile(
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withOpacity(0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.location_on, color: Colors.orange, size: 20),
+                      ),
+                      title: Text(
+                        place,
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                      ),
+                      subtitle: Text(
+                        'Egypt',
+                        style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                      ),
+                      onTap: () {
+                        day.addressController.text = place;
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

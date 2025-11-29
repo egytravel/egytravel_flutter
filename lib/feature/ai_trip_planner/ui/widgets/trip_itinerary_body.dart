@@ -46,25 +46,23 @@ class TripItineraryBody extends StatelessWidget {
               budget: controller.budget,
             ),
             const DaysNavigationBar(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (controller.tripDays[controller.selectedDayIndex].flight != null)
-                      FlightCard(
-                        flight: controller.tripDays[controller.selectedDayIndex].flight!,
-                        dayIndex: controller.selectedDayIndex,
-                      ),
-                    HotelCard(
-                      hotelName: controller.tripDays[controller.selectedDayIndex].hotel,
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (controller.tripDays[controller.selectedDayIndex].flight != null)
+                    FlightCard(
+                      flight: controller.tripDays[controller.selectedDayIndex].flight!,
                       dayIndex: controller.selectedDayIndex,
                     ),
-                    const SizedBox(height: 16),
-                    _buildActivitiesSection(controller),
-                  ],
-                ),
+                  HotelCard(
+                    hotelName: controller.tripDays[controller.selectedDayIndex].hotel,
+                    dayIndex: controller.selectedDayIndex,
+                  ),
+                  const SizedBox(height: 16),
+                  _buildActivitiesSection(controller),
+                ],
               ),
             ),
           ],

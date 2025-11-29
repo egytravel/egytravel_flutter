@@ -27,98 +27,86 @@ class _CustomFloatingMenuState extends State<CustomFloatingMenu>
     setState(() => isOpen = !isOpen);
   }
 
+  void close() {
+    if (isOpen) {
+      setState(() => isOpen = false);
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      alignment: Alignment.center,
+    return IgnorePointer(
+      ignoring: !isOpen,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.center,
+        children: [
+          /// ===== خلفية شبه شفافة لما المينيو تفتح =====
+          if (isOpen)
+            GestureDetector(
+              onTap: () => setState(() => isOpen = false),
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 300),
+                opacity: isOpen ? 0.5 : 0,
+                child: Container(
+                  color: Colors.black,
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
+              ),
+            ),
 
-
-      children: [
-
-        /// ===== خلفية شبه شفافة لما المينيو تفتح =====
-        if (isOpen)
-          GestureDetector(
-            onTap: () => setState(() => isOpen = false),
+          /// ===== زرارين جنب بعض (Zoom In / Out) =====
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+            bottom: isOpen ? 120 : -150,   // يطلع من خارج الشاشة
             child: AnimatedOpacity(
-              duration: const Duration(milliseconds: 300),
-              opacity: isOpen ? 0.5 : 0,
-              child: Container(
-                color: Colors.black,
-                width: double.infinity,
-                height: double.infinity,
+              opacity: isOpen ? 1 : 0,
+              duration: const Duration(milliseconds: 250),
+              child: AnimatedScale(
+                scale: isOpen ? 1 : 0,       // <<<<<< ZOOM IN / OUT
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutBack,  // انيميشن نطّة بسيطة (جميل جداً)
+                child: Row(
+                  children: [
+
+                    _buildMenuButton(
+                      icon: Icons.public,
+                      text: "Trip plan",
+                      onTap: () {
+                        Get.toNamed( Routes.tripPlanner);
+                        showTopGlassSnackBar(context, 'Navigate to Trip Plan screen',success: true);
+
+                      },
+                    ),
+
+                    const SizedBox(width: 16),
+
+                    _buildMenuButton(
+                      icon: Icons.explore,
+                      text: "Guide",
+                      onTap: () {
+                        Get.to(() => const GuideTripScreen());
+                        Get.snackbar(
+                          'Guide',
+                          'Navigate to Guide screen',
+                          snackPosition: SnackPosition.TOP,
+                          backgroundColor: Colors.orange,
+                          colorText: Colors.white,
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
 
-        /// ===== زرارين جنب بعض (Zoom In / Out) =====
-        AnimatedPositioned(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-          bottom: isOpen ? 120 : -150,   // يطلع من خارج الشاشة
-          child: AnimatedOpacity(
-            opacity: isOpen ? 1 : 0,
-            duration: const Duration(milliseconds: 250),
-            child: AnimatedScale(
-              scale: isOpen ? 1 : 0,       // <<<<<< ZOOM IN / OUT
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOutBack,  // انيميشن نطّة بسيطة (جميل جداً)
-              child: Row(
-                children: [
 
-                  _buildMenuButton(
-                    icon: Icons.public,
-                    text: "Trip plan",
-                    onTap: () {
-                              Get.toNamed( Routes.tripPlanner);
-                              showTopGlassSnackBar(context, 'Navigate to Trip Plan screen',success: true);
-
-                    },
-                  ),
-
-                  const SizedBox(width: 16),
-
-                  _buildMenuButton(
-                    icon: Icons.explore,
-                    text: "Guide",
-                    onTap: () {
-                      Get.to(() => const GuideTripScreen());
-                      Get.snackbar(
-                        'Guide',
-                        'Navigate to Guide screen',
-                        snackPosition: SnackPosition.TOP,
-                        backgroundColor: Colors.orange,
-                        colorText: Colors.white,
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-
-        /// ===== الزرار الأساسي =====
-        // Positioned(
-        //   bottom: 100,
-        //   child: SizedBox(
-        //     width: 45,   // عرض الزر
-        //     height: 45,  // ارتفاع الزر
-        //     child: FloatingActionButton(
-        //       elevation: 0,
-        //       backgroundColor: AppColor.primary,
-        //       shape: const CircleBorder(),
-        //       child: Icon(
-        //         isOpen ? Icons.close : Icons.add,
-        //         size: 30, // حجم الأيقونة
-        //       ),
-        //       onPressed: () => setState(() => isOpen = !isOpen),
-        //     ),
-        //   ),
-        // )
-
-      ],
+        ],
+      ),
     );
   }
 
@@ -131,25 +119,31 @@ class _CustomFloatingMenuState extends State<CustomFloatingMenu>
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        width: 100, // Even smaller width
+        height: 70, // Even smaller height
+        padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(32),
-          boxShadow: const [
+          borderRadius: BorderRadius.circular(16), // Slightly smaller radius
+          boxShadow: [
             BoxShadow(
-              color: Colors.black26,
-              blurRadius: 6,
-              offset: Offset(0, 3),
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
             )
           ],
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.black,size: 26,),
+            Icon(icon, color: AppColor.primary, size: 30), // Smaller icon
+            const SizedBox(height: 4),
             Text(
               text,
+              textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 16,
+                color: Colors.black,
+                fontSize: 14, // Smaller font
                 fontWeight: FontWeight.w600,
               ),
             ),
