@@ -11,7 +11,7 @@ import 'package:egytravel_app/feature/splash/ui/screen/splash_screen.dart';
 import 'package:get/get.dart';
 
 class AppPages {
-  static const initial = Routes.splashScreen;
+  static const initial = Routes.home;
 
   static List<GetPage> appPages() => [
     GetPage(
