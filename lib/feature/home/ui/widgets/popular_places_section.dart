@@ -32,7 +32,14 @@ class PopularPlacesSection extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    Get.to(() => const SaintMoritzDetailScreen());
+                    // Get.to(() => const SaintMoritzDetailScreen());
+                    // Get.to(
+                    //   () => const ImageViewerScreen(
+
+                    //     imageSource: 'controller.places[0].images[0]',
+                    //     index: 0,
+                    //   ),
+                    // );
                   },
                   child: const Text(
                     'See All',
@@ -53,7 +60,10 @@ class PopularPlacesSection extends StatelessWidget {
               children: controller.places.map((place) {
                 return Padding(
                   padding: const EdgeInsets.only(right: 16.0),
-                  child: PlaceCard(place: place),
+                  child: GestureDetector(
+                    onTap: () => Get.to(() => const SaintMoritzDetailScreen()),
+                    child: PlaceCard(place: place),
+                  ),
                 );
               }).toList(),
             ),

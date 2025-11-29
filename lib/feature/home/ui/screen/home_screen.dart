@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:egytravel_app/feature/ai_trip_planner/ui/screens/icon_add_widget.dart';
 import 'package:egytravel_app/feature/home/logic/controller/home_controller.dart';
@@ -46,7 +44,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
 
-
       backgroundColor: Colors.transparent,
       extendBody: true,
 
@@ -56,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
           marginR: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
           currentIndex: _SelectedTab.values.indexOf(_selectedTab),
           unselectedItemColor: Colors.white70,
-          backgroundColor: Colors.black.withOpacity(0.4),
+          backgroundColor: Colors.black.withValues(alpha: .4),
           borderWidth: 2,
           outlineBorderColor: Colors.white,
           onTap: _handleIndexChanged,

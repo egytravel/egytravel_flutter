@@ -1,5 +1,6 @@
 import 'package:egytravel_app/feature/home/data/model/destination_model.dart';
 import 'package:flutter/material.dart';
+import 'dart:ui';
 
 class DestinationCard extends StatelessWidget {
   final Destination destination;
@@ -14,7 +15,7 @@ class DestinationCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -40,7 +41,10 @@ class DestinationCard extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.7),
+                  ],
                 ),
               ),
             ),
@@ -60,31 +64,33 @@ class DestinationCard extends StatelessWidget {
                       letterSpacing: -0.5,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Container(
+                  const SizedBox(height: 8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
+                          horizontal: 12,
+                          vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.3),
+                            color: Colors.white.withValues(alpha: 0.3),
                           ),
                         ),
                         child: const Text(
                           'Explore',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 11,
+                            fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ),

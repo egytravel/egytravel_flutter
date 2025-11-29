@@ -1,5 +1,8 @@
+import 'package:egytravel_app/core/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:egytravel_app/feature/home/logic/controller/home_controller.dart';
+import 'package:get/get.dart';
+import 'dart:ui';
 
 class SearchBarWidget extends StatelessWidget {
   final HomeController controller;
@@ -10,47 +13,59 @@ class SearchBarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
+      child: GestureDetector(
+        onTap: () {
+          // Navigate to search screen
+          Get.toNamed(Routes.search);
+        },
+        child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: TextField(
-          controller: controller.searchController,
-          decoration: InputDecoration(
-            hintText: 'Search destinations...',
-            hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 15),
-            prefixIcon: const Icon(
-              Icons.search_rounded,
-              color: Color(0xFF64748B),
-              size: 22,
-            ),
-            suffixIcon: Container(
-              margin: const EdgeInsets.all(8),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: IconButton(
-                onPressed: controller.openFilter,
-                icon: const Icon(
-                  Icons.tune_rounded,
-                  color: Color(0xFF64748B),
-                  size: 20,
+                color: Colors.white.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  width: 1,
                 ),
               ),
-            ),
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 16,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.search_rounded,
+                    color: Colors.white70,
+                    size: 22,
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Search destinations...',
+                      style: TextStyle(color: Colors.white60, fontSize: 15),
+                    ),
+                  ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(
+                          Icons.tune_rounded,
+                          color: Colors.white70,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
