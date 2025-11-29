@@ -13,8 +13,8 @@ class TripSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Reduced margin
+      padding: const EdgeInsets.all(12), // Reduced padding
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Colors.deepOrange, Colors.orange],
@@ -36,13 +36,13 @@ class TripSummaryCard extends StatelessWidget {
             '$totalDays Days',
             'Duration',
           ),
-          Container(width: 1, height: 40, color: Colors.white.withOpacity(0.3)),
+          Container(width: 1, height: 30, color: Colors.white.withOpacity(0.3)), // Reduced height
           _buildSummaryItem(
             Icons.hotel,
             '${totalDays - 1} Nights',
             'Accommodation',
           ),
-          Container(width: 1, height: 40, color: Colors.white.withOpacity(0.3)),
+          Container(width: 1, height: 30, color: Colors.white.withOpacity(0.3)), // Reduced height
           _buildSummaryItem(
             Icons.account_balance_wallet,
             budget,
@@ -56,19 +56,19 @@ class TripSummaryCard extends StatelessWidget {
   Widget _buildSummaryItem(IconData icon, String value, String label) {
     return Column(
       children: [
-        Icon(icon, color: Colors.white, size: 24),
-        const SizedBox(height: 8),
+        Icon(icon, color: Colors.white, size: 20), // Reduced icon size
+        const SizedBox(height: 4), // Reduced spacing
         Text(
           value,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 16,
+            fontSize: 14, // Reduced font size
             fontWeight: FontWeight.bold,
           ),
         ),
         Text(
           label,
-          style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 11),
+          style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 10), // Reduced font size
         ),
       ],
     );

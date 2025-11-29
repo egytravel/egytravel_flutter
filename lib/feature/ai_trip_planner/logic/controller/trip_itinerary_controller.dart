@@ -1,5 +1,6 @@
 import 'package:egytravel_app/feature/ai_trip_planner/logic/models/trip_itinerary_models.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 
 class TripItineraryController extends GetxController {
@@ -12,6 +13,15 @@ class TripItineraryController extends GetxController {
   List<DayItinerary> tripDays = [];
   bool isLoading = true;
   int selectedDayIndex = 0;
+  final isChatVisible = true.obs;
+
+  void updateChatVisibility(ScrollDirection direction) {
+    if (direction == ScrollDirection.reverse) {
+      if (isChatVisible.value) isChatVisible.value = false;
+    } else if (direction == ScrollDirection.forward) {
+      if (!isChatVisible.value) isChatVisible.value = true;
+    }
+  }
 
   void initData({
     required String destination,

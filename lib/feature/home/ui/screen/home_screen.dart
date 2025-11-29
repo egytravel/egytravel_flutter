@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:egytravel_app/feature/ai_trip_planner/ui/screens/icon_add_widget.dart';
 import 'package:egytravel_app/feature/home/logic/controller/home_controller.dart';
@@ -97,6 +99,9 @@ class _HomeScreenState extends State<HomeScreen> {
       CustomFloatingMenu.menuKey.currentState?.toggle();
       return;
     }
+
+    // Close menu if open when switching tabs
+    CustomFloatingMenu.menuKey.currentState?.close();
 
     setState(() {
       _selectedTab = _SelectedTab.values[index];

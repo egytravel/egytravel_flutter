@@ -6,7 +6,6 @@ class AiChatController extends GetxController {
   final TextEditingController messageController = TextEditingController();
   final ScrollController scrollController = ScrollController();
   final messages = <ChatMessage>[].obs;
-  final isLoading = false.obs;
 
   @override
   void onInit() {
@@ -37,7 +36,6 @@ class AiChatController extends GetxController {
     _scrollToBottom();
 
     // Simulate AI response
-    isLoading.value = true;
     await Future.delayed(const Duration(seconds: 2));
     
     messages.add(
@@ -47,7 +45,6 @@ class AiChatController extends GetxController {
         timestamp: DateTime.now(),
       ),
     );
-    isLoading.value = false;
     _scrollToBottom();
   }
 

@@ -4,6 +4,7 @@ import 'package:egytravel_app/feature/guid_trip/ui/widgets/day_input_card.dart';
 import 'package:egytravel_app/feature/guid_trip/ui/widgets/guide_app_bar.dart';
 import 'package:egytravel_app/feature/guid_trip/ui/widgets/guide_bottom_action_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 
 class GuideDetailsScreen extends GetView<GuideTripController> {
@@ -21,12 +22,19 @@ class GuideDetailsScreen extends GetView<GuideTripController> {
                 GuideAppBar(destination: controller.destinationController.text),
                 Expanded(
                   child: Obx(
-                    () => ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: controller.days.length,
-                      itemBuilder: (context, index) {
-                        return DayInputCard(day: controller.days[index]);
+                    () => NotificationListener<UserScrollNotification>(
+                      onNotification: (notification) {
+                        controller.updateFabVisibility(notification.direction);
+                        return true;
                       },
+                      child: ListView.builder(
+                        controller: controller.scrollController,
+                        padding: const EdgeInsets.all(16),
+                        itemCount: controller.days.length,
+                        itemBuilder: (context, index) {
+                          return DayInputCard(day: controller.days[index]);
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -36,12 +44,19 @@ class GuideDetailsScreen extends GetView<GuideTripController> {
           ),
         ],
       ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 90.0),
-        child: FloatingActionButton(
-          onPressed: controller.addDay,
-          backgroundColor: Colors.orange,
-          child: const Icon(Icons.add, color: Colors.white),
+      floatingActionButton: Obx(
+        () => AnimatedScale(
+          scale: controller.isFabVisible.value ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 90.0),
+            child: FloatingActionButton(
+              onPressed: controller.addDay,
+              backgroundColor: Colors.orange,
+              child: const Icon(Icons.add, color: Colors.white),
+            ),
+          ),
         ),
       ),
     );

@@ -60,21 +60,34 @@ class TripItineraryScreen extends StatelessWidget {
             ),
           ),
           child: SafeArea(
-            child: Column(
-              children: [
-                TripAppBar(destination: destination),
-                const Expanded(
-                  child: TripItineraryBody(),
+            child: NotificationListener<UserScrollNotification>(
+              onNotification: (notification) {
+                controller.updateChatVisibility(notification.direction);
+                return true;
+              },
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    TripAppBar(destination: destination),
+                    const TripItineraryBody(),
+                    const TripBottomActionBar(),
+                  ],
                 ),
-                const TripBottomActionBar(),
-              ],
+              ),
             ),
           ),
         ),
       ),
-      floatingActionButton: const Padding(
-        padding: EdgeInsets.only(bottom: 110.0),
-        child: FloatingChatButton(),
+      floatingActionButton: Obx(
+        () => AnimatedScale(
+          scale: controller.isChatVisible.value ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          child: const Padding(
+            padding: EdgeInsets.only(bottom: 110.0),
+            child: FloatingChatButton(),
+          ),
+        ),
       ),
     );
   }

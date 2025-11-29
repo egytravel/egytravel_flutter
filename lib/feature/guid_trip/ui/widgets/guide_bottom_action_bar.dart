@@ -25,7 +25,7 @@ class GuideBottomActionBar extends StatelessWidget {
               Expanded(
                 child: OutlinedButton(
                   onPressed: () {
-                    // Save as draft
+
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Guide saved as draft'),

@@ -46,7 +46,7 @@ class GuideAppBar extends StatelessWidget {
                   'Your Guide Trip',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -54,7 +54,7 @@ class GuideAppBar extends StatelessWidget {
                   destination,
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.8),
-                    fontSize: 12,
+                    fontSize: 16,
                   ),
                 ),
               ],
