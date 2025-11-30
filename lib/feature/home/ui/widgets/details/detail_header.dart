@@ -44,9 +44,9 @@ class DetailHeader extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.black.withOpacity(0.4),
+                Colors.black.withValues(alpha: 0.4),
                 Colors.transparent,
-                Colors.black.withOpacity(0.2),
+                Colors.black.withValues(alpha: 0.2),
               ],
             ),
           ),
@@ -101,11 +101,10 @@ class DetailHeader extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: Colors.white.withOpacity(0.3),
-                width: 1,
+                color: Colors.white.withValues(alpha: 0.3),
               ),
             ),
             child: Icon(icon, size: 20, color: color),

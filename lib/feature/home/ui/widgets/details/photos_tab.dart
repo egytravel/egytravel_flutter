@@ -32,11 +32,10 @@ class PhotosTab extends StatelessWidget {
                     onTap: () => controller.showImageSourceDialog(context),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
-                          style: BorderStyle.solid,
+                          color: Colors.white.withValues(alpha: 0.2),
                           width: 2,
                         ),
                       ),
@@ -46,7 +45,7 @@ class PhotosTab extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF6C5CE7).withOpacity(0.1),
+                              color: const Color(0xFF6C5CE7).withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -92,7 +91,7 @@ class PhotosTab extends StatelessWidget {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
