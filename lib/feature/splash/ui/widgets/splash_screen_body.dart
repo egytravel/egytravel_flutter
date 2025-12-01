@@ -1,7 +1,6 @@
-import 'package:egytravel_app/core/theme/app_color.dart';
+import 'package:egytravel_app/feature/ai_trip_planner/ui/widgets/background_widget.dart';
 import 'package:egytravel_app/feature/splash/logic/controller/splash_controller.dart';
 import 'package:egytravel_app/feature/splash/ui/widgets/bottom_loading.dart';
-import 'package:egytravel_app/feature/splash/ui/widgets/decorative_circles.dart';
 import 'package:egytravel_app/feature/splash/ui/widgets/main_content.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,33 +11,16 @@ class SplashScreenBody extends GetView<SplashController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColor.backgroundGradientStart,
-              AppColor.backgroundGradientMiddle,
-              AppColor.backgroundGradientEnd,
-            ],
-            // colors: [Color(0xFFFDF2E0), Color(0xFFF5E6D3), Color(0xFFEDD5B8)],
-          ),
-        ),
-        child: Stack(
-          children: [
-            // Decorative rotating circles
-            DecorativeCircles(controller: controller),
+      body: Stack(
+        children: [
+          const BackgroundImage(),
 
-            // Main content
-            MainContent(controller: controller),
+          // Main content
+          MainContent(controller: controller),
 
-            // Bottom loading section
-            BottomLoading(controller: controller),
-          ],
-        ),
+          // Bottom loading section
+          BottomLoading(controller: controller),
+        ],
       ),
     );
   }

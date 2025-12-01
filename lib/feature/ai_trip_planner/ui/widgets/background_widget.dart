@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class BackgroundImage extends StatelessWidget {
-  const BackgroundImage({super.key});
+  final Widget? child;
+  const BackgroundImage({super.key, this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +24,7 @@ class BackgroundImage extends StatelessWidget {
             ],
           ),
         ),
+        child: child,
       ),
     );
   }
