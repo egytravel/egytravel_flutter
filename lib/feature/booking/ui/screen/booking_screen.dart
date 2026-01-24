@@ -46,7 +46,7 @@ class _BookingScreenState extends State<BookingScreen> {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-            excludeHeaderSemantics: false,
+            forceMaterialTransparency: true,
             centerTitle: true,
             title: const Text(
               'Booking',
