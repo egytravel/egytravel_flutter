@@ -32,63 +32,69 @@ class LoginController extends GetxController {
   }
 
   Future<void> login(BuildContext context) async {
-    if (!formKey.currentState!.validate()) return;
-
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
-
-    if (email.isEmpty || password.isEmpty) {
-      showTopGlassSnackBar(
-        context,
-        'Please fill in both email and password',
-      );
-      return;
-    }
-
-    if (!_isValidEmail(email)) {
-      showTopGlassSnackBar(
-        context,
-        'Invalid Email',
-      );
-      return;
-    }
-
-    if (password.length < 8) {
-      showTopGlassSnackBar(
-        context,
-        'Password must be at least 8 characters',
-      );
-      return;
-    }
-
-    try {
-      isLoading.value = true;
-
-      final user = await _authRepo.login(email: email, password: password);
-
       showTopGlassSnackBar(
         context,
         'Login Successful',
         success: true,
       );
-
       Get.offAllNamed(Routes.home);
-
-    } on ApiError catch (e) {
-      showTopGlassSnackBar(
-        context,
-        e.message,
-      );
-      return;
-    } catch (e) {
-      showTopGlassSnackBar(
-        context,
-        'An error occurred during login',
-      );
-      return;
-    } finally {
-      isLoading.value = false;
-    }
+    // if (!formKey.currentState!.validate()) return;
+    //
+    // final email = emailController.text.trim();
+    // final password = passwordController.text.trim();
+    //
+    // if (email.isEmpty || password.isEmpty) {
+    //   showTopGlassSnackBar(
+    //     context,
+    //     'Please fill in both email and password',
+    //   );
+    //   return;
+    // }
+    //
+    // if (!_isValidEmail(email)) {
+    //   showTopGlassSnackBar(
+    //     context,
+    //     'Invalid Email',
+    //   );
+    //   return;
+    // }
+    //
+    // if (password.length < 8) {
+    //   showTopGlassSnackBar(
+    //     context,
+    //     'Password must be at least 8 characters',
+    //   );
+    //   return;
+    // }
+    //
+    // try {
+    //   isLoading.value = true;
+    //
+    //   final user = await _authRepo.login(email: email, password: password);
+    //
+    //   showTopGlassSnackBar(
+    //     context,
+    //     'Login Successful',
+    //     success: true,
+    //   );
+    //
+    //   Get.offAllNamed(Routes.home);
+    //
+    // } on ApiError catch (e) {
+    //   showTopGlassSnackBar(
+    //     context,
+    //     e.message,
+    //   );
+    //   return;
+    // } catch (e) {
+    //   showTopGlassSnackBar(
+    //     context,
+    //     'An error occurred during login',
+    //   );
+    //   return;
+    // } finally {
+    //   isLoading.value = false;
+    // }
   }
 
 
