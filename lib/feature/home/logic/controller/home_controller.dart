@@ -15,6 +15,7 @@ class HomeController extends GetxController {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final scrollController = ScrollController();
   final scrollOpacity = 0.0.obs;
+  final isScrolled = false.obs;
 
   final categories = ['Popular', 'Pyramids', 'Beach', 'Temple'];
 
@@ -80,14 +81,20 @@ class HomeController extends GetxController {
   }
 
   void _onScroll() {
-    // حساب الـ opacity بناءً على الـ scroll position
     final offset = scrollController.offset;
-    final maxScroll = 500.0; // المسافة اللي بعدها يوصل الأسود لأقصاه
+    // Change app bar color when scrolled past 100 pixels
+    isScrolled.value = offset > 100;
+
+    // Calculate opacity for other scroll effects
+    final maxScroll = 500.0;
     scrollOpacity.value = (offset / maxScroll).clamp(0.0, 0.7);
   }
 
   void _startAutoScroll() {
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      // Check if PageController is attached to a PageView
+      if (!pageController.hasClients) return;
+
       if (currentPage.value < featuredPlaces.length - 1) {
         currentPage.value++;
       } else {
@@ -101,6 +108,7 @@ class HomeController extends GetxController {
       );
     });
   }
+
   IconData getCategoryIcon(String category) {
     switch (category) {
       case 'Popular':
@@ -115,6 +123,7 @@ class HomeController extends GetxController {
         return Icons.category_rounded;
     }
   }
+
   @override
   void onClose() {
     _timer?.cancel();

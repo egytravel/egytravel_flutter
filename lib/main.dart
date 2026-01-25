@@ -1,5 +1,8 @@
+import 'package:egytravel_app/core/routes/app_pages.dart';
 import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/home/ui/screen/home_screen.dart';
+import 'package:egytravel_app/feature/onboarding/ui/screen/onboarding_screen.dart';
+import 'package:egytravel_app/feature/splash/ui/screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,17 +20,19 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'EgyTravel',
       theme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: Colors.black,
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColor.primaryColor,
+          brightness: Brightness.dark,
           primary: AppColor.primaryColor,
         ),
         useMaterial3: true,
       ),
 
-      home: HomeScreen(),
-     //  initialRoute: AppPages.initial,
-     //  getPages: AppPages.appPages(),
-
+      // home: OnboardingScreen(),
+      initialRoute: AppPages.initial,
+      getPages: AppPages.appPages(),
     );
   }
 }

@@ -1,13 +1,11 @@
-import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
-import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
-import 'package:egytravel_app/core/theme/app_color.dart';
+import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
+import 'package:egytravel_app/feature/ai_trip_planner/ui/screens/icon_add_widget.dart';
+import 'package:egytravel_app/feature/booking/ui/screen/booking_screen.dart';
 import 'package:egytravel_app/feature/home/logic/controller/home_controller.dart';
-import 'package:egytravel_app/feature/home/ui/screen/details.dart';
-import 'package:egytravel_app/feature/home/ui/widgets/destination_card.dart';
+import 'package:egytravel_app/feature/home/logic/controller/home_navigation_controller.dart';
 import 'package:egytravel_app/feature/home/ui/widgets/home_screen_body.dart';
-import 'package:egytravel_app/feature/home/ui/widgets/place_card.dart';
 import 'package:egytravel_app/feature/profile/ui/screen/profile_screen.dart';
-import 'package:egytravel_app/generated/assets.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -19,76 +17,97 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Widget> pages = [
+  ValueNotifier<bool> isDialOpen = ValueNotifier(false);
+  late final HomeNavigationController navController;
+
+  final List<Widget> pages = [
     const HomeScreenBody(),
-    const ProfileScreen(),
     const HomeScreenBody(),
-    const ProfileScreen(),
+    Container(),
+    const BookingScreen(),
     const ProfileScreen(),
   ];
 
-    int selectedItem = 0;
+  @override
+  void initState() {
+    super.initState();
+    navController = Get.put(HomeNavigationController());
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(HomeController());
-    return Scaffold(
+
+    return Obx(() {
+      return Scaffold(
         key: controller.scaffoldKey,
-        body: pages[selectedItem],
+        body: Stack(
+          children: [
+            pages[navController.selectedBottomTab.value],
+            CustomFloatingMenu(key: CustomFloatingMenu.menuKey),
+          ],
+        ),
         backgroundColor: Colors.transparent,
         extendBody: true,
-        bottomNavigationBar: CurvedNavigationBar(
-          color: AppColor.primary,
-          backgroundColor: Colors.transparent,
-          buttonBackgroundColor: AppColor.primary.withValues(alpha: 0.7),
-          items: [
-            CurvedNavigationBarItem(
-              child: SizedBox(
-                height: 30,
-                width: 30,
-                child: Image.asset(Assets.iconsHome),
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.only(bottom: 4),
+          child: CrystalNavigationBar(
+            marginR: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
+            currentIndex: navController.selectedBottomTab.value,
+            unselectedItemColor: Colors.white70,
+            backgroundColor: Colors.black.withValues(alpha: .4),
+            borderWidth: 2,
+            outlineBorderColor: Colors.white,
+            onTap: _handleIndexChanged,
+            items: [
+              CrystalNavigationBarItem(
+                icon: CupertinoIcons.house_fill,
+                unselectedIcon: CupertinoIcons.house,
+                selectedColor: Colors.white,
               ),
-              label: 'Home',
-            ),
-            CurvedNavigationBarItem(
-              child: SizedBox(
-                height: 30,
-                width: 30,
-                child: Image.asset(Assets.iconsSearch),
+              CrystalNavigationBarItem(
+                icon: CupertinoIcons.map_fill,
+                unselectedIcon: CupertinoIcons.map,
+                selectedColor: Colors.white,
               ),
-              label: 'Search',
-            ),
-            CurvedNavigationBarItem(
-              child: SizedBox(
-                height: 30,
-                width: 30,
-                child: Image.asset(Assets.iconsExplore),
+              CrystalNavigationBarItem(
+                icon: CupertinoIcons.add_circled_solid,
+                unselectedIcon: CupertinoIcons.add,
+                selectedColor: Colors.white,
               ),
-              label: 'add',
-            ),
-            CurvedNavigationBarItem(
-              child: SizedBox(
-                height: 30,
-                width: 30,
-                child: Image.asset(Assets.iconsExplore),
+              CrystalNavigationBarItem(
+                icon: CupertinoIcons.creditcard_fill,
+                unselectedIcon: CupertinoIcons.creditcard,
+                selectedColor: Colors.white,
               ),
-              label: 'Explore',
-            ),
-            CurvedNavigationBarItem(
-              child: SizedBox(
-                height: 30,
-                width: 30,
-                child: Image.asset(Assets.iconsProfile),
+              CrystalNavigationBarItem(
+                icon: CupertinoIcons.person_fill,
+                unselectedIcon: CupertinoIcons.person,
+                selectedColor: Colors.white,
               ),
-              label: 'Profile',
-            ),
-          ],
-          onTap: (index) {
-            setState(() {
-              selectedItem = index;
-            });
-          },
+            ],
+          ),
         ),
+      );
+    });
+  }
 
-    );
+  void _handleIndexChanged(int index) {
+    if (index == 2) {
+      // Add button
+      CustomFloatingMenu.menuKey.currentState?.toggle();
+      return;
+    }
+
+    // Close menu if open when switching tabs
+    CustomFloatingMenu.menuKey.currentState?.close();
+
+    navController.setBottomTab(index);
+  }
+
+  @override
+  void dispose() {
+    isDialOpen.dispose();
+    super.dispose();
   }
 }

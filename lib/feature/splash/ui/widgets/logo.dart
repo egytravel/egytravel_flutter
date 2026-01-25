@@ -17,24 +17,22 @@ class Logo extends StatelessWidget {
             height: 160,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
+              color: Colors.white.withOpacity(0.1),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.2),
+                width: 2,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(
-                    0xFF8B6F47,
-                  ).withOpacity(0.3 * controller.pulseAnimation.value),
-                  // blurRadius: 40 * controller.pulseAnimation.value,
-                  // spreadRadius: 10 * controller.pulseAnimation.value,
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 20,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
             child: ClipOval(
               child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: const Color(0xFF8B6F47), width: 3),
-                  shape: BoxShape.circle,
-                ),
-                padding: const EdgeInsets.all(15),
+                padding: const EdgeInsets.all(20),
                 child: ClipOval(
                   child: Image.asset(
                     'assets/image/logo.png',
