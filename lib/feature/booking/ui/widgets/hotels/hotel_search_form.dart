@@ -12,7 +12,7 @@ class HotelSearchForm extends StatelessWidget {
     final controller = Get.find<BookingController>();
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 18),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: BackdropFilter(
@@ -275,7 +275,7 @@ class HotelSearchForm extends StatelessWidget {
           () => InkWell(
             onTap: onTap,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(12),
@@ -327,7 +327,7 @@ class HotelSearchForm extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(12),

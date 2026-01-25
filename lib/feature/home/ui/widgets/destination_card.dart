@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/home/data/model/destination_model.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
@@ -10,22 +11,23 @@ class DestinationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 200,
+      height: 220,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: Colors.black.withOpacity(0.2),
             blurRadius: 16,
-            offset: const Offset(0, 4),
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         child: Stack(
           fit: StackFit.expand,
           children: [
+            // Image
             Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
@@ -36,18 +38,21 @@ class DestinationCard extends StatelessWidget {
                 color: const Color(0xFFE2E8F0),
               ),
             ),
+            // Gradient overlay
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.7),
+                    const Color(0xFF0A1628).withOpacity(0.2),
+                    const Color(0xFF0A1628).withOpacity(0.9),
                   ],
+                  stops: const [0.3, 1.0],
                 ),
               ),
             ),
+            // Content
             Positioned(
               bottom: 16,
               left: 16,
@@ -59,35 +64,59 @@ class DestinationCard extends StatelessWidget {
                     destination.name,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 20,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                       letterSpacing: -0.5,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                     child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
+                          horizontal: 8,
+                          vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(8),
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColor.primaryColor,
+                              AppColor.primaryColor.withOpacity(0.85),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.3),
+                            color: AppColor.primaryColor.withOpacity(0.4),
+                            width: 1.5,
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColor.primaryColor.withOpacity(0.3),
+                              blurRadius: 10,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
                         ),
-                        child: const Text(
-                          'Explore',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.explore_rounded,
+                              color: Colors.black,
+                              size: 14,
+                            ),
+                            SizedBox(width: 6),
+                            Text(
+                              'Explore Now',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),

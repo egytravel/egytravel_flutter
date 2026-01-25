@@ -29,7 +29,7 @@ class HotelCard extends StatelessWidget {
               children: [
                 // Hotel Image
                 Container(
-                  height: 120,
+                  height: 110,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -75,7 +75,7 @@ class HotelCard extends StatelessWidget {
 
                 // Hotel Info
                 Padding(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -87,7 +87,7 @@ class HotelCard extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
-                        maxLines: 2,
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 6),
@@ -151,7 +151,7 @@ class HotelCard extends StatelessWidget {
                           ),
 
                           // Price
-                          Column(
+                          Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
