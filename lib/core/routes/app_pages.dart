@@ -3,6 +3,7 @@ import 'package:egytravel_app/feature/ai_trip_planner/logic/binding/trip_binding
 import 'package:egytravel_app/feature/ai_trip_planner/ui/screens/ai_trip_planner_screen.dart';
 import 'package:egytravel_app/feature/auth/logic/binding/login_binding.dart';
 import 'package:egytravel_app/feature/auth/ui/screens/login_view.dart';
+import 'package:egytravel_app/feature/booking/ui/screen/booking_screen.dart';
 import 'package:egytravel_app/feature/home/ui/screen/home_screen.dart';
 import 'package:egytravel_app/feature/home/ui/screen/search_screen.dart';
 import 'package:egytravel_app/feature/onboarding/ui/screen/onboarding_screen.dart';
@@ -35,5 +36,6 @@ class AppPages {
       binding: TripBinding(),
     ),
     GetPage(name: Routes.search, page: () => const SearchScreen()),
+    GetPage(name: Routes.bookingScreen, page: () => const BookingScreen()),
   ];
 }

@@ -88,6 +88,9 @@ class HomeController extends GetxController {
 
   void _startAutoScroll() {
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      // Check if PageController is attached to a PageView
+      if (!pageController.hasClients) return;
+
       if (currentPage.value < featuredPlaces.length - 1) {
         currentPage.value++;
       } else {
@@ -101,6 +104,7 @@ class HomeController extends GetxController {
       );
     });
   }
+
   IconData getCategoryIcon(String category) {
     switch (category) {
       case 'Popular':
@@ -115,6 +119,7 @@ class HomeController extends GetxController {
         return Icons.category_rounded;
     }
   }
+
   @override
   void onClose() {
     _timer?.cancel();

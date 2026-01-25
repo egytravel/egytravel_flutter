@@ -1,5 +1,6 @@
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:egytravel_app/feature/ai_trip_planner/ui/screens/icon_add_widget.dart';
+import 'package:egytravel_app/feature/booking/ui/screen/booking_screen.dart';
 import 'package:egytravel_app/feature/home/logic/controller/home_controller.dart';
 import 'package:egytravel_app/feature/home/ui/widgets/home_screen_body.dart';
 import 'package:egytravel_app/feature/profile/ui/screen/profile_screen.dart';
@@ -27,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const HomeScreenBody(),
     const HomeScreenBody(),
     Container(),
-    const ProfileScreen(),
+    const BookingScreen(),
     const ProfileScreen(),
   ];
 
