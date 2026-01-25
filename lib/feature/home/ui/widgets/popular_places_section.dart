@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:egytravel_app/feature/home/logic/controller/home_controller.dart';
 import 'package:egytravel_app/feature/home/ui/widgets/place_card.dart';
@@ -41,10 +42,10 @@ class PopularPlacesSection extends StatelessWidget {
                     //   ),
                     // );
                   },
-                  child: const Text(
+                  child: Text(
                     'See All',
                     style: TextStyle(
-                      color: Color(0xFFFF6B35),
+                      color: AppColor.primaryColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
