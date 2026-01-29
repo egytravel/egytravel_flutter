@@ -5,6 +5,7 @@ import 'package:egytravel_app/feature/home/logic/controller/home_controller.dart
 import 'package:egytravel_app/feature/home/logic/controller/home_navigation_controller.dart';
 import 'package:egytravel_app/feature/home/ui/widgets/home_screen_body.dart';
 import 'package:egytravel_app/feature/profile/ui/screen/profile_screen.dart';
+import 'package:egytravel_app/feature/explore/ui/screen/explore_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> pages = [
     const HomeScreenBody(),
-    const HomeScreenBody(),
+    const ExploreScreen(),
     Container(),
     const BookingScreen(),
     const ProfileScreen(),

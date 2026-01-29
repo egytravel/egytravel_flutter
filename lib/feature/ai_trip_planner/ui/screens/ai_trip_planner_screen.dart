@@ -28,7 +28,9 @@ class PlanTripScreen extends GetView<TripController> {
                     children: [
                       Header(onClose: () => Navigator.pop(context)),
                       const SizedBox(height: 32),
-                      DestinationInput(controller: controller.destinationController),
+                      DestinationInput(
+                        controller: controller.destinationController,
+                      ),
                       const SizedBox(height: 16),
                       DateSelector(
                         startDate: controller.startDate,
