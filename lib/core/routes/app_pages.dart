@@ -9,6 +9,9 @@ import 'package:egytravel_app/feature/home/ui/screen/search_screen.dart';
 import 'package:egytravel_app/feature/onboarding/ui/screen/onboarding_screen.dart';
 import 'package:egytravel_app/feature/splash/logic/binding/splash_binding.dart';
 import 'package:egytravel_app/feature/splash/ui/screen/splash_screen.dart';
+import 'package:egytravel_app/feature/explore/ui/screen/explore_listing_screen.dart';
+import 'package:egytravel_app/feature/explore/ui/screen/map_view_screen.dart';
+import 'package:egytravel_app/feature/explore/ui/screen/explore_details_screen.dart';
 import 'package:get/get.dart';
 
 class AppPages {
@@ -37,5 +40,14 @@ class AppPages {
     ),
     GetPage(name: Routes.search, page: () => const SearchScreen()),
     GetPage(name: Routes.bookingScreen, page: () => const BookingScreen()),
+    GetPage(
+      name: Routes.exploreListing,
+      page: () => const ExploreListingScreen(),
+    ),
+    GetPage(name: Routes.mapView, page: () => const MapViewScreen()),
+    GetPage(
+      name: Routes.exploreDetails,
+      page: () => const ExploreDetailsScreen(),
+    ),
   ];
 }
