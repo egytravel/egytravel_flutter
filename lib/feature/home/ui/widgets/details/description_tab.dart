@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:flutter/material.dart';
 
 class DescriptionTab extends StatelessWidget {
@@ -26,7 +27,7 @@ class DescriptionTab extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      Icon(Icons.star, color: Color(0xFFFF7675), size: 16),
+                      Icon(Icons.star, color: AppColor.gold, size: 16),
                       SizedBox(width: 4),
                       Text(
                         '4.8',
@@ -74,7 +75,7 @@ class DescriptionTab extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: MediaQuery.heightOf(context) * 0.12),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: SizedBox(
@@ -83,7 +84,7 @@ class DescriptionTab extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6C5CE7),
+                backgroundColor: AppColor.primaryColor,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -116,7 +117,7 @@ class DescriptionTab extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: const Color(0xFF6C5CE7)),
+          Icon(icon, size: 20, color: AppColor.primaryColor),
           const SizedBox(width: 8),
           Text(
             label,

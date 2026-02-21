@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:flutter/material.dart';
 
 class RatingBarWidget extends StatelessWidget {
@@ -44,7 +45,7 @@ class RatingBarWidget extends StatelessWidget {
                   child: Container(
                     height: 8,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFF7675),
+                      color: AppColor.gold,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),

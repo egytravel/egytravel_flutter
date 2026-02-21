@@ -11,7 +11,7 @@ class ExploreAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      centerTitle: false,
+      centerTitle: true,
       title: const Padding(
         padding: EdgeInsets.only(left: 8.0),
         child: Text(

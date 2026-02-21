@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../logic/controller/saint_moritz_controller.dart';
@@ -48,7 +49,7 @@ class AddReviewDialog extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 4),
                         child: Icon(
                           index < rating.value ? Icons.star : Icons.star_border,
-                          color: const Color(0xFFFF7675),
+                          color: AppColor.gold,
                           size: 32,
                         ),
                       ),
@@ -78,7 +79,7 @@ class AddReviewDialog extends StatelessWidget {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFF6C5CE7)),
+                    borderSide: const BorderSide(color: AppColor.primaryColor),
                   ),
                   filled: true,
                   fillColor: Colors.white.withOpacity(0.05),
@@ -123,7 +124,7 @@ class AddReviewDialog extends StatelessWidget {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6C5CE7),
+                        backgroundColor: AppColor.primaryColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),

@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:flutter/material.dart';
 import '../../../data/model/review_model.dart';
 
@@ -52,19 +53,19 @@ class ReviewCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFF7675).withValues(alpha: 0.1),
+                  color: AppColor.gold.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.star, size: 14, color: Color(0xFFFF7675)),
+                    const Icon(Icons.star, size: 14, color: AppColor.gold),
                     const SizedBox(width: 4),
                     Text(
                       review.rating.toString(),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
-                        color: Color(0xFFFF7675),
+                        color: AppColor.gold,
                       ),
                     ),
                   ],

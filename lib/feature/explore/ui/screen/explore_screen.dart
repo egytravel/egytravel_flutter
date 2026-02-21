@@ -25,21 +25,8 @@ class ExploreScreen extends GetView<ExploreController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // =============> Explore Places Section
               const SizedBox(height: 10),
-
-              // Recommended Places
-              ExploreSectionHeader(
-                title: "Recommended",
-                onSeeAll: () => controller.navigateToSeeAll(
-                  ExploreItemType.place,
-                  category: 'Recommended',
-                ),
-              ),
-              ExploreHorizontalList(items: controller.recommendedPlaces),
-
-              const SizedBox(height: 20),
-
-              // Explore Places Section
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(
@@ -61,17 +48,27 @@ class ExploreScreen extends GetView<ExploreController> {
               ),
               const SizedBox(height: 16),
 
-              // Categorized Items List
+              // =============> Recommended Places
               Obx(
                 () => ExploreHorizontalList(
                   items: controller.placesForSelectedCategory,
                   emptyMessage: "No places found in this category",
                 ),
               ),
+              const SizedBox(height: 20),
+              ExploreSectionHeader(
+                title: "Recommended",
+                onSeeAll: () => controller.navigateToSeeAll(
+                  ExploreItemType.place,
+                  category: 'Recommended',
+                ),
+              ),
+              ExploreHorizontalList(items: controller.recommendedPlaces),
 
+              // Categorized Items List
               const SizedBox(height: 24),
 
-              // Restaurants
+              // =============> Restaurants
               ExploreSectionHeader(
                 title: "Top Restaurants",
                 onSeeAll: () =>
@@ -81,7 +78,7 @@ class ExploreScreen extends GetView<ExploreController> {
 
               const SizedBox(height: 24),
 
-              // Hotels
+              // =============> Hotels
               ExploreSectionHeader(
                 title: "Best Hotels",
                 onSeeAll: () =>
@@ -91,7 +88,7 @@ class ExploreScreen extends GetView<ExploreController> {
 
               const SizedBox(height: 24),
 
-              // Flights
+              // =============> Flights
               ExploreSectionHeader(
                 title: "Upcoming Flights",
                 onSeeAll: () =>
