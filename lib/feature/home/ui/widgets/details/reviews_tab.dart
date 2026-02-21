@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../logic/controller/saint_moritz_controller.dart';
@@ -39,7 +40,7 @@ class ReviewsTab extends StatelessWidget {
                       children: List.generate(5, (index) {
                         return const Icon(
                           Icons.star,
-                          color: Color(0xFFFF7675),
+                          color: AppColor.gold,
                           size: 16,
                         );
                       }),

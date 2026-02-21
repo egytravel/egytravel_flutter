@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/widgets/glassy_background.dart';
 import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/booking/data/models/flight_model.dart';
 import 'package:flutter/material.dart';
@@ -11,107 +12,89 @@ class FlightDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/image/Splash_Screen.png'),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.black.withOpacity(0.6),
-              Colors.black.withOpacity(0.8),
-            ],
-          ),
-        ),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: CustomScrollView(
-            slivers: [
-              // App Bar
-              SliverAppBar(
-                expandedHeight: 200,
-                pinned: true,
-                backgroundColor: Colors.black,
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: () => Navigator.pop(context),
+    return GlassyBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: CustomScrollView(
+          slivers: [
+            // App Bar
+            SliverAppBar(
+              expandedHeight: 200,
+              pinned: true,
+              backgroundColor: Colors.black,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
+              ),
+              flexibleSpace: FlexibleSpaceBar(
+                title: const Text(
+                  'Flight Details',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                flexibleSpace: FlexibleSpaceBar(
-                  title: const Text(
-                    'Flight Details',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                background: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        AppColor.primaryColor.withValues(alpha: 0.3),
+                        Colors.black,
+                      ],
                     ),
                   ),
-                  background: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          AppColor.primaryColor.withValues(alpha: 0.3),
-                          Colors.black,
-                        ],
-                      ),
-                    ),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SizedBox(height: 40),
-                          Text(
-                            flight.airlineLogo,
-                            style: const TextStyle(fontSize: 60),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 40),
+                        Text(
+                          flight.airlineLogo,
+                          style: const TextStyle(fontSize: 60),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          flight.airlineName,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            flight.airlineName,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
+            ),
 
-              // Content
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Route Card
-                      _buildRouteCard(),
-                      const SizedBox(height: 20),
+            // Content
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Route Card
+                    _buildRouteCard(),
+                    const SizedBox(height: 20),
 
-                      // Flight Info
-                      _buildInfoSection(),
-                      const SizedBox(height: 20),
+                    // Flight Info
+                    _buildInfoSection(),
+                    const SizedBox(height: 20),
 
-                      // Price Breakdown
-                      _buildPriceSection(),
-                      const SizedBox(height: 100),
-                    ],
-                  ),
+                    // Price Breakdown
+                    _buildPriceSection(),
+                    const SizedBox(height: 100),
+                  ],
                 ),
               ),
-            ],
-          ),
-          bottomNavigationBar: _buildBottomBar(context),
+            ),
+          ],
         ),
+        bottomNavigationBar: _buildBottomBar(context),
       ),
     );
   }

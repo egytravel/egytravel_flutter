@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:io';
@@ -45,13 +46,15 @@ class PhotosTab extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF6C5CE7).withValues(alpha: 0.1),
+                              color: AppColor.primaryColor.withValues(
+                                alpha: 0.1,
+                              ),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
                               Icons.add_a_photo,
                               size: 32,
-                              color: Color(0xFF6C5CE7),
+                              color: AppColor.primaryColor,
                             ),
                           ),
                           const SizedBox(height: 12),

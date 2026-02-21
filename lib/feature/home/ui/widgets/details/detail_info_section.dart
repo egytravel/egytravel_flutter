@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
@@ -34,7 +35,7 @@ class DetailInfoSection extends StatelessWidget {
                         Icon(
                           Icons.location_on,
                           size: 16,
-                          color: Color(0xFF6C5CE7),
+                          color: AppColor.primaryColor,
                         ),
                         SizedBox(width: 4),
                         Text(
@@ -61,7 +62,7 @@ class DetailInfoSection extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF6C5CE7),
+                            color: AppColor.primaryColor,
                           ),
                         ),
                         TextSpan(
@@ -91,18 +92,14 @@ class DetailInfoSection extends StatelessWidget {
                         child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              Icons.star,
-                              size: 16,
-                              color: Color(0xFFFF7675),
-                            ),
+                            Icon(Icons.star, size: 16, color: AppColor.gold),
                             SizedBox(width: 4),
                             Text(
                               '4.8 (2.5k)',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFFFF7675),
+                                color: AppColor.gold,
                               ),
                             ),
                           ],
