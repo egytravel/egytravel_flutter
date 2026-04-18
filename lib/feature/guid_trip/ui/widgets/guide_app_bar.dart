@@ -1,13 +1,10 @@
+import 'package:egytravel_app/core/widgets/custom_back_button.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class GuideAppBar extends StatelessWidget {
   final String destination;
 
-  const GuideAppBar({
-    Key? key,
-    required this.destination,
-  }) : super(key: key);
+  const GuideAppBar({Key? key, required this.destination}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,28 +12,7 @@ class GuideAppBar extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: Row(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.black.withOpacity(0.5),
-                  Colors.black.withOpacity(0.7),
-                  Colors.black.withOpacity(0.85),
-                ],
-              ),
-              color: Colors.white.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.2),
-              ),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Get.back(),
-            ),
-          ),
+          CustomBackButton(onPressed: () => Navigator.of(context).pop()),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -72,9 +48,7 @@ class GuideAppBar extends StatelessWidget {
                 ],
               ),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.2),
-              ),
+              border: Border.all(color: Colors.white.withOpacity(0.2)),
             ),
             child: IconButton(
               icon: const Icon(Icons.share, color: Colors.white),
