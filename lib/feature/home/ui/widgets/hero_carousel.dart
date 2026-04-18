@@ -29,20 +29,14 @@ class HeroCarousel extends StatelessWidget {
                   // Image
                   Container(
                     decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        bottomRight: Radius.circular(40),
-                        bottomLeft: Radius.circular(40),
-                      ),
+
                     ),
                     child: Image.asset(place['image']!, fit: BoxFit.cover),
                   ),
                   // Enhanced gradient overlay
                   Container(
                     decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                        bottomRight: Radius.circular(40),
-                        bottomLeft: Radius.circular(40),
-                      ),
+
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,

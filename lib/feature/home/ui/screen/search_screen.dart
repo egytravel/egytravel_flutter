@@ -1,4 +1,4 @@
-import 'package:egytravel_app/feature/ai_trip_planner/ui/widgets/background_widget.dart';
+import 'package:egytravel_app/core/widgets/glassy_background.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:ui';
@@ -32,7 +32,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BackgroundImage(
+    return GlassyBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(

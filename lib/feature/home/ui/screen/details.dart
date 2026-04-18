@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/widgets/glassy_background.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../logic/controller/saint_moritz_controller.dart';
@@ -7,7 +8,6 @@ import '../widgets/details/detail_tab_bar.dart';
 import '../widgets/details/description_tab.dart';
 import '../widgets/details/photos_tab.dart';
 import '../widgets/details/reviews_tab.dart';
-import '../../../ai_trip_planner/ui/widgets/background_widget.dart';
 
 class SaintMoritzDetailScreen extends StatelessWidget {
   const SaintMoritzDetailScreen({super.key});
@@ -16,7 +16,7 @@ class SaintMoritzDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(SaintMoritzController());
 
-    return BackgroundImage(
+    return GlassyBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Column(
