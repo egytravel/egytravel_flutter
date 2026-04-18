@@ -81,7 +81,8 @@ class ExploreDetailsContent extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         Text(
-          "Experience the magic of ${item.title}. Just a short distance from ${item.location}, this destination offers a unique blend of culture, history, and modern amenities perfect for travelers seeking adventure and relaxation.",
+          item.description ??
+              "Experience the magic of ${item.title}. Just a short distance from ${item.location}, this destination offers a unique blend of culture, history, and modern amenities perfect for travelers seeking adventure and relaxation.",
           style: const TextStyle(
             fontSize: 14,
             color: Colors.white70,
