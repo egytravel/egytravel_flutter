@@ -1,7 +1,8 @@
 import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/core/widgets/custom_button.dart';
+import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 
 class ExploreDetailsActionBar extends StatelessWidget {
   final String price;
@@ -44,11 +45,7 @@ class ExploreDetailsActionBar extends StatelessWidget {
               backgroundColor: AppColor.primary,
               textColor: Colors.white,
               onPressed: () {
-                Get.snackbar(
-                  "Booking",
-                  "Booking feature coming soon!",
-                  snackPosition: SnackPosition.BOTTOM,
-                );
+                showSuccess('Booking feature coming soon!');
               },
             ),
           ),

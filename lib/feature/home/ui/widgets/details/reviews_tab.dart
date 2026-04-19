@@ -1,18 +1,20 @@
 import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../logic/controller/saint_moritz_controller.dart';
+import 'package:egytravel_app/feature/home/logic/controller/place_detail_controller.dart';
 import 'review_card.dart';
 import 'rating_bar_widget.dart';
 import 'add_review_dialog.dart';
 
 class ReviewsTab extends StatelessWidget {
-  final SaintMoritzController controller;
+  final PlaceDetailController controller;
 
   const ReviewsTab({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
+    final place = controller.place;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -28,9 +30,9 @@ class ReviewsTab extends StatelessWidget {
               children: [
                 Column(
                   children: [
-                    const Text(
-                      '4.8',
-                      style: TextStyle(
+                    Text(
+                      place.rating.toString(),
+                      style: const TextStyle(
                         fontSize: 48,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -38,17 +40,17 @@ class ReviewsTab extends StatelessWidget {
                     ),
                     Row(
                       children: List.generate(5, (index) {
-                        return const Icon(
-                          Icons.star,
+                        return Icon(
+                          index < place.rating.floor() ? Icons.star : Icons.star_border,
                           color: AppColor.gold,
                           size: 16,
                         );
                       }),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      '2.5k reviews',
-                      style: TextStyle(color: Colors.white60, fontSize: 12),
+                    Text(
+                      '${place.reviewCount ?? 0} reviews',
+                      style: const TextStyle(color: Colors.white60, fontSize: 12),
                     ),
                   ],
                 ),
@@ -112,3 +114,4 @@ class ReviewsTab extends StatelessWidget {
     return RatingBarWidget(label: label, stars: stars, percentage: percentage);
   }
 }
+

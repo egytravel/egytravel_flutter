@@ -1,24 +1,31 @@
 import 'package:egytravel_app/core/routes/app_pages.dart';
 import 'package:egytravel_app/core/theme/app_color.dart';
-import 'package:egytravel_app/feature/home/ui/screen/home_screen.dart';
-import 'package:egytravel_app/feature/onboarding/ui/screen/onboarding_screen.dart';
-import 'package:egytravel_app/feature/splash/ui/screen/splash_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:device_preview/device_preview.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    DevicePreview(
+      // enabled: false,
+      builder: (context) => const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'EgyTravel',
+      // Device Preview Configuration
+      // useInheritedMediaQuery: true,
+      // locale: DevicePreview.locale(context),
+      // builder: DevicePreview.appBuilder,
       theme: ThemeData(
         brightness: Brightness.dark,
         scaffoldBackgroundColor: Colors.black,
@@ -29,8 +36,6 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-
-      // home: OnboardingScreen(),
       initialRoute: AppPages.initial,
       getPages: AppPages.appPages(),
     );

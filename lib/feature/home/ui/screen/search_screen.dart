@@ -1,38 +1,16 @@
-import 'package:egytravel_app/feature/ai_trip_planner/ui/widgets/background_widget.dart';
+import 'package:egytravel_app/core/widgets/glassy_background.dart';
+import 'package:egytravel_app/feature/home/logic/controller/search_controller.dart';
+import 'package:egytravel_app/feature/home/ui/screen/details.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:ui';
 
-class SearchScreen extends StatefulWidget {
+class SearchScreen extends GetView<AppSearchController> {
   const SearchScreen({super.key});
 
   @override
-  State<SearchScreen> createState() => _SearchScreenState();
-}
-
-class _SearchScreenState extends State<SearchScreen> {
-  final TextEditingController _searchController = TextEditingController();
-  final FocusNode _focusNode = FocusNode();
-
-  @override
-  void initState() {
-    super.initState();
-    // Auto-focus on the search field when screen opens
-    Future.delayed(const Duration(milliseconds: 300), () {
-      _focusNode.requestFocus();
-    });
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return BackgroundImage(
+    return GlassyBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(
@@ -82,22 +60,33 @@ class _SearchScreenState extends State<SearchScreen> {
                               ),
                             ),
                             child: TextField(
-                              controller: _searchController,
-                              focusNode: _focusNode,
+                              controller: controller.searchTextField,
+                              focusNode: controller.focusNode,
+                              onChanged: controller.onSearchChanged,
+                              onSubmitted: (value) {
+                                controller.addToRecentSearches(value);
+                              },
                               style: const TextStyle(color: Colors.white),
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 hintText: 'Search destinations...',
-                                hintStyle: TextStyle(
+                                hintStyle: const TextStyle(
                                   color: Colors.white60,
                                   fontSize: 15,
                                 ),
-                                prefixIcon: Icon(
+                                prefixIcon: const Icon(
                                   Icons.search_rounded,
                                   color: Colors.white70,
                                   size: 22,
                                 ),
+                                suffixIcon: Obx(() => controller.isSearching.value
+                                    ? IconButton(
+                                        icon: const Icon(Icons.close,
+                                            color: Colors.white60, size: 20),
+                                        onPressed: controller.clearSearch,
+                                      )
+                                    : const SizedBox.shrink()),
                                 border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(
+                                contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 20,
                                   vertical: 16,
                                 ),
@@ -113,37 +102,110 @@ class _SearchScreenState extends State<SearchScreen> {
 
               // Search Results
               Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    _buildSectionTitle('Popular Destinations'),
-                    const SizedBox(height: 12),
-                    _buildSearchResultItem(
-                      'Saint Moritz',
-                      'Switzerland',
-                      Icons.landscape,
-                    ),
-                    _buildSearchResultItem(
-                      'Maldives',
-                      'Indian Ocean',
-                      Icons.beach_access,
-                    ),
-                    _buildSearchResultItem(
-                      'Paris',
-                      'France',
-                      Icons.location_city,
-                    ),
-                    const SizedBox(height: 24),
-                    _buildSectionTitle('Recent Searches'),
-                    const SizedBox(height: 12),
-                    _buildSearchResultItem('Tokyo', 'Japan', Icons.history),
-                    _buildSearchResultItem('Dubai', 'UAE', Icons.history),
-                  ],
-                ),
+                child: Obx(() {
+                  if (!controller.isSearching.value) {
+                    return _buildInitialState();
+                  }
+
+                  if (controller.filteredResults.isEmpty) {
+                    return _buildEmptyState();
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: controller.filteredResults.length,
+                    itemBuilder: (context, index) {
+                      final place = controller.filteredResults[index];
+                      return _buildSearchResultItem(
+                        place.name,
+                        place.location,
+                        Icons.location_on_rounded,
+                        onTap: () {
+                          controller.addToRecentSearches(place.name);
+                          Get.to(
+                            () => const PlaceDetailScreen(),
+                            arguments: place,
+                            transition: Transition.rightToLeftWithFade,
+                          );
+                        },
+                      );
+                    },
+                  );
+                }),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildInitialState() {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        if (controller.recentSearches.isNotEmpty) ...[
+          _buildSectionTitle('Recent Searches'),
+          const SizedBox(height: 12),
+          ...controller.recentSearches.map((query) => _buildSearchResultItem(
+                query,
+                'Recent search',
+                Icons.history,
+                onTap: () {
+                  controller.searchTextField.text = query;
+                  controller.onSearchChanged(query);
+                },
+              )),
+          const SizedBox(height: 24),
+        ],
+        _buildSectionTitle('Popular Destinations'),
+        const SizedBox(height: 12),
+        _buildSearchResultItem(
+          'Pyramids of Giza',
+          'Cairo, Egypt',
+          Icons.landscape,
+          onTap: () {
+            controller.searchTextField.text = 'Pyramids of Giza';
+            controller.onSearchChanged('Pyramids of Giza');
+          },
+        ),
+        _buildSearchResultItem(
+          'Luxor Temple',
+          'Luxor, Egypt',
+          Icons.account_balance_rounded,
+          onTap: () {
+            controller.searchTextField.text = 'Luxor Temple';
+            controller.onSearchChanged('Luxor Temple');
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.search_off_rounded,
+              size: 80, color: Colors.white.withValues(alpha: 0.2)),
+          const SizedBox(height: 16),
+          Text(
+            'No results found',
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.5),
+              fontSize: 18,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Try different keywords',
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.3),
+              fontSize: 14,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -162,7 +224,8 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildSearchResultItem(String title, String subtitle, IconData icon) {
+  Widget _buildSearchResultItem(String title, String subtitle, IconData icon,
+      {required VoidCallback onTap}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: ClipRRect(
@@ -176,6 +239,7 @@ class _SearchScreenState extends State<SearchScreen> {
               border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
             ),
             child: ListTile(
+              onTap: onTap,
               leading: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(

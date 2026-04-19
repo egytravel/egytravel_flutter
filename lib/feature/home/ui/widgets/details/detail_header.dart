@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:ui';
-import '../../../logic/controller/saint_moritz_controller.dart';
+import '../../../logic/controller/place_detail_controller.dart';
 
 class DetailHeader extends StatelessWidget {
-  final SaintMoritzController controller;
+  final PlaceDetailController controller;
 
   const DetailHeader({super.key, required this.controller});
 
@@ -14,19 +14,17 @@ class DetailHeader extends StatelessWidget {
       children: [
         // Main image with Hero animation
         Hero(
-          tag: 'place_image',
+          tag: 'place_image_${controller.place.id}',
           child: Container(
             height: 320,
             width: double.infinity,
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(30),
                 bottomRight: Radius.circular(30),
               ),
               image: DecorationImage(
-                image: NetworkImage(
-                  'https://images.unsplash.com/photo-1605540436563-5bca919ae766?w=800',
-                ),
+                image: NetworkImage(controller.place.image),
                 fit: BoxFit.cover,
               ),
             ),
@@ -114,3 +112,4 @@ class DetailHeader extends StatelessWidget {
     );
   }
 }
+

@@ -23,15 +23,15 @@ class ExploreDetailsInfoGrid extends StatelessWidget {
           Icons.restaurant_menu,
         ),
       );
-      items.add(_buildInfoItem("Open", "10 AM - 11 PM", Icons.access_time));
+      items.add(_buildInfoItem("Open", item.openingHours ?? "N/A", Icons.access_time));
     } else if (item.type == ExploreItemType.flight) {
       items.add(
         _buildInfoItem("Date", item.date ?? "TBD", Icons.calendar_today),
       );
       items.add(_buildInfoItem("Class", item.category, Icons.flight_class));
     } else if (item.type == ExploreItemType.hotel) {
-      items.add(_buildInfoItem("Features", "Wifi, Pool", Icons.pool));
-      items.add(_buildInfoItem("Check-in", "12:00 PM", Icons.login));
+      items.add(_buildInfoItem("Features", item.features ?? "N/A", Icons.pool));
+      items.add(_buildInfoItem("Amenities", item.amenities?.take(2).join(", ") ?? "N/A", Icons.login));
     } else {
       items.add(_buildInfoItem("Duration", "2-3 Hours", Icons.timer_outlined));
       items.add(_buildInfoItem("Guide", "Available", Icons.group_outlined));

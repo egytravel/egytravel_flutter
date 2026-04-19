@@ -2,6 +2,8 @@ import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/home/logic/controller/home_navigation_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:egytravel_app/core/routes/app_routes.dart';
+import 'package:egytravel_app/feature/guid_trip/ui/screens/guid_trip_screen.dart';
 import 'dart:ui';
 
 class QuickActionsSection extends StatelessWidget {
@@ -10,7 +12,7 @@ class QuickActionsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -53,15 +55,7 @@ class QuickActionsSection extends StatelessWidget {
                   icon: Icons.tour_rounded,
                   label: 'Tours',
                   onTap: () {
-                    Get.snackbar(
-                      'Coming Soon',
-                      'Tours feature will be available soon!',
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: AppColor.primaryColor,
-                      colorText: Colors.black,
-                      margin: const EdgeInsets.all(16),
-                      borderRadius: 12,
-                    );
+                    Get.toNamed(Routes.tripPlanner);
                   },
                 ),
               ),
@@ -71,14 +65,9 @@ class QuickActionsSection extends StatelessWidget {
                   icon: Icons.person_pin_circle_rounded,
                   label: 'Guides',
                   onTap: () {
-                    Get.snackbar(
-                      'Coming Soon',
-                      'Guides feature will be available soon!',
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: AppColor.primaryColor,
-                      colorText: Colors.black,
-                      margin: const EdgeInsets.all(16),
-                      borderRadius: 12,
+                    Get.to(
+                      () => const GuideTripScreen(),
+                      transition: Transition.rightToLeftWithFade,
                     );
                   },
                 ),
@@ -126,7 +115,7 @@ class _QuickActionButtonState extends State<_QuickActionButton> {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(20),

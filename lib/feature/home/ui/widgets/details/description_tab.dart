@@ -1,23 +1,28 @@
 import 'package:egytravel_app/core/theme/app_color.dart';
+import 'package:egytravel_app/feature/home/logic/controller/place_detail_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class DescriptionTab extends StatelessWidget {
   const DescriptionTab({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<PlaceDetailController>();
+    final place = controller.place;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     'Overview',
                     style: TextStyle(
                       fontSize: 18,
@@ -27,11 +32,11 @@ class DescriptionTab extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      Icon(Icons.star, color: AppColor.gold, size: 16),
-                      SizedBox(width: 4),
+                      const Icon(Icons.star, color: AppColor.gold, size: 16),
+                      const SizedBox(width: 4),
                       Text(
-                        '4.8',
-                        style: TextStyle(
+                        place.rating.toString(),
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
@@ -40,42 +45,41 @@ class DescriptionTab extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Text(
-                'Saint Moritz is a high Alpine resort town in the Engadin in Switzerland, at an elevation of about 1,800 metres (5,910 ft) above sea level. It is a major village and a municipality in the district of Maloja in the Swiss canton of Graubünden.',
-                style: TextStyle(
+                place.description ?? 'No description available.',
+                style: const TextStyle(
                   fontSize: 14,
                   color: Colors.white70,
                   height: 1.6,
                 ),
               ),
-              SizedBox(height: 20),
-              Text(
-                'Facilities',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              const SizedBox(height: 20),
+              if (place.facilities != null && place.facilities!.isNotEmpty) ...[
+                const Text(
+                  'Facilities',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              SizedBox(height: 12),
+                const SizedBox(height: 12),
+              ],
             ],
           ),
         ),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            children: [
-              _buildFacilityChip(Icons.wifi, 'Free Wifi'),
-              _buildFacilityChip(Icons.pool, 'Pool'),
-              _buildFacilityChip(Icons.restaurant, 'Restaurant'),
-              _buildFacilityChip(Icons.fitness_center, 'Gym'),
-              _buildFacilityChip(Icons.local_parking, 'Parking'),
-            ],
+        if (place.facilities != null && place.facilities!.isNotEmpty)
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: place.facilities!.map((facility) {
+                return _buildFacilityChip(_getFacilityIcon(facility), facility);
+              }).toList(),
+            ),
           ),
-        ),
-        SizedBox(height: MediaQuery.heightOf(context) * 0.12),
+        SizedBox(height: MediaQuery.heightOf(context) * 0.08),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: SizedBox(
@@ -104,6 +108,19 @@ class DescriptionTab extends StatelessWidget {
         const SizedBox(height: 20),
       ],
     );
+  }
+
+  IconData _getFacilityIcon(String facility) {
+    String f = facility.toLowerCase();
+    if (f.contains('wifi')) return Icons.wifi;
+    if (f.contains('pool')) return Icons.pool;
+    if (f.contains('restau')) return Icons.restaurant;
+    if (f.contains('gym')) return Icons.fitness_center;
+    if (f.contains('parking')) return Icons.local_parking;
+    if (f.contains('tour')) return Icons.tour;
+    if (f.contains('shop')) return Icons.shopping_bag;
+    if (f.contains('cafe')) return Icons.coffee;
+    return Icons.check_circle_outline;
   }
 
   Widget _buildFacilityChip(IconData icon, String label) {

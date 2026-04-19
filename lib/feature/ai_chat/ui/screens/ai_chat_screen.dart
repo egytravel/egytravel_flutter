@@ -1,6 +1,7 @@
+import 'package:egytravel_app/core/widgets/custom_back_button.dart';
+import 'package:egytravel_app/core/widgets/glassy_background.dart';
 import 'package:egytravel_app/feature/ai_chat/logic/controller/ai_chat_controller.dart';
 import 'package:egytravel_app/feature/ai_chat/ui/widgets/chat_bubble.dart';
-import 'package:egytravel_app/feature/auth/ui/widgets/auth_background.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/glass_container.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,15 +13,19 @@ class AiChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(AiChatController());
 
-    return AuthBackground(
+    return GlassyBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Get.back(),
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Center(
+              child: CustomBackButton(
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
           ),
           title: const Text(
             'AI Travel Assistant',

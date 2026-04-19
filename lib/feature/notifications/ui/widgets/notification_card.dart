@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/notifications/data/notification_model.dart';
 import 'package:egytravel_app/feature/notifications/logic/controller/notifications_controller.dart';
@@ -20,15 +21,7 @@ class NotificationCard extends StatelessWidget {
       direction: DismissDirection.endToStart,
       onDismissed: (direction) {
         controller.deleteNotification(notification.id);
-        Get.snackbar(
-          'Deleted',
-          'Notification removed',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.black87,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 2),
-          margin: const EdgeInsets.all(16),
-        );
+        showSuccess('Notification removed');
       },
       background: Container(
         alignment: Alignment.centerRight,

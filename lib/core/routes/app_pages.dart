@@ -12,6 +12,8 @@ import 'package:egytravel_app/feature/splash/ui/screen/splash_screen.dart';
 import 'package:egytravel_app/feature/explore/ui/screen/explore_listing_screen.dart';
 import 'package:egytravel_app/feature/explore/ui/screen/map_view_screen.dart';
 import 'package:egytravel_app/feature/explore/ui/screen/explore_details_screen.dart';
+import 'package:egytravel_app/feature/home/logic/binding/search_binding.dart';
+import 'package:egytravel_app/feature/community/ui/screen/community_screen.dart';
 import 'package:get/get.dart';
 
 class AppPages {
@@ -38,7 +40,7 @@ class AppPages {
       page: () => PlanTripScreen(),
       binding: TripBinding(),
     ),
-    GetPage(name: Routes.search, page: () => const SearchScreen()),
+    GetPage(name: Routes.search, page: () => const SearchScreen(), binding: SearchBinding()),
     GetPage(name: Routes.bookingScreen, page: () => const BookingScreen()),
     GetPage(
       name: Routes.exploreListing,
@@ -48,6 +50,10 @@ class AppPages {
     GetPage(
       name: Routes.exploreDetails,
       page: () => const ExploreDetailsScreen(),
+    ),
+    GetPage(
+      name: Routes.community,
+      page: () => const CommunityScreen(),
     ),
   ];
 }

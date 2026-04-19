@@ -1,7 +1,8 @@
 import 'package:egytravel_app/core/theme/app_color.dart';
+import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'package:egytravel_app/feature/booking/data/models/room_model.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import 'dart:ui';
 
 class RoomCard extends StatelessWidget {
@@ -132,13 +133,7 @@ class RoomCard extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: room.isAvailable
                         ? () {
-                            Get.snackbar(
-                              'Room Selected',
-                              '${room.roomType} has been added to your booking',
-                              snackPosition: SnackPosition.BOTTOM,
-                              backgroundColor: AppColor.primaryColor,
-                              colorText: Colors.black,
-                            );
+                            showSuccess('${room.roomType} added to booking');
                           }
                         : null,
                     style: ElevatedButton.styleFrom(
