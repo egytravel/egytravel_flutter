@@ -1,5 +1,6 @@
-import 'dart:ui';
+import 'package:egytravel_app/feature/wallet/ui/screens/wallet_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ProfileQuickActions extends StatelessWidget {
   const ProfileQuickActions({super.key});
@@ -8,109 +9,68 @@ class ProfileQuickActions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              SizedBox(
-                width: (constraints.maxWidth - 12) / 2,
-                child: _buildQuickActionCard(
-                  Icons.edit_outlined,
-                  'Edit Profile',
-                  Colors.white,
-                  () {},
-                ),
-              ),
-              SizedBox(
-                width: (constraints.maxWidth - 12) / 2,
-                child: _buildQuickActionCard(
-                  Icons.share_outlined,
-                  'Share',
-                  Colors.white,
-                  () {},
-                ),
-              ),
-              SizedBox(
-                width: (constraints.maxWidth - 12) / 2,
-                child: _buildQuickActionCard(
-                  Icons.wallet_outlined,
-                  'Wallet',
-                  Colors.white,
-                  () {},
-                ),
-              ),
-              SizedBox(
-                width: (constraints.maxWidth - 12) / 2,
-                child: _buildQuickActionCard(
-                  Icons.support_agent_outlined,
-                  'Support',
-                  Colors.white,
-                  () {},
-                ),
-              ),
-            ],
-          );
-        },
+      child: Row(
+        children: [
+          _buildAction(icon: Icons.edit_outlined, label: 'Edit', onTap: () {}),
+          const SizedBox(width: 10),
+          _buildAction(
+            icon: Icons.share_outlined,
+            label: 'Share',
+            onTap: () {},
+          ),
+          const SizedBox(width: 10),
+          _buildAction(
+            icon: Icons.wallet_outlined,
+            label: 'Wallet',
+            onTap: () {
+              Get.to(
+                () => const WalletScreen(),
+                transition: Transition.cupertino,
+                duration: const Duration(milliseconds: 300),
+              );
+            },
+          ),
+          const SizedBox(width: 10),
+          _buildAction(
+            icon: Icons.support_agent_outlined,
+            label: 'Support',
+            onTap: () {},
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildQuickActionCard(
-    IconData icon,
-    String label,
-    Color iconColor,
-    VoidCallback onTap,
-  ) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+  Widget _buildAction({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
         child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.08),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
+            color: Colors.white.withOpacity(0.06),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: Colors.white.withOpacity(0.1)),
           ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: onTap,
-              borderRadius: BorderRadius.circular(16),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20,
-                  horizontal: 12,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(icon, color: iconColor, size: 24),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      label,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: Colors.white70, size: 22),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white60,
+                  letterSpacing: 0.2,
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),
