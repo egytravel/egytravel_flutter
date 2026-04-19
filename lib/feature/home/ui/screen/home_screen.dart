@@ -51,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.transparent,
         extendBody: true,
         bottomNavigationBar: CrystalNavigationBar(
+
           marginR: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
           currentIndex: navController.selectedBottomTab.value,
           unselectedItemColor: Colors.white70,

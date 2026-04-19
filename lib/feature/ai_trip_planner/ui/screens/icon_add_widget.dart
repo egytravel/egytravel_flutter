@@ -90,6 +90,18 @@ class _CustomFloatingMenuState extends State<CustomFloatingMenu>
                         showTopGlassSnackBar(context, 'Navigate to Guide screen', success: true);
                       },
                     ),
+
+                    const SizedBox(width: 16),
+
+                    _buildMenuButton(
+                      icon: Icons.add_a_photo_rounded,
+                      text: "Post",
+                      onTap: () {
+                        setState(() => isOpen = false);
+                        Get.toNamed(Routes.community);
+                        showTopGlassSnackBar(context, 'Navigate to Community Post', success: true);
+                      },
+                    ),
                   ],
                 ),
               ),

@@ -2,6 +2,7 @@ import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/home/logic/controller/home_controller.dart';
 import 'package:egytravel_app/feature/notifications/logic/controller/notifications_controller.dart';
 import 'package:egytravel_app/feature/notifications/ui/screen/notifications_screen.dart';
+import 'package:egytravel_app/core/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:ui';
@@ -34,8 +35,26 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                   : Colors.transparent,
               elevation: 0,
               actions: [
+                /// Community Feed Icon
                 Container(
-                  margin: const EdgeInsets.all(8),
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    onPressed: () => Get.toNamed(Routes.community),
+                    icon: const Icon(
+                      Icons.groups_outlined,
+                      color: Color(0xFF2D3748),
+                    ),
+                    tooltip: 'Community',
+                  ),
+                ),
+
+                /// Notifications Icon
+                Container(
+                  margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.9),
                     shape: BoxShape.circle,
@@ -75,10 +94,6 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                             decoration: const BoxDecoration(
                               color: AppColor.primaryColor,
                               shape: BoxShape.circle,
-                            ),
-                            constraints: const BoxConstraints(
-                              minWidth: 18,
-                              minHeight: 18,
                             ),
                             child: Text(
                               unreadCount > 9 ? '9+' : unreadCount.toString(),

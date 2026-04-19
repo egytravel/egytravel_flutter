@@ -461,11 +461,12 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 opacity: _fadeAnimation,
                 child: GestureDetector(
                   onTap: () {
-                    _controller.animateToPage(
-                      images.length - 1,
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.easeInOut,
-                    );
+                    Get.offAndToNamed(Routes.loginScreen);
+                    // _controller.animateToPage(
+                    //   images.length - 1,
+                    //   duration: const Duration(milliseconds: 500),
+                    //   curve: Curves.easeInOut,
+                    // );
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
