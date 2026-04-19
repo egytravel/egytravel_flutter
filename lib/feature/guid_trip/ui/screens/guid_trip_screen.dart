@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/widgets/custom_back_button.dart';
 import 'package:egytravel_app/core/widgets/glassy_background.dart';
 import 'package:egytravel_app/feature/guid_trip/logic/controller/guide_trip_controller.dart';
 import 'package:egytravel_app/feature/ai_trip_planner/ui/widgets/data_selector_widget.dart';
@@ -23,10 +24,8 @@ class GuideTripScreen extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () => Get.back(),
-                    ),
+                    const CustomBackButton(),
+                    const SizedBox(width: 12),
                     const Text(
                       'Create Your Guide',
                       style: TextStyle(

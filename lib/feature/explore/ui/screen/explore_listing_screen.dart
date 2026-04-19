@@ -1,49 +1,77 @@
 import 'package:egytravel_app/core/widgets/glassy_background.dart';
 import 'package:egytravel_app/feature/explore/data/model/explore_item_model.dart';
+import 'package:egytravel_app/feature/explore/logic/controller/explore_controller.dart';
 import 'package:egytravel_app/feature/explore/ui/widgets/listing/explore_grid.dart';
 import 'package:egytravel_app/feature/explore/ui/widgets/listing/explore_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ExploreListingScreen extends StatefulWidget {
+class ExploreListingScreen extends StatelessWidget {
   const ExploreListingScreen({super.key});
 
   @override
-  State<ExploreListingScreen> createState() => _ExploreListingScreenState();
-}
+  Widget build(BuildContext context) {
+    final ExploreItemType? type = Get.arguments?['type'];
+    final String? initialCategory = Get.arguments?['category'];
+    final controller = Get.find<ExploreController>();
 
-class _ExploreListingScreenState extends State<ExploreListingScreen> {
-  final ExploreItemType? type = Get.arguments?['type'];
-  final String? initialCategory = Get.arguments?['category'];
-  List<ExploreItemModel> items = [];
+    final List<ExploreItemModel> items = _getItemsByType(controller, type);
 
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
-
-  void _loadData() {
-    items = List.generate(
-      10,
-      (index) => ExploreItemModel(
-        title: 'Item $index',
-        location: 'Location $index',
-        image: 'assets/images/card.png',
-        rating: 4.5,
-        price: '\$${index * 10}',
-        category: 'Category',
-        type: type ?? ExploreItemType.place,
-        date: type == ExploreItemType.flight ? '12 Oct' : null,
-        isFavorite: false, // Initialize favorite state
+    return GlassyBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(
+            _getScreenTitle(type, initialCategory),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.white),
+        ),
+        body: Column(
+          children: [
+            ExploreSearchBar(onFilterPressed: () {}),
+            Expanded(
+              child: items.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'No items available',
+                        style: TextStyle(color: Colors.white70, fontSize: 16),
+                      ),
+                    )
+                  : ExploreGrid(items: items),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  String get screenTitle {
+  List<ExploreItemModel> _getItemsByType(
+    ExploreController controller,
+    ExploreItemType? type,
+  ) {
+    if (type == null) return controller.allPlaces;
+    switch (type) {
+      case ExploreItemType.place:
+        return controller.allPlaces;
+      case ExploreItemType.restaurant:
+        return controller.restaurants;
+      case ExploreItemType.hotel:
+        return controller.hotels;
+      case ExploreItemType.flight:
+        return controller.flights;
+    }
+  }
+
+  String _getScreenTitle(ExploreItemType? type, String? category) {
     String title = "Explore";
     if (type != null) {
-      switch (type!) {
+      switch (type) {
         case ExploreItemType.place:
           title = "Places";
           break;
@@ -58,36 +86,9 @@ class _ExploreListingScreenState extends State<ExploreListingScreen> {
           break;
       }
     }
-    if (initialCategory != null) {
-      title = "$initialCategory $title";
+    if (category != null) {
+      title = "$category $title";
     }
     return title;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GlassyBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: Text(
-            screenTitle,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.white),
-        ),
-        body: Column(
-          children: [
-            ExploreSearchBar(onFilterPressed: () {}),
-            Expanded(child: ExploreGrid(items: items)),
-          ],
-        ),
-      ),
-    );
   }
 }
