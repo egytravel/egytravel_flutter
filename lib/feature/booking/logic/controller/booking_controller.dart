@@ -1,4 +1,5 @@
 import 'package:egytravel_app/feature/booking/data/models/flight_model.dart';
+import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'package:egytravel_app/feature/booking/data/models/hotel_model.dart';
 import 'package:get/get.dart';
 
@@ -36,11 +37,7 @@ class BookingController extends GetxController {
   // Search flights
   void searchFlights() {
     if (flightFrom.value.isEmpty || flightTo.value.isEmpty) {
-      Get.snackbar(
-        'Missing Information',
-        'Please enter departure and arrival cities',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      showError('Please enter departure and arrival cities');
       return;
     }
 
@@ -61,11 +58,7 @@ class BookingController extends GetxController {
   // Search hotels
   void searchHotels() {
     if (hotelDestination.value.isEmpty) {
-      Get.snackbar(
-        'Missing Information',
-        'Please enter a destination',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      showError('Please enter a destination');
       return;
     }
 

@@ -1,4 +1,5 @@
 import 'package:egytravel_app/core/widgets/build_loading_overlay.dart';
+import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'package:egytravel_app/feature/auth/logic/controller/login_controller.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/auth_background.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/login/email_input.dart';
@@ -9,7 +10,6 @@ import 'package:egytravel_app/feature/auth/ui/widgets/login/password_input.dart'
 import 'package:egytravel_app/feature/auth/ui/widgets/login/register_prompt.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/login/remember_me_row.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/login/social_login_buttons.dart';
-import 'package:egytravel_app/feature/auth/ui/widgets/login/travo_logo.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -66,16 +66,9 @@ class LoginScreen extends StatelessWidget {
                         () => LoginButton(
                           onPressed: controller.isButtonEnabled.value
                               ? () => controller.login(context)
-                              : () {
-                            Get.snackbar(
-                              'Warning',
-                              'Please fill in both email and password',
-                              backgroundColor: Colors.orangeAccent,
-                              colorText: Colors.white,
-                              snackPosition: SnackPosition.BOTTOM,
-                              margin: const EdgeInsets.all(12),
-                            );
-                          },
+                               : () {
+                                  showError('Please fill in both email and password');
+                                },
 
                           enabled: controller.isButtonEnabled.value,
                         ),

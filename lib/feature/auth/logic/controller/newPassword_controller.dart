@@ -1,4 +1,5 @@
 import 'package:egytravel_app/feature/auth/ui/widgets/bottom_sheet_suces_pass.dart';
+import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -19,35 +20,17 @@ class NewPasswordController extends GetxController {
 
   void submitNewPassword() {
     if (passwordController.text.isEmpty || rePasswordController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please fill all fields',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      showError('Please fill all fields');
       return;
     }
 
     if (passwordController.text != rePasswordController.text) {
-      Get.snackbar(
-        'Error',
-        'Passwords do not match',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      showError('Passwords do not match');
       return;
     }
 
     if (passwordController.text.length < 6) {
-      Get.snackbar(
-        'Error',
-        'Password must be at least 6 characters',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      showError('Password must be at least 6 characters');
       return;
     }
 

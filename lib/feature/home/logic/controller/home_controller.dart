@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'package:egytravel_app/feature/home/data/model/destination_model.dart';
 import 'package:egytravel_app/feature/home/data/model/place_model.dart';
+import 'package:egytravel_app/feature/home/data/repo/home_repo.dart';
 import 'package:egytravel_app/feature/home/ui/widgets/filter_bottom_sheet.dart';
-import 'package:egytravel_app/generated/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
+  final HomeRepo _homeRepo = HomeRepo();
+  
   final pageController = PageController();
   final currentPage = 0.obs;
   Timer? _timer;
@@ -17,31 +19,44 @@ class HomeController extends GetxController {
   final scrollOpacity = 0.0.obs;
   final isScrolled = false.obs;
 
+  // State Management
+  final isLoading = true.obs;
+  final isError = false.obs;
+  final errorMessage = ''.obs;
+
   final categories = ['Popular', 'Pyramids', 'Beach', 'Temple'];
 
-  final places = [
-    Place(
-      name: 'Valley of the Kings',
-      location: 'Luxor',
-      image: Assets.imageCard,
-      rating: 4.8,
-      season: '302N',
-      price: '\$ 300/p',
-    ),
-    Place(
-      name: 'Abu Simbel',
-      location: 'Aswan',
-      image: Assets.imageCard,
-      rating: 4.6,
-      season: '302N',
-      price: '\$ 420/p',
-    ),
-  ];
+  // Data Lists
+  final RxList<Place> places = <Place>[].obs;
+  final RxList<Destination> destinations = <Destination>[].obs;
+  final RxList<Place> featuredPlaces = <Place>[].obs;
 
-  final destinations = [
-    Destination(image: Assets.imageCard, name: 'Cairo'),
-    Destination(image: Assets.imageCard, name: 'Luxor'),
-  ];
+  @override
+  void onInit() {
+    super.onInit();
+    getHomeData();
+    scrollController.addListener(_onScroll);
+  }
+
+  Future<void> getHomeData() async {
+    try {
+      isLoading.value = true;
+      isError.value = false;
+      
+      final response = await _homeRepo.getHomeData();
+      
+      places.assignAll(response.popular);
+      destinations.assignAll(response.destinations);
+      featuredPlaces.assignAll(response.featured);
+      
+      _startAutoScroll();
+    } catch (e) {
+      isError.value = true;
+      errorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   void openDrawer() {
     scaffoldKey.currentState?.openDrawer();
@@ -55,44 +70,22 @@ class HomeController extends GetxController {
     );
   }
 
-  final featuredPlaces = [
-    {
-      'image': Assets.imageCard,
-      'title': 'The Great Pyramid of Giza',
-      'location': 'Giza Necropolis',
-    },
-    {
-      'image': Assets.imageRectangle,
-      'title': 'The Great Sphinx',
-      'location': 'Giza Plateau',
-    },
-    {
-      'image': Assets.imageOnboarding1,
-      'title': 'Karnak Temple',
-      'location': 'Luxor',
-    },
-  ];
-
-  @override
-  void onInit() {
-    super.onInit();
-    _startAutoScroll();
-    scrollController.addListener(_onScroll);
-  }
-
   void _onScroll() {
+    if (!scrollController.hasClients) return;
     final offset = scrollController.offset;
     // Change app bar color when scrolled past 100 pixels
     isScrolled.value = offset > 100;
 
     // Calculate opacity for other scroll effects
-    final maxScroll = 500.0;
+    const maxScroll = 500.0;
     scrollOpacity.value = (offset / maxScroll).clamp(0.0, 0.7);
   }
 
   void _startAutoScroll() {
+    _timer?.cancel();
+    if (featuredPlaces.isEmpty) return;
+    
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
-      // Check if PageController is attached to a PageView
       if (!pageController.hasClients) return;
 
       if (currentPage.value < featuredPlaces.length - 1) {
@@ -133,3 +126,4 @@ class HomeController extends GetxController {
     super.onClose();
   }
 }
+

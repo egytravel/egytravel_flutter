@@ -1,4 +1,5 @@
 import 'package:egytravel_app/feature/guid_trip/logic/models/guide_day_model.dart';
+import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'package:egytravel_app/feature/guid_trip/ui/screens/guide_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -49,13 +50,7 @@ class GuideTripController extends GetxController {
 
   void createGuide() {
     if (destinationController.text.isEmpty || startDate == null || endDate == null) {
-      Get.snackbar(
-        'Error',
-        'Please fill in all fields',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      showError('Please fill in all fields');
       return;
     }
 

@@ -2,10 +2,10 @@ import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:io';
-import '../../../logic/controller/saint_moritz_controller.dart';
+import '../../../logic/controller/place_detail_controller.dart';
 
 class PhotosTab extends StatelessWidget {
-  final SaintMoritzController controller;
+  final PlaceDetailController controller;
 
   const PhotosTab({super.key, required this.controller});
 
@@ -111,3 +111,4 @@ class PhotosTab extends StatelessWidget {
     );
   }
 }
+

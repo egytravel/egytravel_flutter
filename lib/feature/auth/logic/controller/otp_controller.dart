@@ -1,4 +1,5 @@
 import 'package:egytravel_app/feature/auth/logic/binding/new_password_binding.dart';
+import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'package:egytravel_app/feature/auth/ui/screens/new_password.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -27,24 +28,12 @@ class OTPController extends GetxController {
         binding: NewPasswordBinding(),
       );
     } else {
-      Get.snackbar(
-        'Error',
-        'Please enter a valid 4-digit OTP',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      showError('Please enter a valid 4-digit OTP');
     }
   }
 
   void resendCode() {
-    Get.snackbar(
-      'OTP Sent',
-      'New code has been sent',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
-    );
+    showSuccess('New code has been sent');
   }
 
   @override

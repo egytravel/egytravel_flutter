@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'package:get/get.dart';
 
 class RegisterController extends GetxController {
@@ -69,16 +70,11 @@ class RegisterController extends GetxController {
   }
 
   void _showSnack(String title, String message, {bool success = false}) {
-    Get.snackbar(
-      title,
-      message,
-      backgroundColor: success ? Colors.green.shade600 : Colors.red.shade600,
-      colorText: Colors.white,
-      snackPosition: SnackPosition.TOP,
-      margin: const EdgeInsets.all(12),
-      borderRadius: 10,
-      duration: const Duration(seconds: 2),
-    );
+    if (success) {
+      showSuccess(message);
+    } else {
+      showError(message);
+    }
   }
 
 
