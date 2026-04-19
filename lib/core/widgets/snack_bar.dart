@@ -4,27 +4,35 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 void showError(String message) {
-  Get.snackbar(
-    "Error",
-    message,
-    backgroundColor: Colors.red,
-    colorText: Colors.white,
-    snackPosition: SnackPosition.TOP,
-    margin: const EdgeInsets.all(12),
-    borderRadius: 10,
-  );
+  if (Get.context != null) {
+    showTopGlassSnackBar(Get.context!, message, success: false);
+  } else {
+    Get.snackbar(
+      "Error",
+      message,
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+      snackPosition: SnackPosition.TOP,
+      margin: const EdgeInsets.all(12),
+      borderRadius: 10,
+    );
+  }
 }
 
 void showSuccess(String message) {
-  Get.snackbar(
-    "Success",
-    message,
-    backgroundColor: Colors.green[400],
-    colorText: Colors.white,
-    snackPosition: SnackPosition.TOP,
-    margin: const EdgeInsets.all(12),
-    borderRadius: 10,
-  );
+  if (Get.context != null) {
+    showTopGlassSnackBar(Get.context!, message, success: true);
+  } else {
+    Get.snackbar(
+      "Success",
+      message,
+      backgroundColor: Colors.green[400],
+      colorText: Colors.white,
+      snackPosition: SnackPosition.TOP,
+      margin: const EdgeInsets.all(12),
+      borderRadius: 10,
+    );
+  }
 }
 
 void showFullWidthGlassSnackBar(
@@ -32,7 +40,17 @@ void showFullWidthGlassSnackBar(
   String message, {
   bool success = false,
 }) {
-  final overlay = Overlay.of(context);
+  final overlay = Overlay.maybeOf(context);
+  if (overlay == null) {
+    Get.snackbar(
+      success ? "Success" : "Error",
+      message,
+      backgroundColor: success ? Colors.green : Colors.red,
+      colorText: Colors.white,
+      snackPosition: SnackPosition.TOP,
+    );
+    return;
+  }
   late OverlayEntry entry;
 
   entry = OverlayEntry(
@@ -113,7 +131,18 @@ void showFullWidthGlassSnackBar(
 
 
 void showTopGlassSnackBar(BuildContext context, String message, {bool success = false}) {
-  final overlay = Overlay.of(context);
+  final overlay = Overlay.maybeOf(context);
+
+  if (overlay == null) {
+    Get.snackbar(
+      success ? "Success" : "Error",
+      message,
+      backgroundColor: success ? Colors.green : Colors.red,
+      colorText: Colors.white,
+      snackPosition: SnackPosition.TOP,
+    );
+    return;
+  }
 
   late OverlayEntry entry;
 

@@ -1,12 +1,13 @@
 import 'package:egytravel_app/core/theme/app_color.dart';
+import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../logic/controller/saint_moritz_controller.dart';
+import '../../../logic/controller/place_detail_controller.dart';
 import '../../../data/model/review_model.dart';
 import 'dart:ui';
 
 class AddReviewDialog extends StatelessWidget {
-  final SaintMoritzController controller;
+  final PlaceDetailController controller;
 
   const AddReviewDialog({super.key, required this.controller});
 
@@ -112,15 +113,7 @@ class AddReviewDialog extends StatelessWidget {
                             ),
                           );
                           Get.back();
-                          Get.snackbar(
-                            'Success',
-                            'Review added successfully',
-                            snackPosition: SnackPosition.BOTTOM,
-                            backgroundColor: Colors.green,
-                            colorText: Colors.white,
-                            margin: const EdgeInsets.all(16),
-                            borderRadius: 12,
-                          );
+                          showSuccess('Review added successfully');
                         }
                       },
                       style: ElevatedButton.styleFrom(

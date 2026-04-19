@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'dart:ui';
 
 class ViewerBottomBar extends StatelessWidget {
@@ -26,34 +26,14 @@ class ViewerBottomBar extends StatelessWidget {
               icon: Icons.download_rounded,
               label: 'Download',
               onTap: () {
-                Get.snackbar(
-                  'Download',
-                  'Image downloaded successfully',
-                  snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: Colors.white.withValues(alpha: 0.1),
-                  colorText: Colors.white,
-                  margin: const EdgeInsets.all(16),
-                  borderRadius: 12,
-                  barBlur: 10,
-                  overlayBlur: 2,
-                );
+                showSuccess('Image downloaded successfully');
               },
             ),
             _buildActionButton(
               icon: Icons.share_rounded,
               label: 'Share',
               onTap: () {
-                Get.snackbar(
-                  'Share',
-                  'Sharing image...',
-                  snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: Colors.white.withValues(alpha: 0.1),
-                  colorText: Colors.white,
-                  margin: const EdgeInsets.all(16),
-                  borderRadius: 12,
-                  barBlur: 10,
-                  overlayBlur: 2,
-                );
+                showSuccess('Sharing image...');
               },
             ),
             _buildActionButton(

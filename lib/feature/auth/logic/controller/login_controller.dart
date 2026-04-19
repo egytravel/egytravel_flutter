@@ -1,8 +1,5 @@
-import 'package:egytravel_app/core/error/api_error.dart';
-import 'package:egytravel_app/core/locale_storage/shared_preferences_helper.dart';
 import 'package:egytravel_app/core/routes/app_routes.dart';
-import 'package:egytravel_app/core/theme/app_color.dart';
-import 'package:egytravel_app/core/widgets/snak_bar.dart';
+import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'package:egytravel_app/feature/auth/data/repo/auth_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

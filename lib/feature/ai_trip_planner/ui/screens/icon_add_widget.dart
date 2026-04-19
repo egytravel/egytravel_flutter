@@ -1,5 +1,6 @@
 import 'package:egytravel_app/core/routes/app_routes.dart';
 import 'package:egytravel_app/core/theme/app_color.dart';
+import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'package:egytravel_app/feature/ai_trip_planner/logic/controller/ai_trip_controller.dart';
 import 'package:egytravel_app/feature/ai_trip_planner/ui/screens/ai_trip_planner_screen.dart';
 import 'package:egytravel_app/feature/guid_trip/ui/screens/guid_trip_screen.dart';
@@ -82,6 +83,7 @@ class _CustomFloatingMenuState extends State<CustomFloatingMenu>
                       text: "Guide",
                       onTap: () {
                         Get.to(() => const GuideTripScreen());
+                        showTopGlassSnackBar(context, 'Navigate to Guide screen', success: true);
                       },
                     ),
                   ],

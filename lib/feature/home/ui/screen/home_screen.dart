@@ -50,44 +50,41 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         backgroundColor: Colors.transparent,
         extendBody: true,
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.only(bottom: 4),
-          child: CrystalNavigationBar(
-            marginR: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
-            currentIndex: navController.selectedBottomTab.value,
-            unselectedItemColor: Colors.white70,
-            backgroundColor: Colors.black.withValues(alpha: .4),
-            borderWidth: 2,
-            outlineBorderColor: Colors.white,
-            onTap: _handleIndexChanged,
-            items: [
-              CrystalNavigationBarItem(
-                icon: CupertinoIcons.house_fill,
-                unselectedIcon: CupertinoIcons.house,
-                selectedColor: Colors.white,
-              ),
-              CrystalNavigationBarItem(
-                icon: CupertinoIcons.map_fill,
-                unselectedIcon: CupertinoIcons.map,
-                selectedColor: Colors.white,
-              ),
-              CrystalNavigationBarItem(
-                icon: CupertinoIcons.add_circled_solid,
-                unselectedIcon: CupertinoIcons.add,
-                selectedColor: Colors.white,
-              ),
-              CrystalNavigationBarItem(
-                icon: CupertinoIcons.creditcard_fill,
-                unselectedIcon: CupertinoIcons.creditcard,
-                selectedColor: Colors.white,
-              ),
-              CrystalNavigationBarItem(
-                icon: CupertinoIcons.person_fill,
-                unselectedIcon: CupertinoIcons.person,
-                selectedColor: Colors.white,
-              ),
-            ],
-          ),
+        bottomNavigationBar: CrystalNavigationBar(
+          marginR: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
+          currentIndex: navController.selectedBottomTab.value,
+          unselectedItemColor: Colors.white70,
+          backgroundColor: Colors.black.withValues(alpha: .4),
+          borderWidth: 2,
+          outlineBorderColor: Colors.white,
+          onTap: _handleIndexChanged,
+          items: [
+            CrystalNavigationBarItem(
+              icon: CupertinoIcons.house_fill,
+              unselectedIcon: CupertinoIcons.house,
+              selectedColor: Colors.white,
+            ),
+            CrystalNavigationBarItem(
+              icon: CupertinoIcons.map_fill,
+              unselectedIcon: CupertinoIcons.map,
+              selectedColor: Colors.white,
+            ),
+            CrystalNavigationBarItem(
+              icon: CupertinoIcons.add_circled_solid,
+              unselectedIcon: CupertinoIcons.add,
+              selectedColor: Colors.white,
+            ),
+            CrystalNavigationBarItem(
+              icon: CupertinoIcons.creditcard_fill,
+              unselectedIcon: CupertinoIcons.creditcard,
+              selectedColor: Colors.white,
+            ),
+            CrystalNavigationBarItem(
+              icon: CupertinoIcons.person_fill,
+              unselectedIcon: CupertinoIcons.person,
+              selectedColor: Colors.white,
+            ),
+          ],
         ),
       );
     });

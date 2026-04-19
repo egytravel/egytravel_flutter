@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:ui';
-import '../../../logic/controller/saint_moritz_controller.dart';
+import '../../../logic/controller/place_detail_controller.dart';
 
 class DetailTabBar extends StatelessWidget {
-  final SaintMoritzController controller;
+  final PlaceDetailController controller;
 
   const DetailTabBar({super.key, required this.controller});
 

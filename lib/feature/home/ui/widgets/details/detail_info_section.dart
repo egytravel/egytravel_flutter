@@ -1,12 +1,17 @@
 import 'package:egytravel_app/core/theme/app_color.dart';
+import 'package:egytravel_app/feature/home/logic/controller/place_detail_controller.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'package:get/get.dart';
 
 class DetailInfoSection extends StatelessWidget {
   const DetailInfoSection({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<PlaceDetailController>();
+    final place = controller.place;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
@@ -16,31 +21,31 @@ class DetailInfoSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Saint Moritz',
-                      style: TextStyle(
+                      place.name,
+                      style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                         height: 1.2,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.location_on,
                           size: 16,
                           color: AppColor.primaryColor,
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text(
-                          'Switzerland',
-                          style: TextStyle(
+                          place.location,
+                          style: const TextStyle(
                             fontSize: 16,
                             color: Colors.white70,
                             fontWeight: FontWeight.w500,
@@ -55,18 +60,18 @@ class DetailInfoSection extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   RichText(
-                    text: const TextSpan(
+                    text: TextSpan(
                       children: [
                         TextSpan(
-                          text: '\$120',
-                          style: TextStyle(
+                          text: '\$${place.price}',
+                          style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: AppColor.primaryColor,
                           ),
                         ),
-                        TextSpan(
-                          text: '/night',
+                        const TextSpan(
+                          text: '/p',
                           style: TextStyle(fontSize: 14, color: Colors.white70),
                         ),
                       ],
@@ -89,14 +94,14 @@ class DetailInfoSection extends StatelessWidget {
                             color: Colors.white.withValues(alpha: 0.2),
                           ),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.star, size: 16, color: AppColor.gold),
-                            SizedBox(width: 4),
+                            const Icon(Icons.star, size: 16, color: AppColor.gold),
+                            const SizedBox(width: 4),
                             Text(
-                              '4.8 (2.5k)',
-                              style: TextStyle(
+                              '${place.rating} (${place.reviewCount ?? 0})',
+                              style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 color: AppColor.gold,
@@ -116,3 +121,4 @@ class DetailInfoSection extends StatelessWidget {
     );
   }
 }
+

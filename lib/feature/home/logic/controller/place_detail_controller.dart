@@ -1,3 +1,4 @@
+import 'package:egytravel_app/feature/home/data/model/place_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -5,22 +6,14 @@ import 'dart:io';
 import '../../data/model/review_model.dart';
 import '../../ui/screen/image_viewer_screen.dart';
 
-class SaintMoritzController extends GetxController {
+class PlaceDetailController extends GetxController {
+  final Place place = Get.arguments;
+  
   var selectedTab = 0.obs;
   var isFavorite = false.obs;
   final ImagePicker _picker = ImagePicker();
 
-  var photoUrls = <dynamic>[
-    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',
-    'https://images.unsplash.com/photo-1605540436563-5bca919ae766?w=400',
-    'https://images.unsplash.com/photo-1551524164-687a55dd1126?w=400',
-    'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400',
-    'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=400',
-    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',
-    'https://images.unsplash.com/photo-1605540436563-5bca919ae766?w=400',
-    'https://images.unsplash.com/photo-1551524164-687a55dd1126?w=400',
-    'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400',
-  ].obs;
+  var photoUrls = <dynamic>[].obs;
 
   var reviews = <Review>[
     Review(
@@ -40,6 +33,17 @@ class SaintMoritzController extends GetxController {
           'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.',
     ),
   ].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Initialize photoUrls from place.images or place.image if images list is null
+    if (place.images != null && place.images!.isNotEmpty) {
+      photoUrls.assignAll(place.images!);
+    } else {
+      photoUrls.add(place.image);
+    }
+  }
 
   void changeTab(int index) {
     selectedTab.value = index;
@@ -142,3 +146,4 @@ class SaintMoritzController extends GetxController {
     );
   }
 }
+
