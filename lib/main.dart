@@ -1,11 +1,14 @@
 import 'package:egytravel_app/core/routes/app_pages.dart';
 import 'package:egytravel_app/core/theme/app_color.dart';
+import 'package:egytravel_app/core/locale_storage/shared_preferences_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:device_preview/device_preview.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SharedPreferencesHelper.init();
   runApp(
     DevicePreview(
       // enabled: false,

@@ -8,7 +8,8 @@ class DioFactory {
           BaseOptions(
             baseUrl: EndPoint.baseUrl,
             receiveDataWhenStatusError: true,
-            connectTimeout: const Duration(seconds: 8),
+            connectTimeout: const Duration(seconds: 60),
+            receiveTimeout: const Duration(seconds: 60),
             headers: {
               'Cache-Control': 'no-cache',
               'Content-Type': 'application/json',
