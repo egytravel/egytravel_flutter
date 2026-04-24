@@ -1,4 +1,5 @@
 import 'package:egytravel_app/core/routes/app_routes.dart';
+import 'package:egytravel_app/core/locale_storage/shared_preferences_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -6,7 +7,7 @@ class OnboardingController extends GetxController {
   final currentPage = 0.obs;
   final pageController = PageController();
 
-  void nextPage() {
+  void nextPage() async {
     if (currentPage.value < 2) {
       currentPage.value++;
       pageController.animateToPage(
@@ -15,17 +16,14 @@ class OnboardingController extends GetxController {
         curve: Curves.easeInOut,
       );
     } else {
-      Get.offAllNamed(Routes.home); // or
+      await SharedPreferencesHelper.setOnboardingCompleted();
+      Get.offAllNamed(Routes.loginScreen);
     }
   }
 
-  void skipToEnd() {
-    currentPage.value = 2;
-    pageController.animateToPage(
-      2,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
-    );
+  void skipToEnd() async {
+    await SharedPreferencesHelper.setOnboardingCompleted();
+    Get.offAllNamed(Routes.loginScreen);
   }
 
   void onPageChanged(int page) {

@@ -30,4 +30,32 @@ class AuthRepo {
       throw ApiError(message: e.toString());
     }
   }
+
+  ///Register
+  Future<UserModel?> register({
+    required String name,
+    required String email,
+    required String phone,
+    required String password,
+  }) async {
+    try {
+      final response = await _apiService.post(EndPoint.register, {
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'password': password,
+        'role': 'user',
+      });
+
+      final user = UserModel.fromJson(response.data['data']);
+      if (user.token != null && user.token!.isNotEmpty) {
+        SharedPreferencesHelper.saveToken(user.token!);
+      }
+      return user;
+    } on ApiError catch (_) {
+      rethrow;
+    } catch (e) {
+      throw ApiError(message: e.toString());
+    }
+  }
 }

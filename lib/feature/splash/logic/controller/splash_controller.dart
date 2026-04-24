@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/locale_storage/shared_preferences_helper.dart';
 import 'package:egytravel_app/core/routes/app_routes.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -89,8 +90,17 @@ class SplashController extends GetxController with GetTickerProviderStateMixin {
     });
   }
 
-  void navigateToHome() {
-    Get.offAllNamed(Routes.onboardingScreen);
+  Future<void> navigateToHome() async {
+    String token = await SharedPreferencesHelper.getToken();
+    bool hasOnboarded = await SharedPreferencesHelper.isOnboardingCompleted();
+
+    if (token.isNotEmpty) {
+      Get.offAllNamed(Routes.home);
+    } else if (hasOnboarded) {
+      Get.offAllNamed(Routes.loginScreen);
+    } else {
+      Get.offAllNamed(Routes.onboardingScreen);
+    }
   }
 
   @override
