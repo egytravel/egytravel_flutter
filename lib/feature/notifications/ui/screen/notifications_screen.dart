@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/core/widgets/glassy_background.dart';
 import 'package:egytravel_app/feature/notifications/logic/controller/notifications_controller.dart';
+import 'package:egytravel_app/core/widgets/custom_back_button.dart';
 import 'package:egytravel_app/feature/notifications/ui/widgets/notification_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,21 +20,9 @@ class NotificationsScreen extends StatelessWidget {
         appBar: AppBar(
           forceMaterialTransparency: true,
           centerTitle: true,
-          leading: IconButton(
-            onPressed: () => Get.back(),
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.white.withOpacity(0.2)),
-              ),
-              child: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.white,
-                size: 20,
-              ),
-            ),
+          leading: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: CustomBackButton(),
           ),
           title: const Text(
             'Notifications',

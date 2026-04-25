@@ -13,7 +13,7 @@ class ExploreListingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final ExploreItemType? type = Get.arguments?['type'];
     final String? initialCategory = Get.arguments?['category'];
-    final controller = Get.find<ExploreController>();
+    final controller = Get.put(ExploreController());
 
     final List<ExploreItemModel> items = _getItemsByType(controller, type);
 

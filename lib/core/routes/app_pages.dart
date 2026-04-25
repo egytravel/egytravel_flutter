@@ -6,6 +6,7 @@ import 'package:egytravel_app/feature/auth/ui/screens/login_view.dart';
 import 'package:egytravel_app/feature/booking/ui/screen/booking_screen.dart';
 import 'package:egytravel_app/feature/home/ui/screen/home_screen.dart';
 import 'package:egytravel_app/feature/home/ui/screen/search_screen.dart';
+import 'package:egytravel_app/feature/home/ui/screen/event_details_screen.dart';
 import 'package:egytravel_app/feature/onboarding/ui/screen/onboarding_screen.dart';
 import 'package:egytravel_app/feature/splash/logic/binding/splash_binding.dart';
 import 'package:egytravel_app/feature/splash/ui/screen/splash_screen.dart';
@@ -54,6 +55,10 @@ class AppPages {
     GetPage(
       name: Routes.community,
       page: () => const CommunityScreen(),
+    ),
+    GetPage(
+      name: Routes.eventDetails,
+      page: () => const EventDetailsScreen(),
     ),
   ];
 }

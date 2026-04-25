@@ -1,5 +1,6 @@
 import 'package:egytravel_app/feature/home/logic/controller/home_controller.dart';
 import 'package:egytravel_app/feature/home/ui/widgets/destinations_section.dart';
+import 'package:egytravel_app/feature/home/ui/widgets/events_section.dart';
 import 'package:egytravel_app/feature/home/ui/widgets/hero_carousel.dart';
 import 'package:egytravel_app/feature/home/ui/widgets/home_app_bar.dart';
 import 'package:egytravel_app/feature/home/ui/widgets/popular_places_section.dart';
@@ -70,6 +71,7 @@ class HomeScreenBody extends StatelessWidget {
                   const SizedBox(height: 8),
                   PopularPlacesSection(controller: controller),
                   DestinationsSection(controller: controller),
+                  const EventsSection(),
                 ],
               ),
             ),

@@ -1,6 +1,7 @@
 import 'package:egytravel_app/core/widgets/glassy_background.dart';
 import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/booking/data/models/flight_model.dart';
+import 'package:egytravel_app/core/widgets/custom_back_button.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:intl/intl.dart';
@@ -22,9 +23,9 @@ class FlightDetailsScreen extends StatelessWidget {
               expandedHeight: 200,
               pinned: true,
               backgroundColor: Colors.black,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.pop(context),
+              leading: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: CustomBackButton(),
               ),
               flexibleSpace: FlexibleSpaceBar(
                 title: const Text(
