@@ -4,6 +4,8 @@ import 'package:egytravel_app/feature/home/ui/screen/details.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:ui';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:egytravel_app/core/widgets/custom_back_button.dart';
 
 class SearchScreen extends GetView<AppSearchController> {
   const SearchScreen({super.key});
@@ -21,30 +23,7 @@ class SearchScreen extends GetView<AppSearchController> {
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
                   children: [
-                    GestureDetector(
-                      onTap: () => Get.back(),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.2),
-                              ),
-                            ),
-                            child: const Icon(
-                              Icons.arrow_back_ios_new,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    const CustomBackButton(),
                     const SizedBox(width: 12),
                     Expanded(
                       child: ClipRRect(
@@ -120,6 +99,7 @@ class SearchScreen extends GetView<AppSearchController> {
                         place.name,
                         place.location,
                         Icons.location_on_rounded,
+                        imageUrl: place.image,
                         onTap: () {
                           controller.addToRecentSearches(place.name);
                           Get.to(
@@ -225,7 +205,7 @@ class SearchScreen extends GetView<AppSearchController> {
   }
 
   Widget _buildSearchResultItem(String title, String subtitle, IconData icon,
-      {required VoidCallback onTap}) {
+      {String? imageUrl, required VoidCallback onTap}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: ClipRRect(
@@ -241,12 +221,28 @@ class SearchScreen extends GetView<AppSearchController> {
             child: ListTile(
               onTap: onTap,
               leading: Container(
-                padding: const EdgeInsets.all(10),
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: Colors.white70, size: 20),
+                clipBehavior: Clip.antiAlias,
+                child: imageUrl != null && imageUrl.isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: imageUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white.withValues(alpha: 0.5),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) =>
+                            Icon(icon, color: Colors.white70, size: 20),
+                      )
+                    : Icon(icon, color: Colors.white70, size: 20),
               ),
               title: Text(
                 title,

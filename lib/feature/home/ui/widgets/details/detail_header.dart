@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:ui';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../logic/controller/place_detail_controller.dart';
+import 'package:egytravel_app/core/widgets/custom_back_button.dart';
+import 'package:egytravel_app/core/widgets/glass_action_button.dart';
 
 class DetailHeader extends StatelessWidget {
   final PlaceDetailController controller;
@@ -15,17 +18,20 @@ class DetailHeader extends StatelessWidget {
         // Main image with Hero animation
         Hero(
           tag: 'place_image_${controller.place.id}',
-          child: Container(
-            height: 320,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(30),
-                bottomRight: Radius.circular(30),
-              ),
-              image: DecorationImage(
-                image: NetworkImage(controller.place.image),
-                fit: BoxFit.cover,
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(30),
+              bottomRight: Radius.circular(30),
+            ),
+            child: CachedNetworkImage(
+              height: 320,
+              width: double.infinity,
+              imageUrl: controller.place.image,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Container(color: Colors.grey[800]),
+              errorWidget: (context, url, error) => Container(
+                color: Colors.grey[800],
+                child: const Center(child: Icon(Icons.broken_image, color: Colors.white, size: 50)),
               ),
             ),
           ),
@@ -56,14 +62,11 @@ class DetailHeader extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildGlassButton(
-                  icon: Icons.arrow_back_ios_new,
-                  onTap: () => Get.back(),
-                ),
+                const CustomBackButton(),
                 Row(
                   children: [
                     Obx(
-                      () => _buildGlassButton(
+                      () => GlassActionButton(
                         icon: controller.isFavorite.value
                             ? Icons.favorite
                             : Icons.favorite_border,
@@ -74,7 +77,7 @@ class DetailHeader extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    _buildGlassButton(icon: Icons.share, onTap: () {}),
+                    GlassActionButton(icon: Icons.share, onTap: () {}),
                   ],
                 ),
               ],
@@ -85,31 +88,5 @@ class DetailHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildGlassButton({
-    required IconData icon,
-    required VoidCallback onTap,
-    Color color = Colors.white,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.3),
-              ),
-            ),
-            child: Icon(icon, size: 20, color: color),
-          ),
-        ),
-      ),
-    );
-  }
 }
 

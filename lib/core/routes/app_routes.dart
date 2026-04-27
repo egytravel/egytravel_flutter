@@ -12,4 +12,5 @@ class Routes {
   static const String bookingScreen = '/booking_screen';
   static const String profileScreen = '/profile_screen';
   static const String community = '/community';
+  static const String eventDetails = '/eventDetails';
 }

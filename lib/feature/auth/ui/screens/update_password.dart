@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:egytravel_app/core/widgets/custom_back_button.dart';
 
 
 class PasswordUpdateSuccessScreen extends StatelessWidget {
@@ -12,9 +13,9 @@ class PasswordUpdateSuccessScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Get.back(),
+        leading: const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: CustomBackButton(iconColor: Colors.black),
         ),
       ),
       body: Padding(

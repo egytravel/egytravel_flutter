@@ -1,6 +1,7 @@
 import 'package:egytravel_app/feature/auth/logic/controller/otp_controller.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/auth_background.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/otp/otp_input.dart';
+import 'package:egytravel_app/core/widgets/custom_back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,9 +18,9 @@ class OTPVerificationScreen extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Get.back(),
+          leading: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: CustomBackButton(),
           ),
         ),
         body: SingleChildScrollView(

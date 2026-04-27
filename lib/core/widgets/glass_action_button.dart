@@ -1,29 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'dart:ui';
 
-class CustomBackButton extends StatelessWidget {
-  final VoidCallback? onPressed;
-  final Color iconColor;
-  final double size;
+class GlassActionButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  final Color color;
+  final double iconSize;
+  final EdgeInsets padding;
 
-  const CustomBackButton({
+  const GlassActionButton({
     super.key,
-    this.onPressed,
-    this.iconColor = Colors.white,
-    this.size = 20,
+    required this.icon,
+    required this.onTap,
+    this.color = Colors.white,
+    this.iconSize = 20,
+    this.padding = const EdgeInsets.all(10),
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onPressed ?? () => Get.back(),
+      onTap: onTap,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
-            padding: const EdgeInsets.all(10),
+            padding: padding,
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
@@ -31,11 +34,7 @@ class CustomBackButton extends StatelessWidget {
                 color: Colors.white.withValues(alpha: 0.3),
               ),
             ),
-            child: Icon(
-              Icons.arrow_back_ios_new,
-              color: iconColor,
-              size: size,
-            ),
+            child: Icon(icon, size: iconSize, color: color),
           ),
         ),
       ),
