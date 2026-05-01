@@ -4,7 +4,9 @@ class EndPoint {
   // ── Auth ─────────────────────────────────────────────────────────────────
   static const login = '/api/auth/login';
   static const register = '/api/auth/register';
-  static const authMe = '/api/auth/me';
+  static const resetPassword = '/api/auth/reset-password';
+  static const forgotPassword = '/api/auth/forgot-password';
+  static const verifyOtp = '/api/auth/verify-email';
 
   // ── Home / Explore / Booking / AI ────────────────────────────────────────
   static const home = '/api/home/';
@@ -19,7 +21,7 @@ class EndPoint {
   static const communityPosts = '/api/community/posts';
   static String communityPostById(String id) => '/api/community/posts/$id';
   static String communityPostLikes(String id) => '/api/community/posts/$id/like';
-  static String communityPostComments(String id) => '/api/community/posts/$id/comments';
+  static String communityPostComments(String id) => '/api/community/posts/$id/comments/';
   static String communityCommentById(String id) => '/api/community/comments/$id';
   static String communityUserPosts(String id) => '/api/community/users/$id/posts';
 

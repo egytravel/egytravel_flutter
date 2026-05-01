@@ -22,11 +22,11 @@ class GuideTripScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                const Row(
                   children: [
-                    const CustomBackButton(),
-                    const SizedBox(width: 12),
-                    const Text(
+                    CustomBackButton(),
+                    SizedBox(width: 12),
+                    Text(
                       'Create Your Guide',
                       style: TextStyle(
                         color: Colors.white,

@@ -111,7 +111,7 @@ class CommunityComment {
   factory CommunityComment.fromJson(Map<String, dynamic> json) {
     return CommunityComment(
       id: (json['commentId'] ?? json['comment_id'] ?? '').toString(),
-      content: json['content'] ?? json['text'] ?? '',
+      content: json['content'] ?? json['text'] ?? json['comment'] ?? '',
       createdAt: DateTime.parse(json['createdAt'] ?? json['created_at'] ?? DateTime.now().toIso8601String()),
       user: PostUser.fromJson(json['author'] ?? json['user'] ?? {}),
     );

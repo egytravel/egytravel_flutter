@@ -78,10 +78,12 @@ class EnterNewPasswordScreen extends StatelessWidget {
                   onToggle: controller.toggleRePasswordVisibility,
                 )),
                 const SizedBox(height: 40),
-                SizedBox(
+                Obx(() => SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: controller.submitNewPassword,
+                    onPressed: controller.isLoading.value 
+                        ? null 
+                        : () => controller.submitNewPassword(context),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColor.primary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -90,16 +92,25 @@ class EnterNewPasswordScreen extends StatelessWidget {
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Submit',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: controller.isLoading.value
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text(
+                            'Submit',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
-                ),
+                )),
                 const SizedBox(height: 40),
               ],
             ),
