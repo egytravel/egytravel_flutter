@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/auth/logic/controller/otp_controller.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/auth_background.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/otp/otp_input.dart';
@@ -108,7 +109,7 @@ class OTPVerificationScreen extends StatelessWidget {
                           '00:50s',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Color(0xFF6C5CE7),
+                            color: AppColor.primary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -122,7 +123,7 @@ class OTPVerificationScreen extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: controller.submitOTP,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6C5CE7),
+                      backgroundColor: AppColor.primary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),

@@ -102,11 +102,15 @@ class LoginController extends GetxController {
     super.onInit();
     emailController.addListener(_checkButtonStatus);
     passwordController.addListener(_checkButtonStatus);
+    // Listen to rememberMe changes to update button status
+    ever(rememberMe, (_) => _checkButtonStatus());
   }
 
   void _checkButtonStatus() {
     isButtonEnabled.value =
-        emailController.text.isNotEmpty && passwordController.text.isNotEmpty;
+        emailController.text.isNotEmpty && 
+        passwordController.text.isNotEmpty &&
+        rememberMe.value;
   }
 
   @override

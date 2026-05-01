@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/auth/ui/screens/login_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,7 +20,7 @@ class LoginPrompt extends StatelessWidget {
             child: const Text(
               'Login',
               style: TextStyle(
-                color: Color(0xFF6C5CE7),
+                color: AppColor.primary,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),

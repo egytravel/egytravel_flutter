@@ -10,6 +10,12 @@ class ExploreRepo {
 
   Future<ExploreResponseModel> getExploreData() async {
     final response = await _apiService.get(EndPoint.explore);
-    return ExploreResponseModel.fromJson(response.data);
+    
+    // Safely extract the 'data' map if the response is wrapped
+    final data = (response is Map<String, dynamic> && response.containsKey('data'))
+        ? response['data'] as Map<String, dynamic>
+        : response as Map<String, dynamic>;
+        
+    return ExploreResponseModel.fromJson(data);
   }
 }

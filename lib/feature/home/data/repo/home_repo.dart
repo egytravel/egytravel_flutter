@@ -7,6 +7,12 @@ class HomeRepo {
 
   Future<HomeResponse> getHomeData() async {
     final response = await _apiService.get(EndPoint.home);
-    return HomeResponse.fromJson(response.data['data']);
+    
+    // Safely extract the 'data' map if the response is wrapped
+    final data = (response is Map<String, dynamic> && response.containsKey('data'))
+        ? response['data'] as Map<String, dynamic>
+        : response as Map<String, dynamic>;
+        
+    return HomeResponse.fromJson(data);
   }
 }

@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/glass_container.dart';
 import 'package:flutter/material.dart';
 
@@ -27,14 +28,14 @@ class ContactMethodCard extends StatelessWidget {
       onTap: onTap,
       child: GlassContainer(
         padding: const EdgeInsets.all(16),
-        color: isSelected ? const Color(0xFF6C5CE7).withOpacity(0.3) : Colors.white.withOpacity(0.1),
+        color: isSelected ? AppColor.primary.withOpacity(0.3) : Colors.white.withOpacity(0.1),
         borderRadius: 12,
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFF6C5CE7) : Colors.white.withOpacity(0.2),
+                color: isSelected ? AppColor.primary : Colors.white.withOpacity(0.2),
                 shape: BoxShape.circle,
               ),
               child: Icon(

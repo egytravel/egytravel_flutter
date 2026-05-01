@@ -38,13 +38,13 @@ class RegisterScreen extends GetView<RegisterController> {
                             CustomTextField(
                               controller: controller.nameController,
                               label: 'Name',
-                              hint: 'Fadi Atef',
+                              hint: 'Name',
                             ),
                             const SizedBox(height: 16),
                             CustomTextField(
                               controller: controller.emailController,
                               label: 'Email Address',
-                              hint: 'fadi.atef@example.com',
+                              hint: 'email@gmail.com',
                               keyboardType: TextInputType.emailAddress,
                             ),
                             const SizedBox(height: 16),

@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:egytravel_app/core/widgets/custom_back_button.dart';
 import 'package:egytravel_app/feature/explore/data/model/explore_item_model.dart';
 import 'package:egytravel_app/feature/explore/logic/controller/explore_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'dart:ui';
 
 class ExploreDetailsHeroAppBar extends StatelessWidget {
   final ExploreItemModel item;
@@ -14,40 +16,81 @@ class ExploreDetailsHeroAppBar extends StatelessWidget {
     final controller = Get.find<ExploreController>();
 
     return SliverAppBar(
-      expandedHeight: 300,
+      expandedHeight: 350,
       pinned: true,
       backgroundColor: Colors.transparent,
       elevation: 0,
-      leading: Container(
-        margin: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.9),
-          shape: BoxShape.circle,
-        ),
-        child: const BackButton(color: Colors.black),
+      automaticallyImplyLeading: false,
+      leading: const Padding(
+        padding: EdgeInsets.all(8.0),
+        child: CustomBackButton(),
       ),
       actions: [
-        Container(
-          margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.9),
-            shape: BoxShape.circle,
-          ),
-          child: Obx(
-            () => IconButton(
-              icon: Icon(
+        _buildActionIcon(
+          icon: Obx(() => Icon(
                 item.isFavorite.value ? Icons.favorite : Icons.favorite_border,
-                color: item.isFavorite.value ? Colors.red : Colors.black,
-              ),
-              onPressed: () => controller.toggleFavorite(item),
-            ),
-          ),
+                color: item.isFavorite.value ? Colors.red : Colors.white,
+                size: 20,
+              )),
+          onTap: () => controller.toggleFavorite(item),
         ),
+        _buildActionIcon(
+          icon: const Icon(Icons.share_outlined, color: Colors.white, size: 20),
+          onTap: () {
+            // Share logic
+          },
+        ),
+        const SizedBox(width: 8),
       ],
       flexibleSpace: FlexibleSpaceBar(
-        background: Hero(
-          tag: item.title,
-          child: _buildHeroImage(),
+        background: Stack(
+          fit: StackFit.expand,
+          children: [
+            Hero(
+              tag: item.title,
+              child: _buildHeroImage(),
+            ),
+            // Gradient overlay for better text visibility
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.3),
+                    Colors.transparent,
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.5),
+                  ],
+                  stops: const [0.0, 0.2, 0.7, 1.0],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionIcon({required Widget icon, required VoidCallback onTap}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+      child: GestureDetector(
+        onTap: onTap,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white.withOpacity(0.3)),
+              ),
+              child: icon,
+            ),
+          ),
         ),
       ),
     );

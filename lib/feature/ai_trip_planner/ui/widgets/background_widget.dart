@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class BackgroundImage extends StatelessWidget {
@@ -13,18 +14,21 @@ class BackgroundImage extends StatelessWidget {
           fit: BoxFit.cover,
         ),
       ),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.black.withOpacity(0.6),
-              Colors.black.withOpacity(0.8),
-            ],
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withOpacity(0.4), // Reduced opacity since blur adds darkness
+                Colors.black.withOpacity(0.7),
+              ],
+            ),
           ),
+          child: child,
         ),
-        child: child,
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/auth/logic/controller/newPassword_controller.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/auth_background.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/glass_container.dart';
@@ -82,7 +83,7 @@ class EnterNewPasswordScreen extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: controller.submitNewPassword,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6C5CE7),
+                      backgroundColor: AppColor.primary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),

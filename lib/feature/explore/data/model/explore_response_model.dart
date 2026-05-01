@@ -18,16 +18,21 @@ class ExploreResponseModel {
   });
 
   factory ExploreResponseModel.fromJson(Map<String, dynamic> json) {
-    final data = json['data'] as Map<String, dynamic>;
+    // Check if data is wrapped in a 'data' key or returned directly
+    final data = (json['data'] != null && json['data'] is Map<String, dynamic>)
+        ? json['data'] as Map<String, dynamic>
+        : json;
+
+    final placesList = (data['popularPlaces'] as List<dynamic>? ?? data['places'] as List<dynamic>? ?? [])
+        .map((e) => ExploreItemModel.fromPlaceJson(e))
+        .toList();
 
     return ExploreResponseModel(
-      categories: List<String>.from(data['categories'] ?? []),
-      places: (data['places'] as List<dynamic>? ?? [])
-          .map((e) => ExploreItemModel.fromPlaceJson(e))
+      categories: (data['categories'] as List? ?? [])
+          .map((e) => e is Map ? (e['name'] ?? e['title'] ?? e.toString()).toString() : e.toString())
           .toList(),
-      recommended: (data['recommended'] as List<dynamic>? ?? [])
-          .map((e) => ExploreItemModel.fromPlaceJson(e))
-          .toList(),
+      places: placesList,
+      recommended: placesList.where((p) => p.isRecommended).toList(),
       restaurants: (data['restaurants'] as List<dynamic>? ?? [])
           .map((e) => ExploreItemModel.fromRestaurantJson(e))
           .toList(),

@@ -9,27 +9,34 @@ class ApiService {
   Future<dynamic> get(String endPoint) async {
     try {
       final response = await _dioFactory.dio.get(endPoint);
-      return response;
+      return response.data;
     } on DioException catch (e) {
       throw ApiExceptions.handleError(e);
     }
   }
 
   /// post
+  // Future<dynamic> post(String endPoint, Map<String, dynamic> body) async {
+  //   try {
+  //     final response = await _dioFactory.dio.post(endPoint, data: body);
+  //     return response;
+  //   } on DioException catch (e) {
+  //     throw ApiExceptions.handleError(e);
+  //   }
+  // }
   Future<dynamic> post(String endPoint, Map<String, dynamic> body) async {
     try {
       final response = await _dioFactory.dio.post(endPoint, data: body);
-      return response;
+      return response.data; // ✅ أهم سطر
     } on DioException catch (e) {
       throw ApiExceptions.handleError(e);
     }
   }
-
   /// put
   Future<dynamic> put(String endPoint, Map<String, dynamic> body) async {
     try {
-      final response = await _dioFactory.dio.post(endPoint, data: body);
-      return response;
+      final response = await _dioFactory.dio.put(endPoint, data: body);
+      return response.data;
     } on DioException catch (e) {
       throw ApiExceptions.handleError(e);
     }
@@ -39,7 +46,7 @@ class ApiService {
   Future<dynamic> delete(String endPoint) async {
     try {
       final response = await _dioFactory.dio.delete(endPoint);
-      return response;
+      return response.data;
     } on DioException catch (e) {
       throw ApiExceptions.handleError(e);
     }

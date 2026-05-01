@@ -1,95 +1,112 @@
 import 'package:egytravel_app/feature/community/data/model/community_post_model.dart';
+import 'package:egytravel_app/feature/community/data/repo/community_repo.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CommunityController extends GetxController {
+  final CommunityRepo _repo = CommunityRepo();
+
   final posts = <CommunityPost>[].obs;
-  final isLoading = false.obs;
+  final isLoading = true.obs;
+  final hasError = false.obs;
+  final errorMessage = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
-    loadMockPosts();
+    fetchFeed();
   }
 
-  void loadMockPosts() {
-    isLoading.value = true;
-    // Simulate network delay
-    Future.delayed(const Duration(seconds: 1), () {
-      posts.assignAll([
-        CommunityPost(
-          id: '1',
-          userName: 'Ahmed Ali',
-          userAvatar: 'https://i.pravatar.cc/150?u=ahmed',
-          postImage: 'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?q=80&w=1000',
-          description: 'Exploring the Great Pyramids today! Truly a magnificent sight.',
-          location: 'Giza, Egypt',
-          likesCount: 1250,
-          isLiked: true,
-          comments: ['Beautiful!', 'I want to go there!'],
-        ),
-        CommunityPost(
-          id: '2',
-          userName: 'Sarah Wilson',
-          userAvatar: 'https://i.pravatar.cc/150?u=sarah',
-          postImage: 'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?q=80&w=1000',
-          description: 'The sunset at Dahab is unlike anything else. #Egypt #Travel',
-          location: 'Dahab, South Sinai',
-          likesCount: 840,
-          isLiked: false,
-          comments: ['Pure magic'],
-        ),
-        CommunityPost(
-          id: '3',
-          userName: 'Omar Hassan',
-          userAvatar: 'https://i.pravatar.cc/150?u=omar',
-          postImage: 'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?q=80&w=1000',
-          description: 'A beautiful walk through Islamic Cairo. History everywhere.',
-          location: 'Cairo, Egypt',
-          likesCount: 450,
-          isLiked: false,
-          comments: [],
-        ),
-      ]);
+  // ── FETCH Feed ───────────────────────────────────────────────────────────
+  Future<void> fetchFeed() async {
+    try {
+      isLoading.value = true;
+      hasError.value = false;
+      final result = await _repo.getFeed();
+      posts.assignAll(result);
+    } catch (e) {
+      hasError.value = true;
+      errorMessage.value = e.toString().replaceAll('Exception: ', '');
+    } finally {
       isLoading.value = false;
-    });
-  }
-
-  void toggleLike(String postId) {
-    final index = posts.indexWhere((p) => p.id == postId);
-    if (index != -1) {
-      final post = posts[index];
-      posts[index] = post.copyWith(
-        isLiked: !post.isLiked,
-        likesCount: post.isLiked ? post.likesCount - 1 : post.likesCount + 1,
-      );
     }
   }
 
-  void addPost({
-    required String userName,
-    required String description,
-    String? postImage,
-  }) {
-    final newPost = CommunityPost(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      userName: userName,
-      userAvatar: 'https://i.pravatar.cc/150?u=$userName',
-      postImage: postImage ?? 'https://images.unsplash.com/photo-1541167760496-162955ed8521?q=80&w=1000',
-      description: description,
-      location: '',
-      likesCount: 0,
-      isLiked: false,
-      comments: [],
+  // ── TOGGLE Like ──────────────────────────────────────────────────────────
+  Future<void> toggleLike(int postId) async {
+    // Optimistic UI update
+    final index = posts.indexWhere((p) => p.id == postId);
+    if (index == -1) return;
+
+    final originalPost = posts[index];
+    posts[index] = originalPost.copyWith(
+      isLiked: !originalPost.isLiked,
+      likesCount: originalPost.isLiked ? originalPost.likesCount - 1 : originalPost.likesCount + 1,
     );
-    posts.insert(0, newPost);
+    posts.refresh();
+
+    try {
+      final result = await _repo.toggleLike(postId.toString());
+      // Update with real data from server if available
+      if (result.containsKey('liked') || result.containsKey('likesCount')) {
+        posts[index] = posts[index].copyWith(
+          isLiked: result['liked'] ?? posts[index].isLiked,
+          likesCount: result['likesCount'] ?? posts[index].likesCount,
+        );
+        posts.refresh();
+      }
+    } catch (e) {
+      // Revert on error
+      posts[index] = originalPost;
+      Get.snackbar('Error', 'Failed to update like');
+    }
   }
 
-  void addComment(String postId, String comment) {
-    final index = posts.indexWhere((p) => p.id == postId);
-    if (index != -1) {
-      final post = posts[index];
-      final newComments = List<String>.from(post.comments)..add(comment);
-      posts[index] = post.copyWith(comments: newComments);
+  // ── CREATE Post ──────────────────────────────────────────────────────────
+  Future<void> createPost({
+    required String description,
+    String? mediaUrl,
+    String? location,
+  }) async {
+    try {
+      isLoading.value = true; // or show a dialog loading
+      final newPost = await _repo.createPost(
+        description: description,
+        mediaUrl: mediaUrl,
+        location: location,
+      );
+      posts.insert(0, newPost);
+      Get.back(); // Close post creation screen
+      Get.snackbar('Success', 'Post created successfully', 
+          backgroundColor: const Color(0xFF10B981), colorText: Colors.white);
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to create post');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // ── ADD Comment ──────────────────────────────────────────────────────────
+  Future<void> addComment(int postId, String content) async {
+    if (content.trim().isEmpty) return;
+    
+    try {
+      await _repo.addComment(postId.toString(), content);
+      // Refresh feed or post details to show new comment
+      // For now just show success
+      Get.snackbar('Success', 'Comment added',
+          backgroundColor: const Color(0xFF10B981), colorText: Colors.white);
+      
+      // Update local count
+      final index = posts.indexWhere((p) => p.id == postId);
+      if (index != -1) {
+        posts[index] = posts[index].copyWith(
+          commentsCount: posts[index].commentsCount + 1,
+        );
+        posts.refresh();
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to add comment');
     }
   }
 }

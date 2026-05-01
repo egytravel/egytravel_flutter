@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:flutter/material.dart';
 
 class RegisterButton extends StatelessWidget {
@@ -18,7 +19,7 @@ class RegisterButton extends StatelessWidget {
         onPressed: isEnabled ? onPressed : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: isEnabled
-              ? const Color(0xFF6C5CE7)
+              ? AppColor.primary
               : Colors.grey[600],
           disabledBackgroundColor: Colors.grey[600],
           padding: const EdgeInsets.symmetric(vertical: 16),
