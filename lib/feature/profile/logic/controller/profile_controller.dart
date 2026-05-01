@@ -81,11 +81,16 @@ class ProfileController extends GetxController {
   }) async {
     try {
       isUpdatingProfile.value = true;
+
+      // Only send optional fields if they are not empty to avoid API validation errors
+      final String? trimmedNationality = nationality?.trim().isEmpty ?? true ? null : nationality?.trim();
+      final String? trimmedDob = dateOfBirth?.trim().isEmpty ?? true ? null : dateOfBirth?.trim();
+
       profile.value = await _repo.updateProfile(
-        name: name,
-        phone: phone,
-        nationality: nationality,
-        dateOfBirth: dateOfBirth,
+        name: name?.trim(),
+        phone: phone?.trim(),
+        nationality: trimmedNationality,
+        dateOfBirth: trimmedDob,
         profilePhotoUrl: profilePhotoUrl,
       );
       Get.snackbar(

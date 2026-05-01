@@ -99,7 +99,14 @@ class ExploreDetailController extends GetxController {
           body: Center(
             child: source.toString().startsWith('http')
                 ? Image.network(source)
-                : Image.file(File(source)),
+                : Image.file(
+                    File(source),
+                    errorBuilder: (context, error, stackTrace) => const Icon(
+                      Icons.broken_image,
+                      color: Colors.white54,
+                      size: 64,
+                    ),
+                  ),
           ),
         ),
       ),

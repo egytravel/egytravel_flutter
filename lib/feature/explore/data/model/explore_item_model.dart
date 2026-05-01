@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-enum ExploreItemType { place, restaurant, hotel, flight }
+enum ExploreItemType { place, restaurant, hotel, flight, event }
 
 class ExploreItemModel {
   final String id;
@@ -37,6 +37,10 @@ class ExploreItemModel {
   final String? duration;
   final String? airline;
 
+  // Event-specific fields
+  final String? startDate;
+  final String? ticketUrl;
+
   // Favorite state (reactive)
   final RxBool isFavorite;
 
@@ -66,8 +70,29 @@ class ExploreItemModel {
     this.destination,
     this.duration,
     this.airline,
+    this.startDate,
+    this.ticketUrl,
     bool isFavorite = false,
   }) : isFavorite = isFavorite.obs;
+
+  /// Parse an event item from EventModel (conversion)
+  factory ExploreItemModel.fromEventModel(dynamic event) {
+    // We use dynamic to avoid direct import circular dependency if needed
+    // But since they are in same package it's fine
+    return ExploreItemModel(
+      id: event.id,
+      title: event.title,
+      location: '${event.city}, ${event.location}',
+      image: event.coverImage,
+      rating: 0,
+      price: event.price ?? (event.isFree ? 'Free' : 'N/A'),
+      category: event.category,
+      type: ExploreItemType.event,
+      description: event.description,
+      startDate: event.startDate,
+      ticketUrl: event.ticketUrl,
+    );
+  }
 
   /// Parse a place item from API JSON
   factory ExploreItemModel.fromPlaceJson(Map<String, dynamic> json) {

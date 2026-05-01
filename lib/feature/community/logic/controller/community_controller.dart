@@ -10,6 +10,10 @@ class CommunityController extends GetxController {
   final isLoading = true.obs;
   final hasError = false.obs;
   final errorMessage = ''.obs;
+  
+  // Store comments per post ID
+  final postComments = <String, List<CommunityComment>>{}.obs;
+  final isCommentsLoading = <String, bool>{}.obs;
 
   @override
   void onInit() {
@@ -33,7 +37,7 @@ class CommunityController extends GetxController {
   }
 
   // ── TOGGLE Like ──────────────────────────────────────────────────────────
-  Future<void> toggleLike(int postId) async {
+  Future<void> toggleLike(String postId) async {
     // Optimistic UI update
     final index = posts.indexWhere((p) => p.id == postId);
     if (index == -1) return;
@@ -46,7 +50,7 @@ class CommunityController extends GetxController {
     posts.refresh();
 
     try {
-      final result = await _repo.toggleLike(postId.toString());
+      final result = await _repo.toggleLike(postId);
       // Update with real data from server if available
       if (result.containsKey('liked') || result.containsKey('likesCount')) {
         posts[index] = posts[index].copyWith(
@@ -86,14 +90,29 @@ class CommunityController extends GetxController {
     }
   }
 
+  // ── FETCH Comments ───────────────────────────────────────────────────────
+  Future<void> fetchComments(String postId) async {
+    try {
+      isCommentsLoading[postId] = true;
+      final result = await _repo.getPostComments(postId);
+      postComments[postId] = result;
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to load comments');
+    } finally {
+      isCommentsLoading[postId] = false;
+    }
+  }
+
   // ── ADD Comment ──────────────────────────────────────────────────────────
-  Future<void> addComment(int postId, String content) async {
+  Future<void> addComment(String postId, String content) async {
     if (content.trim().isEmpty) return;
     
     try {
-      await _repo.addComment(postId.toString(), content);
-      // Refresh feed or post details to show new comment
-      // For now just show success
+      await _repo.addComment(postId, content);
+      
+      // Refresh comments
+      await fetchComments(postId);
+      
       Get.snackbar('Success', 'Comment added',
           backgroundColor: const Color(0xFF10B981), colorText: Colors.white);
       

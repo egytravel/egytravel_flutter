@@ -1,4 +1,3 @@
-import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/home/data/model/place_model.dart';
 import 'package:egytravel_app/feature/home/ui/screen/details.dart';
 import 'package:flutter/material.dart';

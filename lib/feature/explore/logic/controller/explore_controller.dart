@@ -2,6 +2,7 @@ import 'package:egytravel_app/core/error/api_error.dart';
 import 'package:egytravel_app/core/routes/app_routes.dart';
 import 'package:egytravel_app/feature/explore/data/model/explore_item_model.dart';
 import 'package:egytravel_app/feature/explore/data/repo/explore_repo.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ExploreController extends GetxController {
@@ -13,6 +14,8 @@ class ExploreController extends GetxController {
   final isLoading = true.obs;
   final hasError = false.obs;
   final errorMessage = ''.obs;
+  final isScrolled = false.obs;
+  final scrollController = ScrollController();
 
   // --- Data ---
   final placeCategories = <String>[].obs;
@@ -21,6 +24,7 @@ class ExploreController extends GetxController {
   final restaurants = <ExploreItemModel>[].obs;
   final hotels = <ExploreItemModel>[].obs;
   final flights = <ExploreItemModel>[].obs;
+  final events = <ExploreItemModel>[].obs;
 
   final selectedPlaceCategory = 'Recent'.obs;
 
@@ -55,6 +59,15 @@ class ExploreController extends GetxController {
   void onInit() {
     super.onInit();
     fetchExploreData();
+    scrollController.addListener(() {
+      isScrolled.value = scrollController.offset > 50;
+    });
+  }
+
+  @override
+  void onClose() {
+    scrollController.dispose();
+    super.onClose();
   }
 
   Future<void> fetchExploreData() async {
@@ -71,6 +84,10 @@ class ExploreController extends GetxController {
       restaurants.assignAll(response.restaurants);
       hotels.assignAll(response.hotels);
       flights.assignAll(response.flights);
+
+      // Fetch events separately if not in response
+      final eventsResponse = await _repo.getEvents();
+      events.assignAll(eventsResponse);
 
       // Default selected category
       if (placeCategories.isNotEmpty) {
@@ -121,6 +138,9 @@ class ExploreController extends GetxController {
           break;
         case ExploreItemType.flight:
           baseList = flights;
+          break;
+        case ExploreItemType.event:
+          baseList = events;
           break;
       }
     }

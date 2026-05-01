@@ -17,40 +17,13 @@ class ExploreDetailsActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.18),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withOpacity(0.3)),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      "Price",
-                      style: TextStyle(color: Colors.white60, fontSize: 14),
-                    ),
-                    Text(
-                      price,
-                      style: const TextStyle(
-                        color: AppColor.primary,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (bookingUrl != null && bookingUrl!.isNotEmpty)
+    return (bookingUrl != null && bookingUrl!.isNotEmpty)
+        ? Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 Expanded(
                   child: CustomButton(
                     text: "Book Now",
@@ -66,10 +39,9 @@ class ExploreDetailsActionBar extends StatelessWidget {
                     },
                   ),
                 ),
-            ],
-          ),
-        ),
-      ),
-    );
+              ],
+            ),
+          )
+        : Container();
   }
 }

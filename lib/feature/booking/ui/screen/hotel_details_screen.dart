@@ -4,6 +4,7 @@ import 'package:egytravel_app/feature/booking/data/models/hotel_model.dart';
 import 'package:egytravel_app/feature/booking/ui/widgets/hotels/room_card.dart';
 import 'package:egytravel_app/core/widgets/custom_back_button.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:ui';
 
 class HotelDetailsScreen extends StatelessWidget {
@@ -38,23 +39,40 @@ class HotelDetailsScreen extends StatelessWidget {
                 ),
               ],
               flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        AppColor.primaryColor.withValues(alpha: 0.4),
-                        Colors.black,
-                      ],
+                background: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    if (hotel.imageUrl.startsWith('http'))
+                      Image.network(
+                        hotel.imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Center(child: Icon(Icons.broken_image, color: Colors.white, size: 50)),
+                      )
+                    else
+                      Container(
+                        color: AppColor.primaryColor.withValues(alpha: 0.2),
+                        child: Center(
+                          child: Text(
+                            hotel.imageUrl,
+                            style: const TextStyle(fontSize: 100),
+                          ),
+                        ),
+                      ),
+                    // Gradient overlay
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withValues(alpha: 0.4),
+                            Colors.black.withValues(alpha: 0.8),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      hotel.imageUrl,
-                      style: const TextStyle(fontSize: 100),
-                    ),
-                  ),
+                  ],
                 ),
               ),
             ),
@@ -159,14 +177,35 @@ class HotelDetailsScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: hotel.rooms.length,
-                      itemBuilder: (context, index) {
-                        return RoomCard(room: hotel.rooms[index]);
-                      },
-                    ),
+                    if (hotel.rooms.isEmpty)
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.05),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                        ),
+                        child: const Column(
+                          children: [
+                            Icon(Icons.info_outline, color: AppColor.primaryColor, size: 32),
+                            SizedBox(height: 8),
+                            Text(
+                              'Specific room details are not available for this property currently. Please proceed to book to see available options.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.white70, fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: hotel.rooms.length,
+                        itemBuilder: (context, index) {
+                          return RoomCard(room: hotel.rooms[index]);
+                        },
+                      ),
                     const SizedBox(height: 100),
                   ],
                 ),
@@ -352,14 +391,28 @@ class HotelDetailsScreen extends StatelessWidget {
           width: double.infinity,
           height: 56,
           child: ElevatedButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Your hotel has been booked successfully!'),
-                  backgroundColor: AppColor.primaryColor,
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
+            onPressed: () async {
+              if (hotel.bookingUrl != null && hotel.bookingUrl!.isNotEmpty) {
+                final Uri url = Uri.parse(hotel.bookingUrl!);
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Could not launch booking URL'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Your hotel has been booked successfully!'),
+                    backgroundColor: AppColor.primaryColor,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColor.primaryColor,

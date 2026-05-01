@@ -17,9 +17,13 @@ class ExploreDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dynamic args = Get.arguments;
-    final ExploreItemModel item = args is Map ? args['item'] : args as ExploreItemModel;
-    final String heroTag = args is Map ? (args['heroTag'] ?? 'explore_image_${item.id}') : 'explore_image_${item.id}';
-    
+    final ExploreItemModel item = args is Map
+        ? args['item']
+        : args as ExploreItemModel;
+    final String heroTag = args is Map
+        ? (args['heroTag'] ?? 'explore_image_${item.id}')
+        : 'explore_image_${item.id}';
+
     // Use unique tag to prevent reusing old controller data between different items
     final controller = Get.put(ExploreDetailController(item), tag: item.id);
 
@@ -27,42 +31,96 @@ class ExploreDetailsScreen extends StatelessWidget {
       child: Scaffold(
         extendBody: true,
         backgroundColor: Colors.transparent,
-        body: Stack(
-          children: [
-            Column(
-              children: [
-                _buildHeader(item, controller, heroTag),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 20),
-                        _buildMainInfo(item),
-                        const SizedBox(height: 24),
-                        _buildTabBar(controller),
-                        const SizedBox(height: 24),
-                        Obx(() {
-                          switch (controller.selectedTab.value) {
-                            case 0:
-                              return _buildDescriptionTab(item, controller);
-                            case 1:
-                              return _buildPhotosTab(item);
-                            case 2:
-                              return _buildReviewsTab(item);
-                            default:
-                              return _buildDescriptionTab(item, controller);
-                          }
-                        }),
-                        // Extra space for the fixed bottom bar
-                        const SizedBox(height: 100),
-                      ],
+        body: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 350.0,
+              collapsedHeight: 150.0,
+              toolbarHeight: 80.0,
+              pinned: true,
+              backgroundColor:
+                  Colors.transparent, // Transparent to prevent hiding the image
+              elevation: 0,
+              automaticallyImplyLeading: false, // Custom leading
+              flexibleSpace: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  return Hero(
+                    tag: heroTag,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Color(
+                          0xFF0A1628,
+                        ), // Dark background behind image to prevent text bleed
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(20),
+                          bottomRight: Radius.circular(20),
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(20),
+                          bottomRight: Radius.circular(20),
+                        ),
+                        child: SizedBox(
+                          height: constraints.maxHeight,
+                          width: double.infinity,
+                          child: _buildImage(item.image),
+                        ),
+                      ),
                     ),
+                  );
+                },
+              ),
+              titleSpacing: 16,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const CustomBackButton(),
+                  Row(
+                    children: [
+                      Obx(
+                        () => GlassActionButton(
+                          icon: item.isFavorite.value
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: item.isFavorite.value
+                              ? Colors.red
+                              : Colors.white,
+                          onTap: controller.toggleFavorite,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                    ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-
+            SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  _buildMainInfo(item),
+                  const SizedBox(height: 24),
+                  _buildTabBar(controller),
+                  const SizedBox(height: 24),
+                  Obx(() {
+                    switch (controller.selectedTab.value) {
+                      case 0:
+                        return _buildDescriptionTab(item, controller);
+                      case 1:
+                        return _buildPhotosTab(item);
+                      case 2:
+                        return _buildReviewsTab(item);
+                      default:
+                        return _buildDescriptionTab(item, controller);
+                    }
+                  }),
+                  // Extra space for the fixed bottom bar
+                  const SizedBox(height: 100),
+                ],
+              ),
+            ),
           ],
         ),
         bottomNavigationBar: Column(
@@ -76,51 +134,6 @@ class ExploreDetailsScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildHeader(ExploreItemModel item, ExploreDetailController controller, String heroTag) {
-    return Stack(
-      children: [
-        Hero(
-          tag: heroTag,
-          child: ClipRRect(
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(40),
-              bottomRight: Radius.circular(40),
-            ),
-            child: _buildImage(item.image),
-          ),
-        ),
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const CustomBackButton(),
-                Row(
-                  children: [
-                    Obx(
-                      () => GlassActionButton(
-                        icon: item.isFavorite.value
-                            ? Icons.favorite
-                            : Icons.favorite_border,
-                        color: item.isFavorite.value
-                            ? Colors.red
-                            : Colors.white,
-                        onTap: controller.toggleFavorite,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    GlassActionButton(icon: Icons.share_outlined, onTap: () {}),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -164,20 +177,30 @@ class ExploreDetailsScreen extends StatelessWidget {
                         fontFamily: 'Poppins',
                       ),
                     ),
-                    if (item.type == ExploreItemType.restaurant && item.cuisine != null)
+                    if (item.type == ExploreItemType.restaurant &&
+                        item.cuisine != null)
                       Padding(
                         padding: const EdgeInsets.only(top: 4.0),
                         child: Text(
                           item.cuisine!,
-                          style: const TextStyle(color: Color(0xFFE09A1E), fontSize: 14, fontWeight: FontWeight.w600),
+                          style: const TextStyle(
+                            color: Color(0xFFE09A1E),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
-                    if (item.type == ExploreItemType.flight && item.airline != null)
+                    if (item.type == ExploreItemType.flight &&
+                        item.airline != null)
                       Padding(
                         padding: const EdgeInsets.only(top: 4.0),
                         child: Text(
                           "${item.airline} • ${item.duration ?? ''}",
-                          style: const TextStyle(color: Color(0xFFE09A1E), fontSize: 14, fontWeight: FontWeight.w600),
+                          style: const TextStyle(
+                            color: Color(0xFFE09A1E),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                   ],
@@ -200,7 +223,10 @@ class ExploreDetailsScreen extends StatelessWidget {
                         ),
                         TextSpan(
                           text: priceSuffix,
-                          style: const TextStyle(fontSize: 14, color: Colors.white70),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.white70,
+                          ),
                         ),
                       ],
                     ),
@@ -208,16 +234,25 @@ class ExploreDetailsScreen extends StatelessWidget {
                   if (item.rating > 0) ...[
                     const SizedBox(height: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.white.withOpacity(0.1)),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.1),
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.star, size: 16, color: Color(0xFFFFD700)),
+                          const Icon(
+                            Icons.star,
+                            size: 16,
+                            color: Color(0xFFFFD700),
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             item.rating.toString(),
@@ -267,17 +302,23 @@ class ExploreDetailsScreen extends StatelessWidget {
         color: const Color(0xFF1E2A3A),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Obx(() => Row(
-            children: [
-              _buildTabItem(0, "Descriptions", controller),
-              _buildTabItem(1, "Photos", controller),
-              _buildTabItem(2, "Reviews", controller),
-            ],
-          )),
+      child: Obx(
+        () => Row(
+          children: [
+            _buildTabItem(0, "Descriptions", controller),
+            _buildTabItem(1, "Photos", controller),
+            _buildTabItem(2, "Reviews", controller),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _buildTabItem(int index, String title, ExploreDetailController controller) {
+  Widget _buildTabItem(
+    int index,
+    String title,
+    ExploreDetailController controller,
+  ) {
     final isSelected = controller.selectedTab.value == index;
     return Expanded(
       child: GestureDetector(
@@ -302,7 +343,10 @@ class ExploreDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDescriptionTab(ExploreItemModel item, ExploreDetailController controller) {
+  Widget _buildDescriptionTab(
+    ExploreItemModel item,
+    ExploreDetailController controller,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -387,7 +431,9 @@ class ExploreDetailsScreen extends StatelessWidget {
         color: const Color(0xFF1E2A3A),
         border: Border.all(color: Colors.white.withOpacity(0.1)),
         image: const DecorationImage(
-          image: NetworkImage('https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=800'), // Placeholder map texture
+          image: NetworkImage(
+            'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=800',
+          ), // Placeholder map texture
           fit: BoxFit.cover,
           opacity: 0.3,
         ),
@@ -401,9 +447,16 @@ class ExploreDetailsScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: const Color(0xFFE09A1E).withOpacity(0.2),
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFE09A1E).withOpacity(0.5), width: 2),
+                border: Border.all(
+                  color: const Color(0xFFE09A1E).withOpacity(0.5),
+                  width: 2,
+                ),
               ),
-              child: const Icon(Icons.location_on, color: Color(0xFFE09A1E), size: 30),
+              child: const Icon(
+                Icons.location_on,
+                color: Color(0xFFE09A1E),
+                size: 30,
+              ),
             ),
             const SizedBox(height: 12),
             Text(
@@ -450,7 +503,11 @@ class ExploreDetailsScreen extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(facilities[index]['icon'], color: const Color(0xFFE09A1E), size: 20),
+                Icon(
+                  facilities[index]['icon'],
+                  color: const Color(0xFFE09A1E),
+                  size: 20,
+                ),
                 const SizedBox(width: 10),
                 Text(
                   facilities[index]['label'],
@@ -491,7 +548,10 @@ class ExploreDetailsScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.white.withOpacity(0.1), width: 2),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.1),
+                      width: 2,
+                    ),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -502,12 +562,20 @@ class ExploreDetailsScreen extends StatelessWidget {
                           color: const Color(0xFFE09A1E).withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.add_a_photo, size: 28, color: Color(0xFFE09A1E)),
+                        child: const Icon(
+                          Icons.add_a_photo,
+                          size: 28,
+                          color: Color(0xFFE09A1E),
+                        ),
                       ),
                       const SizedBox(height: 12),
                       const Text(
                         'Add Photo',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ],
                   ),
@@ -517,18 +585,32 @@ class ExploreDetailsScreen extends StatelessWidget {
 
             final String imageUrl = controller.photoUrls[index - 1];
             return GestureDetector(
-              onTap: () => controller.showImageViewer(context, imageUrl, index - 1),
+              onTap: () =>
+                  controller.showImageViewer(context, imageUrl, index - 1),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: imageUrl.startsWith('http')
                     ? CachedNetworkImage(
                         imageUrl: imageUrl,
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(color: Colors.white10),
+                        placeholder: (context, url) =>
+                            Container(color: Colors.white10),
                       )
                     : Image.file(
                         File(imageUrl),
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.white10,
+                            child: const Center(
+                              child: Icon(
+                                Icons.broken_image,
+                                color: Colors.white24,
+                                size: 40,
+                              ),
+                            ),
+                          );
+                        },
                       ),
               ),
             );
@@ -556,19 +638,28 @@ class ExploreDetailsScreen extends StatelessWidget {
                   children: [
                     Text(
                       item.rating.toString(),
-                      style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.white),
+                      style: const TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                     Row(
                       children: List.generate(5, (index) {
                         return Icon(
-                          index < item.rating.floor() ? Icons.star : Icons.star_border,
+                          index < item.rating.floor()
+                              ? Icons.star
+                              : Icons.star_border,
                           color: const Color(0xFFFFD700),
                           size: 16,
                         );
                       }),
                     ),
                     const SizedBox(height: 4),
-                    const Text('123 reviews', style: TextStyle(color: Colors.white60, fontSize: 12)),
+                    const Text(
+                      '123 reviews',
+                      style: TextStyle(color: Colors.white60, fontSize: 12),
+                    ),
                   ],
                 ),
                 const SizedBox(width: 24),
@@ -587,8 +678,16 @@ class ExploreDetailsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          _buildReviewCard('John Doe', '2 days ago', 'Amazing place! Highly recommended for everyone visiting Egypt.'),
-          _buildReviewCard('Sarah Smith', '1 week ago', 'The view was stunning and the atmosphere was great.'),
+          _buildReviewCard(
+            'John Doe',
+            '2 days ago',
+            'Amazing place! Highly recommended for everyone visiting Egypt.',
+          ),
+          _buildReviewCard(
+            'Sarah Smith',
+            '1 week ago',
+            'The view was stunning and the atmosphere was great.',
+          ),
         ],
       ),
     );
@@ -599,7 +698,13 @@ class ExploreDetailsScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          SizedBox(width: 60, child: Text(label, style: const TextStyle(color: Colors.white60, fontSize: 10))),
+          SizedBox(
+            width: 60,
+            child: Text(
+              label,
+              style: const TextStyle(color: Colors.white60, fontSize: 10),
+            ),
+          ),
           Expanded(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(4),
@@ -612,7 +717,10 @@ class ExploreDetailsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Text('${(percent * 100).toInt()}%', style: const TextStyle(color: Colors.white60, fontSize: 10)),
+          Text(
+            '${(percent * 100).toInt()}%',
+            style: const TextStyle(color: Colors.white60, fontSize: 10),
+          ),
         ],
       ),
     );
@@ -632,24 +740,55 @@ class ExploreDetailsScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              const CircleAvatar(radius: 18, backgroundColor: Colors.white10, child: Icon(Icons.person, color: Colors.white54)),
+              const CircleAvatar(
+                radius: 18,
+                backgroundColor: Colors.white10,
+                child: Icon(Icons.person, color: Colors.white54),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.white)),
-                    Text(date, style: const TextStyle(color: Colors.white60, fontSize: 12)),
+                    Text(
+                      name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Text(
+                      date,
+                      style: const TextStyle(
+                        color: Colors.white60,
+                        fontSize: 12,
+                      ),
+                    ),
                   ],
                 ),
               ),
               const Icon(Icons.star, size: 14, color: Color(0xFFFFD700)),
               const SizedBox(width: 4),
-              const Text('5.0', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Color(0xFFFFD700))),
+              const Text(
+                '5.0',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                  color: Color(0xFFFFD700),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 12),
-          Text(comment, style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.5)),
+          Text(
+            comment,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 14,
+              height: 1.5,
+            ),
+          ),
         ],
       ),
     );

@@ -27,7 +27,7 @@ class ProfileRepo {
       if (dateOfBirth != null) 'date_of_birth': dateOfBirth,
       if (profilePhotoUrl != null) 'profile_photo_url': profilePhotoUrl,
     };
-    final response = await _api.put(EndPoint.profile, body);
+    final response = await _api.put(EndPoint.profile, data: body);
     final userMap = _extractUser(response);
     return ProfileModel.fromJson(userMap);
   }
@@ -37,7 +37,7 @@ class ProfileRepo {
     required String currentPassword,
     required String newPassword,
   }) async {
-    await _api.post(EndPoint.changePassword, {
+    await _api.post(EndPoint.changePassword, data: {
       'currentPassword': currentPassword,
       'newPassword': newPassword,
     });
@@ -58,7 +58,7 @@ class ProfileRepo {
     required bool pushEnabled,
     required bool emailEnabled,
   }) async {
-    await _api.put(EndPoint.notifications, {
+    await _api.put(EndPoint.notifications, data: {
       'pushEnabled': pushEnabled,
       'emailEnabled': emailEnabled,
     });
@@ -76,7 +76,7 @@ class ProfileRepo {
 
   // ── POST /api/users/delete-account ────────────────────────────────────
   Future<void> deleteAccount({required String password}) async {
-    await _api.post(EndPoint.deleteAccount, {'password': password});
+    await _api.post(EndPoint.deleteAccount, data: {'password': password});
   }
 
   // ── GET /api/trips ────────────────────────────────────────────────────
@@ -91,7 +91,7 @@ class ProfileRepo {
 
   // ── PUT /api/trips/:id ────────────────────────────────────────────────
   Future<void> updateTrip(String tripId, Map<String, dynamic> body) async {
-    await _api.put(EndPoint.tripById(tripId), body);
+    await _api.put(EndPoint.tripById(tripId), data: body);
   }
 
   // ── DELETE /api/trips/:id ─────────────────────────────────────────────
@@ -131,7 +131,7 @@ class ProfileRepo {
     required String itemType,
     Map<String, dynamic>? details,
   }) async {
-    await _api.post(EndPoint.favorites, {
+    await _api.post(EndPoint.favorites, data: {
       'itemId': itemId,
       'itemType': itemType,
       if (details != null) 'details': details,

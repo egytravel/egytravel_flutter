@@ -354,6 +354,8 @@ class ExploreCard extends StatelessWidget {
         return Icons.restaurant;
       case ExploreItemType.place:
         return Icons.place;
+      case ExploreItemType.event:
+        return Icons.event;
     }
   }
 }

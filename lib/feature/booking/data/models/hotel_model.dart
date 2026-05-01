@@ -11,6 +11,7 @@ class HotelModel {
   final String description;
   final List<RoomModel> rooms;
   final int reviewCount;
+  final String? bookingUrl;
 
   HotelModel({
     required this.id,
@@ -23,7 +24,69 @@ class HotelModel {
     required this.description,
     required this.rooms,
     required this.reviewCount,
+    this.bookingUrl,
   });
+
+  static double _parseDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    if (value is Map) {
+      if (value.containsKey('amount')) return _parseDouble(value['amount']);
+      if (value.containsKey('value')) return _parseDouble(value['value']);
+      if (value.containsKey('price')) return _parseDouble(value['price']);
+      if (value.containsKey('score')) return _parseDouble(value['score']);
+      if (value.containsKey('rate')) return _parseDouble(value['rate']);
+    }
+    return 0.0;
+  }
+
+  factory HotelModel.fromJson(Map<String, dynamic> json) {
+    final String parsedName = json['name'] ?? json['hotelName'] ?? '';
+    final String parsedCity = json['city'] ?? json['location'] ?? '';
+    final String parsedAddress = json['address'] ?? '';
+    
+    final String finalLocation = parsedAddress.isNotEmpty && parsedCity.isNotEmpty 
+        ? '$parsedAddress, $parsedCity'
+        : (parsedAddress.isNotEmpty ? parsedAddress : parsedCity);
+
+    return HotelModel(
+      id: (json['id'] ?? json['_id'] ?? json['hotelId'] ?? '').toString(),
+      name: parsedName,
+      imageUrl: json['coverImage'] ?? json['thumbnail'] ?? json['imageUrl'] ?? json['image'] ?? '',
+      location: finalLocation,
+      rating: _parseDouble(json['rating']),
+      pricePerNight: _parseDouble(json['pricePerNight'] ?? json['price']),
+      amenities: (json['amenities'] as List?)?.cast<String>() ?? [
+        'Free WiFi',
+        'Air Conditioning',
+        'Daily Housekeeping',
+        '24-hour Front Desk',
+      ],
+      description: json['description'] ?? 'Enjoy a wonderful stay at $parsedName located in $finalLocation. This property offers excellent services and comfortable accommodations for a memorable experience.',
+      rooms: (json['rooms'] as List? ?? [])
+          .map((e) => RoomModel.fromJson(e))
+          .toList(),
+      reviewCount: json['reviewCount'] ?? 0,
+      bookingUrl: json['bookingUrl'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'imageUrl': imageUrl,
+      'location': location,
+      'rating': rating,
+      'pricePerNight': pricePerNight,
+      'amenities': amenities,
+      'description': description,
+      'rooms': rooms.map((e) => e.toJson()).toList(),
+      'reviewCount': reviewCount,
+      'bookingUrl': bookingUrl,
+    };
+  }
 
   // Mock data generator
   static List<HotelModel> getMockHotels({String? destination}) {

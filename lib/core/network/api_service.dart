@@ -6,9 +6,12 @@ class ApiService {
   final DioFactory _dioFactory = DioFactory();
 
   /// get
-  Future<dynamic> get(String endPoint) async {
+  Future<dynamic> get(String endPoint, {Map<String, dynamic>? queryParameters}) async {
     try {
-      final response = await _dioFactory.dio.get(endPoint);
+      final response = await _dioFactory.dio.get(
+        endPoint,
+        queryParameters: queryParameters,
+      );
       return response.data;
     } on DioException catch (e) {
       throw ApiExceptions.handleError(e);
@@ -16,26 +19,19 @@ class ApiService {
   }
 
   /// post
-  // Future<dynamic> post(String endPoint, Map<String, dynamic> body) async {
-  //   try {
-  //     final response = await _dioFactory.dio.post(endPoint, data: body);
-  //     return response;
-  //   } on DioException catch (e) {
-  //     throw ApiExceptions.handleError(e);
-  //   }
-  // }
-  Future<dynamic> post(String endPoint, Map<String, dynamic> body) async {
+  Future<dynamic> post(String endPoint, {Map<String, dynamic>? data}) async {
     try {
-      final response = await _dioFactory.dio.post(endPoint, data: body);
-      return response.data; // ✅ أهم سطر
+      final response = await _dioFactory.dio.post(endPoint, data: data);
+      return response.data;
     } on DioException catch (e) {
       throw ApiExceptions.handleError(e);
     }
   }
+
   /// put
-  Future<dynamic> put(String endPoint, Map<String, dynamic> body) async {
+  Future<dynamic> put(String endPoint, {Map<String, dynamic>? data}) async {
     try {
-      final response = await _dioFactory.dio.put(endPoint, data: body);
+      final response = await _dioFactory.dio.put(endPoint, data: data);
       return response.data;
     } on DioException catch (e) {
       throw ApiExceptions.handleError(e);

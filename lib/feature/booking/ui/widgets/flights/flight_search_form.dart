@@ -41,18 +41,20 @@ class FlightSearchForm extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: _buildTextField(
+                      child: _buildAutocompleteField(
                         label: 'From',
                         icon: Icons.flight_takeoff,
+                        initialValue: controller.flightFrom.value,
                         onChanged: (value) =>
                             controller.flightFrom.value = value,
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: _buildTextField(
+                      child: _buildAutocompleteField(
                         label: 'To',
                         icon: Icons.flight_land,
+                        initialValue: controller.flightTo.value,
                         onChanged: (value) => controller.flightTo.value = value,
                       ),
                     ),
@@ -215,10 +217,30 @@ class FlightSearchForm extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField({
+  static const List<String> _cities = [
+    'Cairo',
+    'Giza',
+    'Alexandria',
+    'Luxor',
+    'Aswan',
+    'Sharm El Sheikh',
+    'Hurghada',
+    'Dahab',
+    'Marsa Alam',
+    'London',
+    'Paris',
+    'New York',
+    'Dubai',
+    'Riyadh',
+    'Istanbul',
+    'Rome',
+  ];
+
+  Widget _buildAutocompleteField({
     required String label,
     required IconData icon,
     required Function(String) onChanged,
+    required String initialValue,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,34 +254,86 @@ class FlightSearchForm extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        TextField(
-          onChanged: onChanged,
-          style: const TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-            prefixIcon: Icon(icon, color: AppColor.primaryColor, size: 20),
-            filled: true,
-            fillColor: Colors.white.withValues(alpha: 0.05),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: Colors.white.withValues(alpha: 0.1),
+        Autocomplete<String>(
+          initialValue: TextEditingValue(text: initialValue),
+          optionsBuilder: (TextEditingValue textEditingValue) {
+            if (textEditingValue.text == '') {
+              return const Iterable<String>.empty();
+            }
+            return _cities.where((String option) {
+              return option
+                  .toLowerCase()
+                  .contains(textEditingValue.text.toLowerCase());
+            });
+          },
+          onSelected: (String selection) {
+            onChanged(selection);
+          },
+          fieldViewBuilder: (context, textEditingController, focusNode,
+              onFieldSubmitted) {
+            return TextField(
+              controller: textEditingController,
+              focusNode: focusNode,
+              onChanged: onChanged,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                prefixIcon: Icon(icon, color: AppColor.primaryColor, size: 20),
+                filled: true,
+                fillColor: Colors.white.withValues(alpha: 0.05),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Colors.white.withValues(alpha: 0.1),
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Colors.white.withValues(alpha: 0.1),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: AppColor.primaryColor),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
               ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: Colors.white.withValues(alpha: 0.1),
+            );
+          },
+          optionsViewBuilder: (context, onSelected, options) {
+            return Align(
+              alignment: Alignment.topLeft,
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  width: (MediaQuery.of(context).size.width - 48) / 2,
+                  margin: const EdgeInsets.only(top: 8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E1E1E),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                  ),
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    itemCount: options.length,
+                    itemBuilder: (context, index) {
+                      final option = options.elementAt(index);
+                      return ListTile(
+                        title: Text(option, style: const TextStyle(color: Colors.white)),
+                        onTap: () {
+                          onSelected(option);
+                        },
+                      );
+                    },
+                  ),
+                ),
               ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColor.primaryColor),
-            ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
-          ),
+            );
+          },
         ),
       ],
     );

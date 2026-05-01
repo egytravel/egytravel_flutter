@@ -29,7 +29,7 @@ class EventCard extends StatelessWidget {
             AspectRatio(
               aspectRatio: 1,
               child: CachedNetworkImage(
-                imageUrl: event.image,
+                imageUrl: event.coverImage,
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(color: Colors.grey[800]),
                 errorWidget: (context, url, error) => Container(
@@ -46,7 +46,7 @@ class EventCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      event.name,
+                      event.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -57,7 +57,7 @@ class EventCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      event.date,
+                      event.startDate,
                       style: TextStyle(
                         color: AppColor.primaryColor,
                         fontSize: 12,

@@ -29,6 +29,57 @@ class FlightModel {
     required this.baggage,
   });
 
+  static double _parseDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    if (value is Map) {
+      if (value.containsKey('amount')) return _parseDouble(value['amount']);
+      if (value.containsKey('value')) return _parseDouble(value['value']);
+      if (value.containsKey('price')) return _parseDouble(value['price']);
+      if (value.containsKey('totalPrice')) return _parseDouble(value['totalPrice']);
+      if (value.containsKey('score')) return _parseDouble(value['score']);
+      if (value.containsKey('rate')) return _parseDouble(value['rate']);
+    }
+    return 0.0;
+  }
+
+  factory FlightModel.fromJson(Map<String, dynamic> json) {
+    return FlightModel(
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      fromCity: json['departureCity'] ?? json['fromCity'] ?? '',
+      toCity: json['arrivalCity'] ?? json['toCity'] ?? '',
+      airlineName: json['airline'] ?? json['airlineName'] ?? '',
+      airlineLogo: json['airlineLogo'] ?? '',
+      departureTime: DateTime.parse(json['departureDate'] ?? json['departureTime'] ?? DateTime.now().toIso8601String()),
+      arrivalTime: DateTime.parse(json['arrivalDate'] ?? json['arrivalTime'] ?? DateTime.now().toIso8601String()),
+      duration: json['duration'] ?? '',
+      price: _parseDouble(json['price'] ?? json['totalPrice']),
+      rating: _parseDouble(json['rating']),
+      flightClass: json['travelClass'] ?? json['flightClass'] ?? 'Economy',
+      flightNumber: json['flightNumber'] ?? '',
+      baggage: json['baggage'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'departureCity': fromCity,
+      'arrivalCity': toCity,
+      'airline': airlineName,
+      'airlineLogo': airlineLogo,
+      'departureDate': departureTime.toIso8601String(),
+      'arrivalDate': arrivalTime.toIso8601String(),
+      'duration': duration,
+      'price': price,
+      'rating': rating,
+      'travelClass': flightClass,
+      'flightNumber': flightNumber,
+      'baggage': baggage,
+    };
+  }
+
   // Mock data generator
   static List<FlightModel> getMockFlights({
     String? from,

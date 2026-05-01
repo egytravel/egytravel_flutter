@@ -12,6 +12,7 @@ class EndPoint {
   static const booking = '/api/booking/';
   static const tripPlanner = '/api/tripPlanner/';
   static const community = '/api/community';
+  static const events = '/api/events';
 
   // ── Community ─────────────────────────────────────────────────────────────
   static const communityFeed = '/api/community/feed';
@@ -36,6 +37,13 @@ class EndPoint {
   // ── Trips ─────────────────────────────────────────────────────────────────
   static const trips = '/api/trips';
   static String tripById(String id) => '/api/trips/$id';
+
+  // ── Flights ───────────────────────────────────────────────────────────────
+  static const flightSearch = '/api/flights/search';
+  static const flightLocations = '/api/flights/locations';
+
+  // ── Hotels ────────────────────────────────────────────────────────────────
+  static const hotelSearch = '/api/hotels/search';
 
   // ── Bookings ──────────────────────────────────────────────────────────────
   static const bookings = '/api/bookings';

@@ -71,6 +71,7 @@ class HomeScreenBody extends StatelessWidget {
                   PopularPlacesSection(controller: controller),
                   DestinationsSection(controller: controller),
                   const EventsSection(),
+                  const SizedBox(height: 70),
                 ],
               ),
             ),

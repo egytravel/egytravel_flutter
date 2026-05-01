@@ -20,30 +20,37 @@ class ApiExceptions {
           switch (status) {
             case 400:
               return ApiError(
-                message: data['message'] ?? data['error'] ?? 'Bad Request',
+                message: _extractMessage(data),
                 statusCode: 400,
               );
             case 401:
+              final msg = _extractMessage(data);
               return ApiError(
-                message: 'Unauthorized - please login again',
+                message: msg != 'Something went wrong' ? msg : 'Unauthorized - please login again',
                 statusCode: 401,
               );
             case 403:
-              return ApiError(message: 'Forbidden access', statusCode: 403);
+              final msg = _extractMessage(data);
+              return ApiError(
+                message: msg != 'Something went wrong' ? msg : 'Forbidden access',
+                statusCode: 403,
+              );
             case 404:
-              return ApiError(message: 'Resource not found', statusCode: 404);
+              final msg = _extractMessage(data);
+              return ApiError(
+                message: msg != 'Something went wrong' ? msg : 'Resource not found',
+                statusCode: 404,
+              );
             case 422:
               return ApiError(
-                message: data['errors'] != null
-                    ? data['errors'].values.first[0].toString()
-                    : data['message'] ?? 'Validation error',
+                message: _extractMessage(data),
                 statusCode: 422,
               );
             case 500:
               return ApiError(message: 'Internal server error', statusCode: 500);
             default:
               return ApiError(
-                message: data['message'] ?? 'Server error: $status',
+                message: _extractMessage(data) ?? 'Server error: $status',
                 statusCode: status ?? -1,
               );
           }
@@ -68,5 +75,44 @@ class ApiExceptions {
       default:
         return ApiError(message: 'Something went wrong, please try again', statusCode: -1);
     }
+  }
+
+  static String _extractMessage(dynamic data) {
+    if (data == null) return 'Something went wrong';
+    if (data is String) return data;
+    if (data is Map) {
+      // 1. Check for 'details' list (specific validation errors like password requirements)
+      if (data['details'] != null &&
+          data['details'] is List &&
+          (data['details'] as List).isNotEmpty) {
+        final firstDetail = (data['details'] as List).first;
+        if (firstDetail is Map && firstDetail['msg'] != null) {
+          return firstDetail['msg'].toString();
+        }
+      }
+
+      // 2. Check for 'error' object (nested structure)
+      if (data['error'] != null) {
+        return _extractMessage(data['error']);
+      }
+
+      // 3. Check for 'message' key
+      if (data['message'] != null) {
+        return _extractMessage(data['message']);
+      }
+
+      // 4. Check for 'errors' key (common in some validation responses)
+      if (data['errors'] != null && data['errors'] is Map) {
+        final errors = data['errors'] as Map;
+        if (errors.isNotEmpty) {
+          final firstError = errors.values.first;
+          if (firstError is List && firstError.isNotEmpty) {
+            return firstError.first.toString();
+          }
+          return firstError.toString();
+        }
+      }
+    }
+    return data.toString();
   }
 }

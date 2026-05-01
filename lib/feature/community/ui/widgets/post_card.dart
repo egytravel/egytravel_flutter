@@ -118,6 +118,15 @@ class PostCard extends StatelessWidget {
                                 File(post.mediaUrl!),
                                 fit: BoxFit.cover,
                                 width: double.infinity,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: Colors.white10,
+                                    width: double.infinity,
+                                    child: const Center(
+                                      child: Icon(Icons.image_not_supported, color: Colors.white24, size: 40),
+                                    ),
+                                  );
+                                },
                               ),
                         Positioned(
                           bottom: 0,
@@ -265,9 +274,72 @@ class PostCard extends StatelessWidget {
                 style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            const Expanded(
-              child: Center(
-                child: Text('Loading comments...', style: TextStyle(color: Colors.white38)),
+            Expanded(
+              child: Builder(
+                builder: (context) {
+                  Future.microtask(() => controller.fetchComments(post.id));
+                  return Obx(() {
+                    final comments = controller.postComments[post.id] ?? [];
+                    final isLoading = controller.isCommentsLoading[post.id] ?? true;
+
+                    if (isLoading && comments.isEmpty) {
+                      return const Center(
+                        child: CircularProgressIndicator(color: AppColor.primary),
+                      );
+                    }
+
+                    if (comments.isEmpty) {
+                      return const Center(
+                        child: Text('No comments yet. Be the first to comment!',
+                            style: TextStyle(color: Colors.white38)),
+                      );
+                    }
+
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemCount: comments.length,
+                      itemBuilder: (context, index) {
+                        final comment = comments[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CircleAvatar(
+                                radius: 16,
+                                backgroundColor: Colors.white10,
+                                backgroundImage: comment.user.profilePhotoUrl != null
+                                    ? NetworkImage(comment.user.profilePhotoUrl!)
+                                    : null,
+                                child: comment.user.profilePhotoUrl == null
+                                    ? const Icon(Icons.person, size: 16, color: Colors.white38)
+                                    : null,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      comment.user.name,
+                                      style: const TextStyle(
+                                          color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      comment.content,
+                                      style: const TextStyle(color: Colors.white70, fontSize: 14),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  });
+                },
               ),
             ),
             Container(
@@ -298,7 +370,7 @@ class PostCard extends StatelessWidget {
                       if (commentController.text.isNotEmpty) {
                         controller.addComment(post.id, commentController.text);
                         commentController.clear();
-                        Navigator.pop(context);
+                        // We don't pop anymore so they can see the comment
                       }
                     },
                     icon: const Icon(CupertinoIcons.arrow_up_circle_fill, color: AppColor.primary, size: 32),

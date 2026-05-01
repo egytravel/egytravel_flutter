@@ -21,7 +21,15 @@ class ExploreScreen extends GetView<ExploreController> {
     return Scaffold(
       backgroundColor: const Color(0xFF0A1628), // Guarantee opaque background
       extendBodyBehindAppBar: true,
-      appBar: ExploreAppBar(onMapPressed: controller.openMapView),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: Obx(
+          () => ExploreAppBar(
+            onMapPressed: controller.openMapView,
+            isScrolled: controller.isScrolled.value,
+          ),
+        ),
+      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -99,20 +107,23 @@ class ExploreScreen extends GetView<ExploreController> {
       color: Colors.white,
       backgroundColor: const Color(0xFF0A1628),
       child: SingleChildScrollView(
+        controller: controller.scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // =============> Explore Places Section
-            const SizedBox(height: 10),
+            const SizedBox(height: 50), // Starting position for content
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 "Explore Places",
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
+                  fontFamily: 'Poppins',
+                  letterSpacing: -0.5,
                 ),
               ),
             ),

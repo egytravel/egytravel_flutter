@@ -14,7 +14,7 @@ class AuthRepo {
     required String password,
   }) async {
     try {
-      final response = await _apiService.post(EndPoint.login, {
+      final response = await _apiService.post(EndPoint.login, data: {
         'email': email,
         'password': password,
       });
@@ -39,7 +39,7 @@ class AuthRepo {
     required String password,
   }) async {
     try {
-      final response = await _apiService.post(EndPoint.register, {
+      final response = await _apiService.post(EndPoint.register, data: {
         'name': name,
         'email': email,
         'phone': phone,
