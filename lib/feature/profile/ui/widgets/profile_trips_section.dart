@@ -93,7 +93,7 @@ class ProfileTripsSection extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'No trips yet',
+              'Not have trip',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -102,7 +102,7 @@ class ProfileTripsSection extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              'Start planning your next adventure!',
+              'Add first trip and start your journey!',
               style: TextStyle(
                 fontSize: 13,
                 color: Colors.white.withOpacity(0.5),

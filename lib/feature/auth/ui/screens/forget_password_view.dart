@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/auth/logic/controller/forget_password_controller.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/auth_background.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/forget_password/contact_method_card.dart';
@@ -76,7 +77,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                 Obx(() => ContactMethodCard(
                   icon: Icons.email_outlined,
                   title: 'Send OTP via Email',
-                  subtitle: 'fadi.atef@example.com',
+                  subtitle: 'email@gmail.com',
                   isSelected: controller.selectedMethod.value == 'email',
                   onTap: controller.selectEmail,
                   controller: controller.emailController,
@@ -88,7 +89,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: controller.sendOTP,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6C5CE7),
+                      backgroundColor: AppColor.primary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),

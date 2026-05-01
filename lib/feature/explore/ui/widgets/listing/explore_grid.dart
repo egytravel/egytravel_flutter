@@ -21,10 +21,16 @@ class ExploreGrid extends StatelessWidget {
       ),
       itemCount: items.length,
       itemBuilder: (context, index) {
+        final item = items[index];
+        final String heroTag = 'grid_${item.id}';
         return ExploreCard(
-          item: items[index],
+          item: item,
+          heroTag: heroTag,
           onTap: () {
-            Get.toNamed(Routes.exploreDetails, arguments: items[index]);
+            Get.toNamed(Routes.exploreDetails, arguments: {
+              'item': item,
+              'heroTag': heroTag,
+            });
           },
         );
       },

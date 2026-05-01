@@ -1,8 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:egytravel_app/feature/profile/data/model/profile_model.dart';
 import 'package:egytravel_app/generated/assets.dart';
 import 'package:flutter/material.dart';
 
 class ProfileHeader extends StatelessWidget {
-  const ProfileHeader({super.key});
+  final ProfileModel? profile;
+  const ProfileHeader({super.key, this.profile});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +34,7 @@ class ProfileHeader extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Profile Image with Online Badge
+              // Profile Image
               Stack(
                 children: [
                   Container(
@@ -47,11 +50,19 @@ class ProfileHeader extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: const CircleAvatar(
+                    child: CircleAvatar(
                       radius: 55,
-                      backgroundImage: AssetImage(Assets.iconsProfile),
+                      backgroundColor: const Color(0xFF1E293B),
+                      backgroundImage: (profile?.profilePhotoUrl != null &&
+                              profile!.profilePhotoUrl!.isNotEmpty &&
+                              profile!.profilePhotoUrl!.startsWith('http'))
+                          ? CachedNetworkImageProvider(
+                              profile!.profilePhotoUrl!)
+                          : const AssetImage(Assets.iconsProfile)
+                              as ImageProvider,
                     ),
                   ),
+                  // Online badge
                   Positioned(
                     bottom: 8,
                     right: 8,
@@ -80,9 +91,10 @@ class ProfileHeader extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 6),
-              const Text(
-                'John Traveler',
-                style: TextStyle(
+              // Name
+              Text(
+                profile?.name ?? '...',
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -90,11 +102,10 @@ class ProfileHeader extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
+              // Email
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(20),
@@ -103,26 +114,25 @@ class ProfileHeader extends StatelessWidget {
                     width: 1,
                   ),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.email_outlined, color: Colors.white, size: 14),
-                    SizedBox(width: 6),
+                    const Icon(Icons.email_outlined,
+                        color: Colors.white, size: 14),
+                    const SizedBox(width: 6),
                     Text(
-                      'user@example.com',
-                      style: TextStyle(color: Colors.white, fontSize: 14),
+                      profile?.email ?? '...',
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 16),
-              // Stats Row with glassmorphism
+              // Stats row
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24),
                 padding: const EdgeInsets.symmetric(
-                  vertical: 4,
-                  horizontal: 20,
-                ),
+                    vertical: 4, horizontal: 20),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),

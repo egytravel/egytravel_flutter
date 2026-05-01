@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/auth/ui/screens/forget_password_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -24,7 +25,7 @@ class RememberMeRow extends StatelessWidget {
               child: Checkbox(
                 value: value,
                 onChanged: onChanged,
-                activeColor: const Color(0xFF6C5CE7),
+                activeColor: AppColor.primary,
                 checkColor: Colors.white,
               ),
             ),
@@ -37,7 +38,7 @@ class RememberMeRow extends StatelessWidget {
           },
           child: const Text(
             'Forgot Password?',
-            style: TextStyle(color: Color(0xFF6C5CE7), fontSize: 14),
+            style: TextStyle(color: AppColor.primary, fontSize: 14),
           ),
         ),
       ],

@@ -19,7 +19,7 @@ class AuthRepo {
         'password': password,
       });
 
-      final user = UserModel.fromJson(response.data['data']);
+      final user = UserModel.fromJson(response['data']);
       if (user.token != null && user.token!.isNotEmpty) {
         SharedPreferencesHelper.saveToken(user.token!);
       }
@@ -47,7 +47,7 @@ class AuthRepo {
         'role': 'user',
       });
 
-      final user = UserModel.fromJson(response.data['data']);
+      final user = UserModel.fromJson(response['data']);
       if (user.token != null && user.token!.isNotEmpty) {
         SharedPreferencesHelper.saveToken(user.token!);
       }
