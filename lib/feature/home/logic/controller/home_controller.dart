@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:egytravel_app/feature/home/data/model/destination_model.dart';
+import 'package:egytravel_app/feature/home/data/model/event_model.dart';
 import 'package:egytravel_app/feature/home/data/model/place_model.dart';
 import 'package:egytravel_app/feature/home/data/repo/home_repo.dart';
 import 'package:egytravel_app/feature/home/ui/widgets/filter_bottom_sheet.dart';
@@ -30,11 +31,13 @@ class HomeController extends GetxController {
   final RxList<Place> places = <Place>[].obs;
   final RxList<Destination> destinations = <Destination>[].obs;
   final RxList<Place> featuredPlaces = <Place>[].obs;
+  final RxList<EventModel> events = <EventModel>[].obs;
 
   @override
   void onInit() {
     super.onInit();
     getHomeData();
+    getEvents();
     scrollController.addListener(_onScroll);
   }
 
@@ -51,8 +54,52 @@ class HomeController extends GetxController {
       
       _startAutoScroll();
     } catch (e) {
+      print('HOME DATA ERROR: $e');
       isError.value = true;
       errorMessage.value = e.toString();
+    } finally {
+      // If we got home data, we can at least show that
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> getEvents() async {
+    try {
+      final response = await _homeRepo.getEvents();
+      print('FETCHED EVENTS: ${response.length}');
+      if (response.isEmpty) {
+        // Mock data for testing if API is empty
+        events.assignAll([
+          EventModel(
+            id: '1',
+            title: 'Cairo Jazz Festival',
+            description: 'Annual music festival in the heart of Cairo.',
+            category: 'Music',
+            location: 'Cairo Opera House',
+            city: 'Cairo',
+            startDate: '2024-11-15',
+            coverImage: 'https://images.unsplash.com/photo-1514525253344-f814d0743b1a',
+            images: [],
+            tags: ['Music', 'Culture'],
+          ),
+          EventModel(
+            id: '2',
+            title: 'Luxor Balloon Festival',
+            description: 'See the temples from above in a hot air balloon.',
+            category: 'Adventure',
+            location: 'Valley of the Kings',
+            city: 'Luxor',
+            startDate: '2024-12-01',
+            coverImage: 'https://images.unsplash.com/photo-1507501336603-6e31db2be093',
+            images: [],
+            tags: ['Adventure', 'View'],
+          ),
+        ]);
+      } else {
+        events.assignAll(response);
+      }
+    } catch (e) {
+      print('EVENTS ERROR: $e');
     } finally {
       isLoading.value = false;
     }

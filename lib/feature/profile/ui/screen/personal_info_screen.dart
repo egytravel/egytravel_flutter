@@ -73,11 +73,41 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   _buildLabel('Phone Number'),
                   _buildTextField(phoneController, Icons.phone_outlined),
                   const SizedBox(height: 20),
-                  _buildLabel('Nationality'),
+                  _buildLabel('Nationality (Optional)'),
                   _buildTextField(nationalityController, Icons.public_rounded),
                   const SizedBox(height: 20),
-                  _buildLabel('Date of Birth'),
-                  _buildTextField(dobController, Icons.calendar_today_outlined),
+                  _buildLabel('Date of Birth (Optional)'),
+                  _buildTextField(
+                    dobController,
+                    Icons.calendar_today_outlined,
+                    readOnly: true,
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now().subtract(const Duration(days: 6570)),
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime.now(),
+                        builder: (context, child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: const ColorScheme.dark(
+                                primary: Color(0xFF6366F1),
+                                onPrimary: Colors.white,
+                                surface: Color(0xFF0D1B2E),
+                                onSurface: Colors.white,
+                              ),
+                            ),
+                            child: child!,
+                          );
+                        },
+                      );
+                      if (pickedDate != null) {
+                        String formattedDate =
+                            "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+                        dobController.text = formattedDate;
+                      }
+                    },
+                  ),
                   const SizedBox(height: 40),
                   SizedBox(
                     width: double.infinity,
@@ -134,7 +164,8 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, IconData icon) {
+  Widget _buildTextField(TextEditingController controller, IconData icon,
+      {bool readOnly = false, VoidCallback? onTap}) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
@@ -143,6 +174,8 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
       ),
       child: TextField(
         controller: controller,
+        readOnly: readOnly,
+        onTap: onTap,
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           prefixIcon: Icon(icon, color: Colors.white38, size: 20),

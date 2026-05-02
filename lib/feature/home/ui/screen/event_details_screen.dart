@@ -32,7 +32,7 @@ class EventDetailsScreen extends StatelessWidget {
               height: 350,
               width: double.infinity,
               child: CachedNetworkImage(
-                imageUrl: event.image,
+                imageUrl: event.coverImage,
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(color: Colors.grey[800]),
                 errorWidget: (context, url, error) => Container(
@@ -51,7 +51,7 @@ class EventDetailsScreen extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          event.name,
+                          event.title,
                           style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -59,21 +59,38 @@ class EventDetailsScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppColor.primaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          '\$${event.price}',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColor.primaryColor,
+                      if (event.isFree)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Text(
+                            'Free',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
+                          ),
+                        )
+                      else if (event.price != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: AppColor.primaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            event.price!.contains('\$') ? event.price! : '\$${event.price}',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppColor.primaryColor,
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -82,7 +99,7 @@ class EventDetailsScreen extends StatelessWidget {
                       Icon(Icons.calendar_today_rounded, size: 20, color: AppColor.primaryColor),
                       const SizedBox(width: 8),
                       Text(
-                        event.date,
+                        event.startDate,
                         style: const TextStyle(fontSize: 16, color: Colors.white70),
                       ),
                     ],
@@ -93,7 +110,7 @@ class EventDetailsScreen extends StatelessWidget {
                       Icon(Icons.location_on_rounded, size: 20, color: AppColor.primaryColor),
                       const SizedBox(width: 8),
                       Text(
-                        event.location,
+                        '${event.location}, ${event.city}',
                         style: const TextStyle(fontSize: 16, color: Colors.white70),
                       ),
                     ],

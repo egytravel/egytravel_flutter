@@ -1,6 +1,5 @@
+import 'package:egytravel_app/core/routes/app_routes.dart';
 import 'package:egytravel_app/core/theme/app_color.dart';
-import 'package:egytravel_app/feature/splash/logic/binding/splash_binding.dart';
-import 'package:egytravel_app/feature/splash/ui/screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -78,7 +77,7 @@ class PasswordUpdateSuccessBottomSheet extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  Get.to(() => const SplashScreen(), binding: SplashBinding());
+                  Get.offAllNamed(Routes.loginScreen);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColor.primary,

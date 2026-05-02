@@ -53,13 +53,17 @@ class DestinationCard extends StatelessWidget {
               Container(
                 color: const Color(0xFFE2E8F0),
                 child: Skeleton.replace(
-                  child: Image.network(
-                    destination.image,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => const Center(
-                      child: Icon(Icons.image_not_supported, color: Colors.white24, size: 48),
-                    ),
-                  ),
+                  child: destination.image.startsWith('http')
+                      ? Image.network(
+                          destination.image,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => const Center(
+                            child: Icon(Icons.place_rounded, color: Colors.white24, size: 48),
+                          ),
+                        )
+                      : const Center(
+                          child: Icon(Icons.place_rounded, color: Colors.white24, size: 48),
+                        ),
                 ),
               ),
               // Gradient overlay

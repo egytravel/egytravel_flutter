@@ -17,6 +17,42 @@ class RoomModel {
     required this.maxGuests,
   });
 
+  static double _parseDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    if (value is Map) {
+      if (value.containsKey('amount')) return _parseDouble(value['amount']);
+      if (value.containsKey('value')) return _parseDouble(value['value']);
+      if (value.containsKey('price')) return _parseDouble(value['price']);
+    }
+    return 0.0;
+  }
+
+  factory RoomModel.fromJson(Map<String, dynamic> json) {
+    return RoomModel(
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      roomType: json['type'] ?? json['roomType'] ?? '',
+      imageUrl: json['imageUrl'] ?? '',
+      pricePerNight: _parseDouble(json['price'] ?? json['pricePerNight']),
+      features: (json['features'] as List? ?? []).cast<String>(),
+      isAvailable: json['isAvailable'] ?? true,
+      maxGuests: json['maxGuests'] ?? 2,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'type': roomType,
+      'imageUrl': imageUrl,
+      'price': pricePerNight,
+      'features': features,
+      'isAvailable': isAvailable,
+      'maxGuests': maxGuests,
+    };
+  }
+
   static List<RoomModel> getMockRooms() {
     return [
       RoomModel(

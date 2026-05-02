@@ -84,10 +84,12 @@ class ForgotPasswordScreen extends StatelessWidget {
                   keyboardType: TextInputType.emailAddress,
                 )),
                 const SizedBox(height: 40),
-                SizedBox(
+                Obx(() => SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: controller.sendOTP,
+                    onPressed: controller.isLoading.value 
+                        ? null 
+                        : () => controller.sendOTP(context),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColor.primary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -96,16 +98,25 @@ class ForgotPasswordScreen extends StatelessWidget {
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Send OTP',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: controller.isLoading.value
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text(
+                            'Send OTP',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
-                ),
+                )),
                 const SizedBox(height: 40),
               ],
             ),

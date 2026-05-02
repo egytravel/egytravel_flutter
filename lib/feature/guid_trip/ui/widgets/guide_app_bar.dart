@@ -1,5 +1,7 @@
 import 'package:egytravel_app/core/widgets/custom_back_button.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:egytravel_app/feature/guid_trip/logic/controller/guide_trip_controller.dart';
 
 class GuideAppBar extends StatelessWidget {
   final String destination;
@@ -52,7 +54,7 @@ class GuideAppBar extends StatelessWidget {
             ),
             child: IconButton(
               icon: const Icon(Icons.share, color: Colors.white),
-              onPressed: () {},
+              onPressed: () => Get.find<GuideTripController>().shareTrip(),
             ),
           ),
         ],

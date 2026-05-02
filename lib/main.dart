@@ -12,7 +12,7 @@ void main() async {
   await SharedPreferencesHelper.init();
   runApp(
     DevicePreview(
-      enabled: false,
+      // enabled: false,
       builder: (context) => const BetterFeedback(
         child: MyApp(),
       ),

@@ -136,15 +136,9 @@ class GuideBottomActionBar extends StatelessWidget {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Guide confirmed successfully! 🎉'),
-                  backgroundColor: Colors.green,
-                  duration: Duration(seconds: 3),
-                ),
-              );
+              await controller.saveTrip();
               // Navigate to booking or next screen
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.deepOrange),

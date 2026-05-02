@@ -14,7 +14,7 @@ class AuthRepo {
     required String password,
   }) async {
     try {
-      final response = await _apiService.post(EndPoint.login, {
+      final response = await _apiService.post(EndPoint.login, data: {
         'email': email,
         'password': password,
       });
@@ -39,7 +39,7 @@ class AuthRepo {
     required String password,
   }) async {
     try {
-      final response = await _apiService.post(EndPoint.register, {
+      final response = await _apiService.post(EndPoint.register, data: {
         'name': name,
         'email': email,
         'phone': phone,
@@ -52,6 +52,38 @@ class AuthRepo {
         SharedPreferencesHelper.saveToken(user.token!);
       }
       return user;
+    } on ApiError catch (_) {
+      rethrow;
+    } catch (e) {
+      throw ApiError(message: e.toString());
+    }
+  }
+
+  ///Forgot Password
+  Future<void> forgotPassword({required String email}) async {
+    try {
+      await _apiService.post(EndPoint.forgotPassword, data: {
+        'email': email.trim(),
+      });
+    } on ApiError catch (_) {
+      rethrow;
+    } catch (e) {
+      throw ApiError(message: e.toString());
+    }
+  }
+
+  ///Reset Password (Items 7 in Postman)
+  Future<void> resetPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
+  }) async {
+    try {
+      await _apiService.post(EndPoint.resetPassword, data: {
+        'email': email.trim(),
+        'otp': otp,
+        'newPassword': newPassword,
+      });
     } on ApiError catch (_) {
       rethrow;
     } catch (e) {

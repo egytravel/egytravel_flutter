@@ -1,5 +1,5 @@
 class CommunityPost {
-  final int id;
+  final String id;
   final String description;
   final String? mediaUrl;
   final String? location;
@@ -23,7 +23,7 @@ class CommunityPost {
 
   factory CommunityPost.fromJson(Map<String, dynamic> json) {
     // Handle both old and new API keys
-    final postId = json['postId'] ?? json['post_id'] ?? 0;
+    final postId = json['postId'] ?? json['post_id'] ?? '';
     final caption = json['caption'] ?? json['description'] ?? '';
     
     // Handle images array or single media_url
@@ -38,7 +38,7 @@ class CommunityPost {
     final authorData = json['author'] ?? json['user'] ?? {};
 
     return CommunityPost(
-      id: postId is String ? int.parse(postId) : postId,
+      id: postId.toString(),
       description: caption,
       mediaUrl: imageUrl,
       location: json['location'] ?? json['place'],
@@ -51,7 +51,7 @@ class CommunityPost {
   }
 
   CommunityPost copyWith({
-    int? id,
+    String? id,
     String? description,
     String? mediaUrl,
     String? location,
@@ -76,7 +76,7 @@ class CommunityPost {
 }
 
 class PostUser {
-  final int id;
+  final dynamic id;
   final String name;
   final String? profilePhotoUrl;
 
@@ -96,7 +96,7 @@ class PostUser {
 }
 
 class CommunityComment {
-  final int id;
+  final String id;
   final String content;
   final DateTime createdAt;
   final PostUser user;
@@ -110,8 +110,8 @@ class CommunityComment {
 
   factory CommunityComment.fromJson(Map<String, dynamic> json) {
     return CommunityComment(
-      id: json['commentId'] ?? json['comment_id'] ?? 0,
-      content: json['content'] ?? json['text'] ?? '',
+      id: (json['commentId'] ?? json['comment_id'] ?? '').toString(),
+      content: json['content'] ?? json['text'] ?? json['comment'] ?? '',
       createdAt: DateTime.parse(json['createdAt'] ?? json['created_at'] ?? DateTime.now().toIso8601String()),
       user: PostUser.fromJson(json['author'] ?? json['user'] ?? {}),
     );

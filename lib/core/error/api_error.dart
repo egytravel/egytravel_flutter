@@ -9,4 +9,7 @@ class ApiError {
       statusCode: json['statusCode'],
     );
   }
+
+  @override
+  String toString() => message;
 }

@@ -3,7 +3,7 @@ import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'package:egytravel_app/feature/ai_trip_planner/logic/controller/ai_trip_controller.dart';
 import 'package:egytravel_app/feature/ai_trip_planner/ui/screens/ai_trip_planner_screen.dart';
-import 'package:egytravel_app/feature/guid_trip/ui/screens/guid_trip_screen.dart';
+import 'package:egytravel_app/feature/guid_trip/ui/screens/plan_a_trip_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -71,8 +71,8 @@ class _CustomFloatingMenuState extends State<CustomFloatingMenu>
                   child: Row(
                     children: [
                       _buildMenuButton(
-                        icon: Icons.public,
-                        text: "Trip plan",
+                        icon: Icons.smart_toy               ,
+                        text: "AI Plan",
                         onTap: () {
                           Get.toNamed(Routes.tripPlanner);
                         },
@@ -81,11 +81,10 @@ class _CustomFloatingMenuState extends State<CustomFloatingMenu>
                       const SizedBox(width: 16),
 
                       _buildMenuButton(
-                        icon: Icons.explore,
-                        text: "Guide",
+                        icon: Icons.travel_explore   ,
+                        text: "Plan a trip",
                         onTap: () {
-                          Get.to(() => const GuideTripScreen());
-                          showTopGlassSnackBar(context, 'Navigate to Guide screen', success: true);
+                          Get.to(() => const PlanATripScreen());
                         },
                       ),
                     ],

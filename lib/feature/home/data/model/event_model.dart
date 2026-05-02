@@ -1,67 +1,83 @@
+import 'package:egytravel_app/core/utils/url_cleaner.dart';
+
 class EventModel {
   final String id;
-  final String name;
-  final String date;
-  final String location;
-  final String image;
+  final String title;
   final String description;
-  final double price;
+  final String? shortDescription;
+  final String category;
+  final String location;
+  final String city;
+  final String startDate;
+  final String? endDate;
+  final String coverImage;
+  final List<String> images;
+  final String? price;
+  final bool isFree;
+  final bool isFeatured;
+  final String? ticketUrl;
+  final List<String> tags;
 
   EventModel({
     required this.id,
-    required this.name,
-    required this.date,
-    required this.location,
-    required this.image,
+    required this.title,
     required this.description,
-    required this.price,
+    this.shortDescription,
+    required this.category,
+    required this.location,
+    required this.city,
+    required this.startDate,
+    this.endDate,
+    required this.coverImage,
+    required this.images,
+    this.price,
+    this.isFree = false,
+    this.isFeatured = false,
+    this.ticketUrl,
+    required this.tags,
   });
 
-  static List<EventModel> get dummyEvents => [
-        EventModel(
-          id: '1',
-          name: 'Sound and Light Show',
-          date: 'Tonight, 8:00 PM',
-          location: 'Giza Pyramids',
-          image: 'https://images.unsplash.com/photo-1539650116574-8efeb43e2b50?auto=format&fit=crop&q=80&w=600',
-          description: 'Experience the magic of the Pyramids of Giza illuminated at night while listening to the history of ancient Egypt.',
-          price: 25.0,
-        ),
-        EventModel(
-          id: '2',
-          name: 'Cairo Jazz Festival',
-          date: 'Oct 15, 6:00 PM',
-          location: 'Cairo Opera House',
-          image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=600',
-          description: 'A spectacular evening with international jazz bands performing live.',
-          price: 40.0,
-        ),
-        EventModel(
-          id: '3',
-          name: 'Hot Air Balloon Ride',
-          date: 'Tomorrow, 5:00 AM',
-          location: 'Luxor',
-          image: 'https://images.unsplash.com/photo-1563299710-1c390cb318ff?auto=format&fit=crop&q=80&w=600',
-          description: 'Watch the sunrise over the Valley of the Kings from a hot air balloon.',
-          price: 80.0,
-        ),
-        EventModel(
-          id: '4',
-          name: 'Nile Cruise Dinner',
-          date: 'Everyday, 7:00 PM',
-          location: 'Marina Cairo',
-          image: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&q=80&w=600',
-          description: 'Enjoy a luxurious dinner on a cruise touring the majestic Nile river with traditional performances.',
-          price: 55.0,
-        ),
-        EventModel(
-            id: '5',
-            name: 'Sun Festival at Abu Simbel',
-            date: 'Oct 22, 6:00 AM',
-            location: 'Aswan',
-            image: 'https://images.unsplash.com/photo-1572252009286-268acec5b882?auto=format&fit=crop&q=80&w=600',
-            description: 'Witness the rare alignment of the sun illuminating the inner sanctuary of the Abu Simbel Temple.',
-            price: 70.0
-        ),
-      ];
+  factory EventModel.fromJson(Map<String, dynamic> json) {
+    return EventModel(
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      title: json['title'] ?? json['name'] ?? '',
+      description: json['description'] ?? '',
+      shortDescription: json['shortDescription'],
+      category: json['category'] ?? '',
+      location: json['location'] ?? '',
+      city: json['city'] ?? '',
+      startDate: json['startDate'] ?? json['date'] ?? '',
+      endDate: json['endDate'],
+      coverImage: UrlCleaner.clean(json['coverImage'] ?? json['image'] ?? ''),
+      images: UrlCleaner.cleanList((json['images'] as List? ?? []).cast<String>()),
+      price: json['price']?.toString(),
+      isFree: json['isFree'] ?? false,
+      isFeatured: json['isFeatured'] ?? false,
+      ticketUrl: json['ticketUrl'],
+      tags: json['tags'] is String
+          ? (json['tags'] as String).split(',').map((e) => e.trim()).toList()
+          : (json['tags'] as List? ?? []).cast<String>(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'shortDescription': shortDescription,
+      'category': category,
+      'location': location,
+      'city': city,
+      'startDate': startDate,
+      'endDate': endDate,
+      'coverImage': coverImage,
+      'images': images,
+      'price': price,
+      'isFree': isFree,
+      'isFeatured': isFeatured,
+      'ticketUrl': ticketUrl,
+      'tags': tags,
+    };
+  }
 }

@@ -95,6 +95,9 @@ class ExploreListingScreen extends StatelessWidget {
         case ExploreItemType.flight:
           title = "Flights";
           break;
+        case ExploreItemType.event:
+          title = "Events";
+          break;
       }
     }
     if (category != null) {

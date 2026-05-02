@@ -10,12 +10,14 @@ class CommunityRepo {
     final response = await _api.get('${EndPoint.communityFeed}?page=$page&limit=$limit');
     
     // The API returns { "success": true, "data": [...] }
-    if (response is Map<String, dynamic> && response['data'] is List) {
-      return (response['data'] as List)
-          .map((p) => CommunityPost.fromJson(p))
-          .toList();
+    List data = [];
+    if (response is List) {
+      data = response;
+    } else if (response is Map<String, dynamic> && response['data'] is List) {
+      data = response['data'];
     }
-    return [];
+
+    return data.map((p) => CommunityPost.fromJson(p)).toList();
   }
 
   // ── CREATE Post ──────────────────────────────────────────────────────────
@@ -24,7 +26,7 @@ class CommunityRepo {
     String? mediaUrl,
     String? location,
   }) async {
-    final response = await _api.post(EndPoint.communityPosts, {
+    final response = await _api.post(EndPoint.communityPosts, data: {
       'caption': description,
       if (mediaUrl != null) 'images': [mediaUrl],
       if (location != null) 'location': location,
@@ -48,7 +50,7 @@ class CommunityRepo {
 
   // ── TOGGLE Like ──────────────────────────────────────────────────────────
   Future<Map<String, dynamic>> toggleLike(String id) async {
-    final response = await _api.post(EndPoint.communityPostLikes(id), {});
+    final response = await _api.post(EndPoint.communityPostLikes(id), data: {});
     return _extractData(response);
   }
 
@@ -66,8 +68,8 @@ class CommunityRepo {
 
   // ── ADD Comment ──────────────────────────────────────────────────────────
   Future<CommunityComment> addComment(String postId, String content) async {
-    final response = await _api.post(EndPoint.communityPostComments(postId), {
-      'content': content,
+    final response = await _api.post(EndPoint.communityPostComments(postId), data: {
+      'comment': content,
     });
     final data = _extractData(response);
     return CommunityComment.fromJson(data['comment'] ?? data);

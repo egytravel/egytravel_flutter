@@ -3,7 +3,7 @@ import 'package:egytravel_app/feature/home/logic/controller/home_navigation_cont
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:egytravel_app/core/routes/app_routes.dart';
-import 'package:egytravel_app/feature/guid_trip/ui/screens/guid_trip_screen.dart';
+import 'package:egytravel_app/feature/guid_trip/ui/screens/plan_a_trip_screen.dart';
 import 'dart:ui';
 
 class QuickActionsSection extends StatelessWidget {
@@ -66,7 +66,7 @@ class QuickActionsSection extends StatelessWidget {
                   label: 'Guides',
                   onTap: () {
                     Get.to(
-                      () => const GuideTripScreen(),
+                      () => const PlanATripScreen(),
                       transition: Transition.rightToLeftWithFade,
                     );
                   },

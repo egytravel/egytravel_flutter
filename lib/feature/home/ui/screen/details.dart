@@ -19,33 +19,31 @@ class PlaceDetailScreen extends StatelessWidget {
     return GlassyBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: Column(
-          children: [
+        body: CustomScrollView(
+          slivers: [
             DetailHeader(controller: controller),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 24),
-                    const DetailInfoSection(),
-                    const SizedBox(height: 24),
-                    DetailTabBar(controller: controller),
-                    const SizedBox(height: 24),
-                    Obx(() {
-                      switch (controller.selectedTab.value) {
-                        case 0:
-                          return const DescriptionTab();
-                        case 1:
-                          return PhotosTab(controller: controller);
-                        case 2:
-                          return ReviewsTab(controller: controller);
-                        default:
-                          return const DescriptionTab();
-                      }
-                    }),
-                    const SizedBox(height: 20),
-                  ],
-                ),
+            SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  const SizedBox(height: 24),
+                  const DetailInfoSection(),
+                  const SizedBox(height: 24),
+                  DetailTabBar(controller: controller),
+                  const SizedBox(height: 24),
+                  Obx(() {
+                    switch (controller.selectedTab.value) {
+                      case 0:
+                        return const DescriptionTab();
+                      case 1:
+                        return PhotosTab(controller: controller);
+                      case 2:
+                        return ReviewsTab(controller: controller);
+                      default:
+                        return const DescriptionTab();
+                    }
+                  }),
+                  const SizedBox(height: 20),
+                ],
               ),
             ),
           ],

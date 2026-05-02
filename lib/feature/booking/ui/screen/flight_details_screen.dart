@@ -51,11 +51,25 @@ class FlightDetailsScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const SizedBox(height: 40),
-                        Text(
-                          flight.airlineLogo,
-                          style: const TextStyle(fontSize: 60),
-                        ),
-                        const SizedBox(height: 8),
+                        if (flight.airlineLogo.startsWith('http'))
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.network(
+                              flight.airlineLogo,
+                              height: 80,
+                              width: 80,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.flight,
+                                      size: 60, color: Colors.white),
+                            ),
+                          )
+                        else
+                          Text(
+                            flight.airlineLogo.isEmpty ? '✈️' : flight.airlineLogo,
+                            style: const TextStyle(fontSize: 60),
+                          ),
+                        const SizedBox(height: 12),
                         Text(
                           flight.airlineName,
                           style: const TextStyle(

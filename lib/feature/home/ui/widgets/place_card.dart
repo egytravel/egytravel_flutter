@@ -32,18 +32,25 @@ class PlaceCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(24),
             child: Skeleton.replace(
-              child: Image.network(
-                place.image,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: Colors.grey[900],
-                  child: const Center(
-                    child: Icon(Icons.image_not_supported, color: Colors.white24, size: 48),
-                  ),
-                ),
-              ),
+              child: place.image.startsWith('http')
+                  ? Image.network(
+                      place.image,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: const Color(0xFF1A2A44),
+                        child: const Center(
+                          child: Icon(Icons.place_rounded, color: Colors.white24, size: 48),
+                        ),
+                      ),
+                    )
+                  : Container(
+                      color: const Color(0xFF1A2A44),
+                      child: const Center(
+                        child: Icon(Icons.place_rounded, color: Colors.white24, size: 48),
+                      ),
+                    ),
             ),
           ),
           // Gradient overlay
