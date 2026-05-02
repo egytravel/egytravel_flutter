@@ -1,3 +1,5 @@
+import 'package:egytravel_app/core/utils/url_cleaner.dart';
+
 class FlightModel {
   final String id;
   final String fromCity;
@@ -45,20 +47,53 @@ class FlightModel {
   }
 
   factory FlightModel.fromJson(Map<String, dynamic> json) {
+    // Handle airline
+    String name = '';
+    String logo = '';
+    if (json['airline'] is Map) {
+      name = json['airline']['name'] ?? '';
+      logo = json['airline']['logo'] ?? '';
+    } else {
+      name = (json['airline'] is String) ? json['airline'] : (json['airlineName'] ?? '');
+      logo = json['airlineLogo'] ?? '';
+    }
+
+    // Handle departure
+    String from = '';
+    String depTime = DateTime.now().toIso8601String();
+    if (json['departure'] is Map) {
+      from = json['departure']['city'] ?? '';
+      depTime = json['departure']['time'] ?? depTime;
+    } else {
+      from = json['departureCity'] ?? json['fromCity'] ?? '';
+      depTime = json['departureDate'] ?? json['departureTime'] ?? depTime;
+    }
+
+    // Handle arrival
+    String to = '';
+    String arrTime = DateTime.now().toIso8601String();
+    if (json['arrival'] is Map) {
+      to = json['arrival']['city'] ?? '';
+      arrTime = json['arrival']['time'] ?? arrTime;
+    } else {
+      to = json['arrivalCity'] ?? json['toCity'] ?? '';
+      arrTime = json['arrivalDate'] ?? json['arrivalTime'] ?? arrTime;
+    }
+
     return FlightModel(
-      id: (json['id'] ?? json['_id'] ?? '').toString(),
-      fromCity: json['departureCity'] ?? json['fromCity'] ?? '',
-      toCity: json['arrivalCity'] ?? json['toCity'] ?? '',
-      airlineName: json['airline'] ?? json['airlineName'] ?? '',
-      airlineLogo: json['airlineLogo'] ?? '',
-      departureTime: DateTime.parse(json['departureDate'] ?? json['departureTime'] ?? DateTime.now().toIso8601String()),
-      arrivalTime: DateTime.parse(json['arrivalDate'] ?? json['arrivalTime'] ?? DateTime.now().toIso8601String()),
+      id: (json['id'] ?? json['_id'] ?? json['flightId'] ?? '').toString(),
+      fromCity: from,
+      toCity: to,
+      airlineName: name,
+      airlineLogo: UrlCleaner.clean(logo),
+      departureTime: DateTime.parse(depTime),
+      arrivalTime: DateTime.parse(arrTime),
       duration: json['duration'] ?? '',
       price: _parseDouble(json['price'] ?? json['totalPrice']),
       rating: _parseDouble(json['rating']),
-      flightClass: json['travelClass'] ?? json['flightClass'] ?? 'Economy',
+      flightClass: json['cabinClass'] ?? json['travelClass'] ?? json['flightClass'] ?? 'Economy',
       flightNumber: json['flightNumber'] ?? '',
-      baggage: json['baggage'] ?? '',
+      baggage: json['baggage']?.toString() ?? '',
     );
   }
 

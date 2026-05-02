@@ -39,6 +39,10 @@ class EndPoint {
   // ── Trips ─────────────────────────────────────────────────────────────────
   static const trips = '/api/trips';
   static String tripById(String id) => '/api/trips/$id';
+  static String tripDays(String id) => '/api/trips/$id/days';
+  static String tripDayById(String tripId, String dayId) => '/api/trips/$tripId/days/$dayId';
+  static String tripMapMarkers(String id) => '/api/trips/$id/map';
+  static String tripAttachHotel(String id) => '/api/trips/$id/hotel';
 
   // ── Flights ───────────────────────────────────────────────────────────────
   static const flightSearch = '/api/flights/search';

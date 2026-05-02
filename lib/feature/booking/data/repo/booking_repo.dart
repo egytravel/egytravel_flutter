@@ -1,6 +1,7 @@
 import 'package:egytravel_app/core/network/api_service.dart';
 import 'package:egytravel_app/core/network/end_point.dart';
 import 'package:egytravel_app/feature/booking/data/models/flight_model.dart';
+import 'package:egytravel_app/feature/booking/data/models/flight_location_model.dart';
 import 'package:egytravel_app/feature/booking/data/models/hotel_model.dart';
 
 class BookingRepo {
@@ -36,6 +37,19 @@ class BookingRepo {
     }
 
     return data.map((e) => FlightModel.fromJson(e)).toList();
+  }
+
+  Future<List<FlightLocationModel>> getFlightLocations() async {
+    final response = await _apiService.get(EndPoint.flightLocations);
+
+    List data = [];
+    if (response is List) {
+      data = response;
+    } else if (response is Map<String, dynamic> && response['data'] is List) {
+      data = response['data'];
+    }
+
+    return data.map((e) => FlightLocationModel.fromJson(e)).toList();
   }
 
   Future<List<HotelModel>> searchHotels({

@@ -1,3 +1,5 @@
+import 'package:egytravel_app/core/utils/url_cleaner.dart';
+
 class EventModel {
   final String id;
   final String title;
@@ -46,8 +48,8 @@ class EventModel {
       city: json['city'] ?? '',
       startDate: json['startDate'] ?? json['date'] ?? '',
       endDate: json['endDate'],
-      coverImage: json['coverImage'] ?? json['image'] ?? '',
-      images: (json['images'] as List? ?? []).cast<String>(),
+      coverImage: UrlCleaner.clean(json['coverImage'] ?? json['image'] ?? ''),
+      images: UrlCleaner.cleanList((json['images'] as List? ?? []).cast<String>()),
       price: json['price']?.toString(),
       isFree: json['isFree'] ?? false,
       isFeatured: json['isFeatured'] ?? false,

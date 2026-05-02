@@ -1,4 +1,5 @@
 import 'package:egytravel_app/core/theme/app_color.dart';
+import 'package:egytravel_app/feature/booking/data/models/flight_location_model.dart';
 import 'package:egytravel_app/feature/booking/logic/controller/booking_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,7 +13,7 @@ class FlightSearchForm extends StatelessWidget {
     final controller = Get.find<BookingController>();
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 18),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 18),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: BackdropFilter(
@@ -44,9 +45,8 @@ class FlightSearchForm extends StatelessWidget {
                       child: _buildAutocompleteField(
                         label: 'From',
                         icon: Icons.flight_takeoff,
-                        initialValue: controller.flightFrom.value,
-                        onChanged: (value) =>
-                            controller.flightFrom.value = value,
+                        controller: controller,
+                        isOrigin: true,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -54,13 +54,13 @@ class FlightSearchForm extends StatelessWidget {
                       child: _buildAutocompleteField(
                         label: 'To',
                         icon: Icons.flight_land,
-                        initialValue: controller.flightTo.value,
-                        onChanged: (value) => controller.flightTo.value = value,
+                        controller: controller,
+                        isOrigin: false,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
 
                 // Dates
                 Row(
@@ -108,11 +108,10 @@ class FlightSearchForm extends StatelessWidget {
                             context: context,
                             initialDate:
                                 controller.flightDepartureDate.value?.add(
-                                  const Duration(days: 1),
-                                ) ??
-                                DateTime.now().add(const Duration(days: 2)),
-                            firstDate:
-                                controller.flightDepartureDate.value ??
+                                      const Duration(days: 1),
+                                    ) ??
+                                    DateTime.now().add(const Duration(days: 2)),
+                            firstDate: controller.flightDepartureDate.value ??
                                 DateTime.now(),
                             lastDate: DateTime.now().add(
                               const Duration(days: 365),
@@ -138,7 +137,7 @@ class FlightSearchForm extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
 
                 // Travelers & Class
                 Row(
@@ -217,31 +216,16 @@ class FlightSearchForm extends StatelessWidget {
     );
   }
 
-  static const List<String> _cities = [
-    'Cairo',
-    'Giza',
-    'Alexandria',
-    'Luxor',
-    'Aswan',
-    'Sharm El Sheikh',
-    'Hurghada',
-    'Dahab',
-    'Marsa Alam',
-    'London',
-    'Paris',
-    'New York',
-    'Dubai',
-    'Riyadh',
-    'Istanbul',
-    'Rome',
-  ];
-
   Widget _buildAutocompleteField({
     required String label,
     required IconData icon,
-    required Function(String) onChanged,
-    required String initialValue,
+    required BookingController controller,
+    required bool isOrigin,
   }) {
+    final initialValue = isOrigin
+        ? controller.selectedFlightFrom.value?.city ?? controller.flightFrom.value
+        : controller.selectedFlightTo.value?.city ?? controller.flightTo.value;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -254,27 +238,46 @@ class FlightSearchForm extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        Autocomplete<String>(
+        Autocomplete<FlightLocationModel>(
           initialValue: TextEditingValue(text: initialValue),
+          displayStringForOption: (option) => '${option.city} (${option.code})',
           optionsBuilder: (TextEditingValue textEditingValue) {
             if (textEditingValue.text == '') {
-              return const Iterable<String>.empty();
+              return const Iterable<FlightLocationModel>.empty();
             }
-            return _cities.where((String option) {
-              return option
-                  .toLowerCase()
-                  .contains(textEditingValue.text.toLowerCase());
+            return controller.flightLocations
+                .where((FlightLocationModel option) {
+              return option.city
+                      .toLowerCase()
+                      .contains(textEditingValue.text.toLowerCase()) ||
+                  option.code
+                      .toLowerCase()
+                      .contains(textEditingValue.text.toLowerCase());
             });
           },
-          onSelected: (String selection) {
-            onChanged(selection);
+          onSelected: (FlightLocationModel selection) {
+            if (isOrigin) {
+              controller.selectedFlightFrom.value = selection;
+              controller.flightFrom.value = selection.city;
+            } else {
+              controller.selectedFlightTo.value = selection;
+              controller.flightTo.value = selection.city;
+            }
           },
-          fieldViewBuilder: (context, textEditingController, focusNode,
-              onFieldSubmitted) {
+          fieldViewBuilder:
+              (context, textEditingController, focusNode, onFieldSubmitted) {
             return TextField(
               controller: textEditingController,
               focusNode: focusNode,
-              onChanged: onChanged,
+              onChanged: (value) {
+                if (isOrigin) {
+                  controller.flightFrom.value = value;
+                  if (value.isEmpty) controller.selectedFlightFrom.value = null;
+                } else {
+                  controller.flightTo.value = value;
+                  if (value.isEmpty) controller.selectedFlightTo.value = null;
+                }
+              },
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 prefixIcon: Icon(icon, color: AppColor.primaryColor, size: 20),
@@ -314,7 +317,8 @@ class FlightSearchForm extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: const Color(0xFF1E1E1E),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                    border:
+                        Border.all(color: Colors.white.withValues(alpha: 0.1)),
                   ),
                   child: ListView.builder(
                     padding: EdgeInsets.zero,
@@ -323,7 +327,11 @@ class FlightSearchForm extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final option = options.elementAt(index);
                       return ListTile(
-                        title: Text(option, style: const TextStyle(color: Colors.white)),
+                        title: Text(option.city,
+                            style: const TextStyle(color: Colors.white)),
+                        subtitle: Text('${option.name} (${option.code})',
+                            style: const TextStyle(
+                                color: Colors.white70, fontSize: 10)),
                         onTap: () {
                           onSelected(option);
                         },

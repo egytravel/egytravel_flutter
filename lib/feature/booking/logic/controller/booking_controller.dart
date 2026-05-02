@@ -1,4 +1,5 @@
 import 'package:egytravel_app/feature/booking/data/models/flight_model.dart';
+import 'package:egytravel_app/feature/booking/data/models/flight_location_model.dart';
 import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'package:egytravel_app/feature/booking/data/models/hotel_model.dart';
 import 'package:egytravel_app/feature/booking/data/repo/booking_repo.dart';
@@ -15,6 +16,8 @@ class BookingController extends GetxController {
   // Flight search parameters
   var flightFrom = ''.obs;
   var flightTo = ''.obs;
+  var selectedFlightFrom = Rx<FlightLocationModel?>(null);
+  var selectedFlightTo = Rx<FlightLocationModel?>(null);
   var flightDepartureDate = Rx<DateTime?>(null);
   var flightReturnDate = Rx<DateTime?>(null);
   var flightTravelers = 1.obs;
@@ -29,6 +32,7 @@ class BookingController extends GetxController {
 
   // Search results
   var flightResults = <FlightModel>[].obs;
+  var flightLocations = <FlightLocationModel>[].obs;
   var hotelResults = <HotelModel>[].obs;
 
   // Loading states
@@ -38,6 +42,22 @@ class BookingController extends GetxController {
   // Has searched flags
   var hasSearchedFlights = false.obs;
   var hasSearchedHotels = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchFlightLocations();
+  }
+
+  Future<void> fetchFlightLocations() async {
+    try {
+      final locations = await _bookingRepo.getFlightLocations();
+      flightLocations.assignAll(locations);
+    } catch (e) {
+      // Silently fail or log, as this is pre-fetching
+      print('Error fetching flight locations: $e');
+    }
+  }
 
   // Search flights
   Future<void> searchFlights() async {
@@ -54,8 +74,8 @@ class BookingController extends GetxController {
     isSearchingFlights.value = true;
     try {
       final results = await _bookingRepo.searchFlights(
-        origin: flightFrom.value,
-        destination: flightTo.value,
+        origin: selectedFlightFrom.value?.code ?? flightFrom.value,
+        destination: selectedFlightTo.value?.code ?? flightTo.value,
         departureDate: _dateFormat.format(flightDepartureDate.value!),
         returnDate: flightReturnDate.value != null 
             ? _dateFormat.format(flightReturnDate.value!) 
@@ -106,6 +126,8 @@ class BookingController extends GetxController {
   void resetFlightSearch() {
     flightFrom.value = '';
     flightTo.value = '';
+    selectedFlightFrom.value = null;
+    selectedFlightTo.value = null;
     flightDepartureDate.value = null;
     flightReturnDate.value = null;
     flightTravelers.value = 1;

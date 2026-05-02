@@ -62,20 +62,25 @@ class HeroCarousel extends StatelessWidget {
                     children: [
                       // Image
                       Container(
-                        color: Colors.grey[900],
+                        color: const Color(0xFF1A2A44),
                         child: Skeleton.replace(
-                          child: Image.network(
-                            place.image,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Center(
-                                  child: Icon(
-                                    Icons.image_not_supported,
-                                    color: Colors.white24,
-                                    size: 48,
-                                  ),
-                                ),
-                          ),
+                          child: place.image.startsWith('http')
+                              ? Image.network(
+                                  place.image,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder: (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const Center(
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white24,
+                                        strokeWidth: 2,
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      _buildPlaceholder(),
+                                )
+                              : _buildPlaceholder(),
                         ),
                       ),
                       // Enhanced gradient overlay
@@ -162,5 +167,24 @@ class HeroCarousel extends StatelessWidget {
         ),
       );
     });
+  }
+
+  Widget _buildPlaceholder() {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF1A2A44), Color(0xFF0D1B2E)],
+        ),
+      ),
+      child: const Center(
+        child: Icon(
+          Icons.place_rounded,
+          color: Colors.white12,
+          size: 64,
+        ),
+      ),
+    );
   }
 }

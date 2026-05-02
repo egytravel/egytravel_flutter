@@ -89,7 +89,9 @@ class PhotosTab extends StatelessWidget {
                         image: DecorationImage(
                           image: imageSource is File
                               ? FileImage(imageSource) as ImageProvider
-                              : NetworkImage(imageSource),
+                              : (imageSource is String && imageSource.startsWith('http'))
+                                  ? NetworkImage(imageSource)
+                                  : const AssetImage('assets/images/placeholder.png') as ImageProvider,
                           fit: BoxFit.cover,
                         ),
                         boxShadow: [

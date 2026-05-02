@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/utils/url_cleaner.dart';
 import 'room_model.dart';
 
 class HotelModel {
@@ -53,7 +54,7 @@ class HotelModel {
     return HotelModel(
       id: (json['id'] ?? json['_id'] ?? json['hotelId'] ?? '').toString(),
       name: parsedName,
-      imageUrl: json['coverImage'] ?? json['thumbnail'] ?? json['imageUrl'] ?? json['image'] ?? '',
+      imageUrl: UrlCleaner.clean(json['coverImage'] ?? json['thumbnail'] ?? json['imageUrl'] ?? json['image'] ?? ''),
       location: finalLocation,
       rating: _parseDouble(json['rating']),
       pricePerNight: _parseDouble(json['pricePerNight'] ?? json['price']),

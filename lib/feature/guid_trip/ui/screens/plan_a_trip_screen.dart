@@ -6,8 +6,8 @@ import 'package:egytravel_app/feature/ai_trip_planner/ui/widgets/estination_inpu
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class GuideTripScreen extends StatelessWidget {
-  const GuideTripScreen({super.key});
+class PlanATripScreen extends StatelessWidget {
+  const PlanATripScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class GuideTripScreen extends StatelessWidget {
                     CustomBackButton(),
                     SizedBox(width: 12),
                     Text(
-                      'Create Your Guide',
+                      'Create Your Plain a trip',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 24,
@@ -38,6 +38,24 @@ class GuideTripScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
                 DestinationInput(controller: controller.destinationController),
+                Obx(() {
+                  if (controller.suggestions.isEmpty) return const SizedBox.shrink();
+                  return Container(
+                    margin: const EdgeInsets.only(top: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.white.withOpacity(0.1)),
+                    ),
+                    child: Column(
+                      children: controller.suggestions.map((s) => ListTile(
+                        title: Text(s, style: const TextStyle(color: Colors.white)),
+                        onTap: () => controller.selectDestination(s),
+                        dense: true,
+                      )).toList(),
+                    ),
+                  );
+                }),
                 const SizedBox(height: 16),
                 GetBuilder<GuideTripController>(
                   builder: (_) => DateSelector(

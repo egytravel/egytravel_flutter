@@ -9,6 +9,7 @@ import 'package:egytravel_app/feature/profile/ui/screen/bookings_screen.dart';
 import 'package:egytravel_app/feature/profile/ui/screen/travel_history_screen.dart';
 import 'package:egytravel_app/feature/profile/ui/screen/personal_info_screen.dart';
 import 'package:egytravel_app/feature/profile/ui/screen/security_screen.dart';
+import 'package:egytravel_app/feature/plan/ui/screen/my_trips_screen.dart';
 import 'package:egytravel_app/generated/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -208,6 +209,13 @@ class ProfileScreen extends StatelessWidget {
                                 title: 'Travel History',
                                 subtitle: "Places you've explored",
                                 onTap: () => Get.to(() => const TravelHistoryScreen()),
+                              ),
+                              const ProfileMenuDivider(),
+                              ProfileMenuItem(
+                                icon: Icons.luggage_outlined,
+                                title: 'My Planned Trips',
+                                subtitle: "View and manage your itineraries",
+                                onTap: () => Get.to(() => const MyTripsScreen()),
                               ),
                             ],
                           ),

@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/utils/url_cleaner.dart';
 import 'package:get/get.dart';
 
 enum ExploreItemType { place, restaurant, hotel, flight, event }
@@ -100,9 +101,13 @@ class ExploreItemModel {
       id: _s(json['id']),
       title: _s(json['title']),
       location: _s(json['location']),
-      image: _s(json['image']),
+      image: UrlCleaner.clean(_s(json['coverImage'] ??
+          json['image'] ??
+          json['imageUrl'] ??
+          json['thumbnail'])),
       rating: _toDouble(json['rating']),
-      price: _s(json['priceDisplay'], '${json['price'] ?? 0} ${json['currency'] ?? ''}'),
+      price: _s(json['priceDisplay'],
+          '${json['price'] ?? 0} ${json['currency'] ?? ''}'),
       category: _s(json['category']),
       type: ExploreItemType.place,
       description: _sn(json['description']),
@@ -119,7 +124,7 @@ class ExploreItemModel {
       id: _s(json['id']),
       title: _s(json['title']),
       location: _s(json['location']),
-      image: _s(json['coverImage'] ?? json['image']),
+      image: UrlCleaner.clean(_s(json['coverImage'] ?? json['image'])),
       rating: _toDouble(json['rating']),
       price: _s(json['priceDisplay'] ?? json['priceRange'], '\$\$'),
       category: _s(json['category']),
@@ -145,7 +150,7 @@ class ExploreItemModel {
       id: _s(json['hotelId'] ?? json['id']),
       title: _s(json['name'] ?? json['title']),
       location: _s(json['address'] ?? json['city']),
-      image: _s(json['coverImage'] ?? json['image']),
+      image: UrlCleaner.clean(_s(json['coverImage'] ?? json['image'])),
       rating: _toDouble(json['rating']),
       price: priceStr,
       category: _s(json['category'], 'Hotel'),
@@ -182,7 +187,7 @@ class ExploreItemModel {
       id: _s(json['flightId'] ?? json['id']),
       title: title,
       location: location,
-      image: airlineData is Map ? _s(airlineData['logo']) : '',
+      image: airlineData is Map ? UrlCleaner.clean(_s(airlineData['logo'])) : '',
       rating: 0,
       price: priceStr,
       category: _s(json['category'], 'Flight'),

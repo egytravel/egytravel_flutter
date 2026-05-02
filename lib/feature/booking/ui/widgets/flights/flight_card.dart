@@ -43,10 +43,22 @@ class FlightCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Center(
-                          child: Text(
-                            flight.airlineLogo,
-                            style: const TextStyle(fontSize: 20),
-                          ),
+                          child: flight.airlineLogo.startsWith('http')
+                              ? Image.network(
+                                  flight.airlineLogo,
+                                  width: 24,
+                                  height: 24,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(Icons.flight,
+                                          size: 20, color: Colors.white),
+                                )
+                              : Text(
+                                  flight.airlineLogo.isEmpty
+                                      ? '✈️'
+                                      : flight.airlineLogo,
+                                  style: const TextStyle(fontSize: 20),
+                                ),
                         ),
                       ),
                       const SizedBox(width: 12),
