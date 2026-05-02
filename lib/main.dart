@@ -1,15 +1,21 @@
 import 'package:egytravel_app/core/routes/app_pages.dart';
 import 'package:egytravel_app/core/theme/app_color.dart';
-import 'package:flutter/foundation.dart';
+import 'package:egytravel_app/core/locale_storage/shared_preferences_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:device_preview/device_preview.dart';
 
-void main() {
+import 'package:feedback/feedback.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SharedPreferencesHelper.init();
   runApp(
     DevicePreview(
       // enabled: false,
-      builder: (context) => const MyApp(),
+      builder: (context) => const BetterFeedback(
+        child: MyApp(),
+      ),
     ),
   );
 }
@@ -28,7 +34,7 @@ class MyApp extends StatelessWidget {
       // builder: DevicePreview.appBuilder,
       theme: ThemeData(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: Colors.black,
+        scaffoldBackgroundColor: const Color(0xFF0A1628),
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColor.primaryColor,
           brightness: Brightness.dark,

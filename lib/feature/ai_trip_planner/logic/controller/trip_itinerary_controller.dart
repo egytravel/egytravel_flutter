@@ -1,9 +1,14 @@
 import 'package:egytravel_app/feature/ai_trip_planner/logic/models/trip_itinerary_models.dart';
+import 'package:egytravel_app/core/widgets/snack_bar.dart';
+import 'package:egytravel_app/feature/plan/data/model/trip_model.dart';
+import 'package:egytravel_app/feature/plan/data/repo/trip_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 
 class TripItineraryController extends GetxController {
+  final TripRepo _tripRepo = Get.put(TripRepo());
+  
   late String destination;
   late DateTime startDate;
   late DateTime endDate;
@@ -242,5 +247,50 @@ class TripItineraryController extends GetxController {
   void updateFlight(int dayIndex, Flight newFlight) {
     tripDays[dayIndex].flight = newFlight;
     update();
+  }
+
+  Future<void> saveTrip() async {
+    try {
+      isLoading = true;
+      update();
+
+      // 1. Create the main trip
+      final tripToCreate = TripModel(
+        id: '', // Server will generate
+        title: 'Trip to $destination',
+        description: 'AI Generated Trip to $destination with $budget budget',
+        destination: destination,
+        startDate: startDate.toIso8601String(),
+        endDate: endDate.toIso8601String(),
+        budget: 0, // Could be parsed from budget string if needed
+        status: 'planning',
+      );
+
+      final createdTrip = await _tripRepo.createTrip(tripToCreate);
+
+      // 2. Add each day and its activities
+      for (var day in tripDays) {
+        final dayData = {
+          'dayNumber': day.dayNumber,
+          'date': day.date.toIso8601String(),
+          'notes': 'Stay at ${day.hotel}',
+          'activities': day.activities.map((a) => {
+            'title': a.title,
+            'time': a.time,
+            'location': destination,
+            'description': a.description,
+            'cost': 0,
+          }).toList(),
+        };
+        await _tripRepo.addDayToTrip(createdTrip.id, dayData);
+      }
+
+      showSuccess('Trip saved successfully!');
+    } catch (e) {
+      showError('Failed to save trip: $e');
+    } finally {
+      isLoading = false;
+      update();
+    }
   }
 }

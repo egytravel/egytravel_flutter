@@ -5,6 +5,7 @@ import 'package:egytravel_app/feature/explore/ui/widgets/listing/explore_grid.da
 import 'package:egytravel_app/feature/explore/ui/widgets/listing/explore_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ExploreListingScreen extends StatelessWidget {
   const ExploreListingScreen({super.key});
@@ -13,9 +14,9 @@ class ExploreListingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final ExploreItemType? type = Get.arguments?['type'];
     final String? initialCategory = Get.arguments?['category'];
-    final controller = Get.find<ExploreController>();
+    final controller = Get.put(ExploreController());
 
-    final List<ExploreItemModel> items = _getItemsByType(controller, type);
+    final List<ExploreItemModel> items = _getItemsByType(controller, type, initialCategory);
 
     return GlassyBackground(
       child: Scaffold(
@@ -34,16 +35,35 @@ class ExploreListingScreen extends StatelessWidget {
         ),
         body: Column(
           children: [
-            ExploreSearchBar(onFilterPressed: () {}),
+            ExploreSearchBar(
+              onFilterPressed: () {
+                // Show filter dialog/bottom sheet
+              },
+              onChanged: (val) => controller.updateSearchQuery(val),
+            ),
             Expanded(
-              child: items.isEmpty
-                  ? const Center(
-                      child: Text(
-                        'No items available',
-                        style: TextStyle(color: Colors.white70, fontSize: 16),
-                      ),
-                    )
-                  : ExploreGrid(items: items),
+              child: Obx(() {
+                final currentItems = _getItemsByType(controller, type, initialCategory);
+
+                if (controller.isLoading.value && currentItems.isEmpty) {
+                  return Skeletonizer(
+                    enabled: true,
+                    child: ExploreGrid(items: controller.dummyItems),
+                  );
+                }
+
+                return Skeletonizer(
+                  enabled: controller.isLoading.value,
+                  child: currentItems.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'No items found',
+                            style: TextStyle(color: Colors.white70, fontSize: 16),
+                          ),
+                        )
+                      : ExploreGrid(items: currentItems),
+                );
+              }),
             ),
           ],
         ),
@@ -54,18 +74,9 @@ class ExploreListingScreen extends StatelessWidget {
   List<ExploreItemModel> _getItemsByType(
     ExploreController controller,
     ExploreItemType? type,
+    String? category,
   ) {
-    if (type == null) return controller.allPlaces;
-    switch (type) {
-      case ExploreItemType.place:
-        return controller.allPlaces;
-      case ExploreItemType.restaurant:
-        return controller.restaurants;
-      case ExploreItemType.hotel:
-        return controller.hotels;
-      case ExploreItemType.flight:
-        return controller.flights;
-    }
+    return controller.getItemsForListing(type, category);
   }
 
   String _getScreenTitle(ExploreItemType? type, String? category) {
@@ -83,6 +94,9 @@ class ExploreListingScreen extends StatelessWidget {
           break;
         case ExploreItemType.flight:
           title = "Flights";
+          break;
+        case ExploreItemType.event:
+          title = "Events";
           break;
       }
     }

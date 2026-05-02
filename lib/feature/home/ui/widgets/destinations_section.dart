@@ -19,10 +19,10 @@ class DestinationsSection extends StatelessWidget {
       final list =
           (controller.isLoading.value && controller.destinations.isEmpty)
           ? List.generate(
-              2,
+              4,
               (index) => Destination(id: '', name: 'Loading Name', image: ''),
             )
-          : controller.destinations;
+          : controller.destinations.take(4).toList();
 
       if (list.isEmpty && !controller.isLoading.value)
         return const SizedBox.shrink();
@@ -70,7 +70,7 @@ class DestinationsSection extends StatelessWidget {
                 );
               }).toList(),
             ),
-            const SizedBox(height: 100),
+            const SizedBox(height: 16),
           ],
         ),
       );

@@ -7,11 +7,13 @@ import 'package:get/get.dart';
 class ExploreHorizontalList extends StatelessWidget {
   final List<ExploreItemModel> items;
   final String? emptyMessage;
+  final String? listId;
 
   const ExploreHorizontalList({
     super.key,
     required this.items,
     this.emptyMessage,
+    this.listId,
   });
 
   @override
@@ -33,10 +35,16 @@ class ExploreHorizontalList extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemCount: items.length,
         itemBuilder: (context, index) {
+          final item = items[index];
+          final String heroTag = '${listId ?? 'list'}_${item.id}';
           return ExploreCard(
-            item: items[index],
+            item: item,
+            heroTag: heroTag,
             onTap: () {
-              Get.toNamed(Routes.exploreDetails, arguments: items[index]);
+              Get.toNamed(Routes.exploreDetails, arguments: {
+                'item': item,
+                'heroTag': heroTag,
+              });
             },
           );
         },

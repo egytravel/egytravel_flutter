@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/auth/logic/binding/register_binding.dart';
 import 'package:egytravel_app/feature/auth/ui/screens/register_view.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class RegisterPrompt extends StatelessWidget {
             child: const Text(
               'Register Now',
               style: TextStyle(
-                color: Color(0xFF6C5CE7),
+                color: AppColor.primary,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),

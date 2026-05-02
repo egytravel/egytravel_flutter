@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 
 class ExploreSearchBar extends StatelessWidget {
   final VoidCallback onFilterPressed;
+  final Function(String)? onChanged;
 
-  const ExploreSearchBar({super.key, required this.onFilterPressed});
+  const ExploreSearchBar({
+    super.key,
+    required this.onFilterPressed,
+    this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +26,15 @@ class ExploreSearchBar extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.white.withOpacity(0.3)),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.search, color: Colors.white70),
-                  SizedBox(width: 8),
+                  const Icon(Icons.search, color: Colors.white70),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: TextField(
-                      style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
+                      onChanged: onChanged,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: "Search...",
                         hintStyle: TextStyle(color: Colors.white60),

@@ -7,6 +7,7 @@ import 'package:egytravel_app/feature/explore/ui/widgets/explore/explore_horizon
 import 'package:egytravel_app/feature/explore/ui/widgets/explore/explore_section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ExploreScreen extends GetView<ExploreController> {
   const ExploreScreen({super.key});
@@ -17,22 +18,40 @@ class ExploreScreen extends GetView<ExploreController> {
       Get.put(ExploreController());
     }
 
-    return GlassyBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: ExploreAppBar(onMapPressed: controller.openMapView),
-        body: Obx(() {
-          if (controller.isLoading.value) {
-            return const Center(
-              child: CircularProgressIndicator(color: Colors.white),
-            );
-          }
-
-          if (controller.hasError.value) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A1628), // Guarantee opaque background
+      extendBodyBehindAppBar: true,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: Obx(
+          () => ExploreAppBar(
+            onMapPressed: controller.openMapView,
+            isScrolled: controller.isScrolled.value,
+          ),
+        ),
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF0A1628),
+              Color(0xFF0A1628),
+              Color(0xFF0D1B2E),
+            ],
+            stops: [0.0, 0.5, 1.0],
+          ),
+        ),
+        child: Obx(() {
+          if (controller.hasError.value && !controller.isLoading.value) {
             return _buildErrorState();
           }
 
-          return _buildContent();
+          return Skeletonizer(
+            enabled: controller.isLoading.value,
+            child: _buildContent(),
+          );
         }),
       ),
     );
@@ -88,20 +107,23 @@ class ExploreScreen extends GetView<ExploreController> {
       color: Colors.white,
       backgroundColor: const Color(0xFF0A1628),
       child: SingleChildScrollView(
+        controller: controller.scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // =============> Explore Places Section
-            const SizedBox(height: 10),
+            const SizedBox(height: 50), // Starting position for content
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 "Explore Places",
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
+                  fontFamily: 'Poppins',
+                  letterSpacing: -0.5,
                 ),
               ),
             ),
@@ -109,7 +131,9 @@ class ExploreScreen extends GetView<ExploreController> {
 
             // Category Chips
             ExploreCategoryList(
-              categories: controller.placeCategories.toList(),
+              categories: controller.isLoading.value && controller.placeCategories.isEmpty
+                  ? ['Recent', 'Beach', 'Mountain', 'City']
+                  : controller.placeCategories.toList(),
               selectedCategory: controller.selectedPlaceCategory,
               onCategoryChanged: controller.changePlaceCategory,
             ),
@@ -118,7 +142,10 @@ class ExploreScreen extends GetView<ExploreController> {
             // =============> Filtered Places (needs Obx — changes on category tap)
             Obx(
               () => ExploreHorizontalList(
-                items: controller.placesForSelectedCategory,
+                listId: 'places',
+                items: controller.isLoading.value && controller.allPlaces.isEmpty
+                    ? controller.dummyItems
+                    : controller.placesForSelectedCategory,
                 emptyMessage: "No places found in this category",
               ),
             ),
@@ -133,7 +160,10 @@ class ExploreScreen extends GetView<ExploreController> {
               ),
             ),
             ExploreHorizontalList(
-              items: controller.recommendedPlaces.toList(),
+              listId: 'recommended',
+              items: controller.isLoading.value && controller.recommendedPlaces.isEmpty
+                  ? controller.dummyItems
+                  : controller.recommendedPlaces.toList(),
             ),
 
             const SizedBox(height: 24),
@@ -144,7 +174,12 @@ class ExploreScreen extends GetView<ExploreController> {
               onSeeAll: () =>
                   controller.navigateToSeeAll(ExploreItemType.restaurant),
             ),
-            ExploreHorizontalList(items: controller.restaurants.toList()),
+            ExploreHorizontalList(
+              listId: 'restaurants',
+              items: controller.isLoading.value && controller.restaurants.isEmpty
+                  ? controller.dummyItems
+                  : controller.restaurants.toList(),
+            ),
 
             const SizedBox(height: 24),
 
@@ -154,7 +189,12 @@ class ExploreScreen extends GetView<ExploreController> {
               onSeeAll: () =>
                   controller.navigateToSeeAll(ExploreItemType.hotel),
             ),
-            ExploreHorizontalList(items: controller.hotels.toList()),
+            ExploreHorizontalList(
+              listId: 'hotels',
+              items: controller.isLoading.value && controller.hotels.isEmpty
+                  ? controller.dummyItems
+                  : controller.hotels.toList(),
+            ),
 
             const SizedBox(height: 24),
 
@@ -164,7 +204,12 @@ class ExploreScreen extends GetView<ExploreController> {
               onSeeAll: () =>
                   controller.navigateToSeeAll(ExploreItemType.flight),
             ),
-            ExploreHorizontalList(items: controller.flights.toList()),
+            ExploreHorizontalList(
+              listId: 'flights',
+              items: controller.isLoading.value && controller.flights.isEmpty
+                  ? controller.dummyItems
+                  : controller.flights.toList(),
+            ),
 
             const SizedBox(height: 100),
           ],

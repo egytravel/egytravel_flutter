@@ -1,8 +1,9 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/glass_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class OtpInput extends StatelessWidget {
+class OtpInput extends StatefulWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final FocusNode? nextFocusNode;
@@ -19,17 +20,44 @@ class OtpInput extends StatelessWidget {
   });
 
   @override
+  State<OtpInput> createState() => _OtpInputState();
+}
+
+class _OtpInputState extends State<OtpInput> {
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.focusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    widget.focusNode.removeListener(_onFocusChange);
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      _isFocused = widget.focusNode.hasFocus;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GlassContainer(
-      width: 60,
-      height: 70,
+      width: 45,
+      height: 55,
       borderRadius: 12,
       padding: EdgeInsets.zero,
+      borderColor: _isFocused ? AppColor.primary : Colors.white.withOpacity(0.2),
+      color: _isFocused ? AppColor.primary.withOpacity(0.1) : Colors.white.withOpacity(0.05),
       child: Center(
         child: TextField(
-          controller: controller,
-          focusNode: focusNode,
-          autofocus: autoFocus,
+          controller: widget.controller,
+          focusNode: widget.focusNode,
+          autofocus: widget.autoFocus,
           textAlign: TextAlign.center,
           keyboardType: TextInputType.number,
           inputFormatters: [
@@ -37,7 +65,7 @@ class OtpInput extends StatelessWidget {
             FilteringTextInputFormatter.digitsOnly,
           ],
           style: const TextStyle(
-            fontSize: 24,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -47,14 +75,8 @@ class OtpInput extends StatelessWidget {
             contentPadding: EdgeInsets.zero,
           ),
           onChanged: (value) {
-            if (value.length == 1 && !isLast) {
-              nextFocusNode?.requestFocus();
-            }
-            if (value.isEmpty && focusNode.canRequestFocus) {
-               // Handle backspace if needed, usually handled by previous node requesting focus
-               // but standard behavior is often enough.
-               // For better backspace handling, we might need a raw keyboard listener,
-               // but keeping it simple for now as per request.
+            if (value.length == 1 && !widget.isLast) {
+              widget.nextFocusNode?.requestFocus();
             }
           },
         ),

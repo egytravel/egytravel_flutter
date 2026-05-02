@@ -2,6 +2,7 @@ import 'package:egytravel_app/core/error/api_error.dart';
 import 'package:egytravel_app/core/routes/app_routes.dart';
 import 'package:egytravel_app/feature/explore/data/model/explore_item_model.dart';
 import 'package:egytravel_app/feature/explore/data/repo/explore_repo.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ExploreController extends GetxController {
@@ -13,6 +14,8 @@ class ExploreController extends GetxController {
   final isLoading = true.obs;
   final hasError = false.obs;
   final errorMessage = ''.obs;
+  final isScrolled = false.obs;
+  final scrollController = ScrollController();
 
   // --- Data ---
   final placeCategories = <String>[].obs;
@@ -21,15 +24,34 @@ class ExploreController extends GetxController {
   final restaurants = <ExploreItemModel>[].obs;
   final hotels = <ExploreItemModel>[].obs;
   final flights = <ExploreItemModel>[].obs;
+  final events = <ExploreItemModel>[].obs;
 
   final selectedPlaceCategory = 'Recent'.obs;
 
+  List<ExploreItemModel> get dummyItems => List.generate(
+        5,
+        (index) => ExploreItemModel(
+          id: 'skeleton_$index',
+          title: 'Place Name Placeholder',
+          location: 'Location Placeholder',
+          image: '',
+          rating: 5.0,
+          price: '\$100',
+          category: 'Category',
+          type: ExploreItemType.place,
+        ),
+      );
+
   List<ExploreItemModel> get placesForSelectedCategory {
-    if (selectedPlaceCategory.value == 'Recent') {
+    final category = selectedPlaceCategory.value;
+    if (category == 'Recent') {
       return allPlaces.take(5).toList();
     }
+    if (category == 'All') {
+      return allPlaces.toList();
+    }
     return allPlaces
-        .where((p) => p.category == selectedPlaceCategory.value)
+        .where((p) => p.category.toLowerCase() == category.toLowerCase())
         .toList();
   }
 
@@ -37,6 +59,15 @@ class ExploreController extends GetxController {
   void onInit() {
     super.onInit();
     fetchExploreData();
+    scrollController.addListener(() {
+      isScrolled.value = scrollController.offset > 50;
+    });
+  }
+
+  @override
+  void onClose() {
+    scrollController.dispose();
+    super.onClose();
   }
 
   Future<void> fetchExploreData() async {
@@ -54,6 +85,10 @@ class ExploreController extends GetxController {
       hotels.assignAll(response.hotels);
       flights.assignAll(response.flights);
 
+      // Fetch events separately if not in response
+      final eventsResponse = await _repo.getEvents();
+      events.assignAll(eventsResponse);
+
       // Default selected category
       if (placeCategories.isNotEmpty) {
         selectedPlaceCategory.value = placeCategories.first;
@@ -63,7 +98,7 @@ class ExploreController extends GetxController {
       errorMessage.value = e.message;
     } catch (e) {
       hasError.value = true;
-      errorMessage.value = 'Something went wrong. Please try again.';
+      errorMessage.value = 'Error: ${e.toString()}';
     } finally {
       isLoading.value = false;
     }
@@ -82,6 +117,58 @@ class ExploreController extends GetxController {
 
   void openMapView() {
     Get.toNamed(Routes.mapView);
+  }
+
+  final searchQuery = ''.obs;
+
+  List<ExploreItemModel> getItemsForListing(ExploreItemType? type, String? category) {
+    List<ExploreItemModel> baseList;
+    if (type == null) {
+      baseList = allPlaces;
+    } else {
+      switch (type) {
+        case ExploreItemType.place:
+          baseList = allPlaces;
+          break;
+        case ExploreItemType.restaurant:
+          baseList = restaurants;
+          break;
+        case ExploreItemType.hotel:
+          baseList = hotels;
+          break;
+        case ExploreItemType.flight:
+          baseList = flights;
+          break;
+        case ExploreItemType.event:
+          baseList = events;
+          break;
+      }
+    }
+
+    // Filter by category if provided
+    if (category != null && category != 'All' && category != 'Explore') {
+      if (category == 'Recommended') {
+        baseList = baseList.where((p) => p.isRecommended).toList();
+      } else {
+        baseList = baseList.where((p) => p.category.toLowerCase() == category.toLowerCase()).toList();
+      }
+    }
+
+    return _filterBySearch(baseList);
+  }
+
+  List<ExploreItemModel> _filterBySearch(List<ExploreItemModel> list) {
+    if (searchQuery.isEmpty) return list.toList();
+    final query = searchQuery.value.toLowerCase();
+    return list
+        .where((item) =>
+            item.title.toLowerCase().contains(query) ||
+            item.location.toLowerCase().contains(query))
+        .toList();
+  }
+
+  void updateSearchQuery(String query) {
+    searchQuery.value = query;
   }
 
   void toggleFavorite(ExploreItemModel item) {

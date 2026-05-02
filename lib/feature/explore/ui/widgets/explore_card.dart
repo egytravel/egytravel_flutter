@@ -7,11 +7,13 @@ import 'package:get/get.dart';
 class ExploreCard extends StatelessWidget {
   final ExploreItemModel item;
   final VoidCallback? onTap;
+  final String? heroTag;
 
-  const ExploreCard({super.key, required this.item, this.onTap});
+  const ExploreCard({super.key, required this.item, this.onTap, this.heroTag});
 
   @override
   Widget build(BuildContext context) {
+    final String finalHeroTag = heroTag ?? 'explore_image_${item.id}';
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -33,7 +35,10 @@ class ExploreCard extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               // Background Image
-              _buildImage(),
+              Hero(
+                tag: finalHeroTag,
+                child: _buildImage(),
+              ),
 
               // Gradient overlay
               Container(
@@ -349,6 +354,8 @@ class ExploreCard extends StatelessWidget {
         return Icons.restaurant;
       case ExploreItemType.place:
         return Icons.place;
+      case ExploreItemType.event:
+        return Icons.event;
     }
   }
 }

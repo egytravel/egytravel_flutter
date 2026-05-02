@@ -8,16 +8,16 @@ class GlassyBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            const Color(0xFF0A1628).withOpacity(0.0),
-            const Color(0xFF0A1628),
-            const Color(0xFF0D1B2E),
+            Color(0xFF0A1628), // Made opaque to fix scrolling glitch
+            Color(0xFF0A1628),
+            Color(0xFF0D1B2E),
           ],
-          stops: const [0.0, 0.5, 1.0],
+          stops: [0.0, 0.5, 1.0],
         ),
       ),
       child: child,

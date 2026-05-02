@@ -6,6 +6,7 @@ import 'package:egytravel_app/feature/community/logic/controller/community_contr
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class PostCard extends StatelessWidget {
   final CommunityPost post;
@@ -50,23 +51,29 @@ class PostCard extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 22,
-                        backgroundImage: NetworkImage(post.userAvatar),
+                        backgroundColor: Colors.white10,
+                        backgroundImage: post.user.profilePhotoUrl != null
+                            ? CachedNetworkImageProvider(post.user.profilePhotoUrl!)
+                            : null,
+                        child: post.user.profilePhotoUrl == null
+                            ? const Icon(Icons.person, color: Colors.white38)
+                            : null,
                       ),
                       const SizedBox(width: 12),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            post.userName,
+                            post.user.name,
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          if (post.location.isNotEmpty)
+                          if (post.location != null && post.location!.isNotEmpty)
                             Text(
-                              post.location,
+                              post.location!,
                               style: const TextStyle(
                                 color: Colors.white70,
                                 fontSize: 12,
@@ -84,51 +91,64 @@ class PostCard extends StatelessWidget {
                 ),
 
                 /// Post Image
-                AspectRatio(
-                  aspectRatio: 1,
-                  child: Stack(
-                    children: [
-                      post.postImage.startsWith('http')
-                          ? Image.network(
-                              post.postImage,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Container(
+                if (post.mediaUrl != null)
+                  AspectRatio(
+                    aspectRatio: 1,
+                    child: Stack(
+                      children: [
+                        post.mediaUrl!.startsWith('http')
+                            ? CachedNetworkImage(
+                                imageUrl: post.mediaUrl!,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                placeholder: (context, url) => Container(
                                   color: Colors.white10,
                                   child: const Center(
-                                    child: CupertinoActivityIndicator(color: Colors.white),
+                                    child: CupertinoActivityIndicator(
+                                        color: Colors.white),
                                   ),
-                                );
-                              },
-                            )
-                          : Image.file(
-                              File(post.postImage),
-                              fit: BoxFit.cover,
-                              width: double.infinity,
+                                ),
+                                errorWidget: (context, url, error) => Container(
+                                  color: Colors.white10,
+                                  child: const Icon(Icons.error_outline,
+                                      color: Colors.white24),
+                                ),
+                              )
+                            : Image.file(
+                                File(post.mediaUrl!),
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: Colors.white10,
+                                    width: double.infinity,
+                                    child: const Center(
+                                      child: Icon(Icons.image_not_supported, color: Colors.white24, size: 40),
+                                    ),
+                                  );
+                                },
+                              ),
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.transparent,
+                                  Colors.black.withOpacity(0.6),
+                                ],
+                              ),
                             ),
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.transparent,
-                                Colors.black.withOpacity(0.6),
-                              ],
-                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                           ),
-                          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
 
                 /// Actions: Like, Comment, Share
                 Padding(
@@ -157,14 +177,14 @@ class PostCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 16,),
                       GestureDetector(
-                        onTap: () => _showCommentsBottomSheet(context, post, controller),
+                        onTap: () => _showCommentsBottomSheet(context),
                         child: Row(
                           children: [
                             const Icon(CupertinoIcons.chat_bubble, color: Colors.white, size: 26),
-                            if (post.comments.isNotEmpty) ...[
+                            if (post.commentsCount > 0) ...[
                               const SizedBox(width: 8),
                               Text(
-                                post.comments.length.toString(),
+                                post.commentsCount.toString(),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -191,7 +211,7 @@ class PostCard extends StatelessWidget {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: '${post.userName} ',
+                              text: '${post.user.name} ',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -220,7 +240,7 @@ class PostCard extends StatelessWidget {
     );
   }
 
-  void _showCommentsBottomSheet(BuildContext context, CommunityPost post, CommunityController controller) {
+  void _showCommentsBottomSheet(BuildContext context) {
     final commentController = TextEditingController();
 
     showModalBottomSheet(
@@ -255,26 +275,72 @@ class PostCard extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: post.comments.isEmpty
-                  ? const Center(
-                      child: Text('No comments yet. be the first!', style: TextStyle(color: Colors.white38)),
-                    )
-                  : ListView.builder(
+              child: Builder(
+                builder: (context) {
+                  Future.microtask(() => controller.fetchComments(post.id));
+                  return Obx(() {
+                    final comments = controller.postComments[post.id] ?? [];
+                    final isLoading = controller.isCommentsLoading[post.id] ?? true;
+
+                    if (isLoading && comments.isEmpty) {
+                      return const Center(
+                        child: CircularProgressIndicator(color: AppColor.primary),
+                      );
+                    }
+
+                    if (comments.isEmpty) {
+                      return const Center(
+                        child: Text('No comments yet. Be the first to comment!',
+                            style: TextStyle(color: Colors.white38)),
+                      );
+                    }
+
+                    return ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: post.comments.length,
-                      itemBuilder: (context, index) => Container(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.05),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Text(
-                          post.comments[index],
-                          style: const TextStyle(color: Colors.white, fontSize: 14),
-                        ),
-                      ),
-                    ),
+                      itemCount: comments.length,
+                      itemBuilder: (context, index) {
+                        final comment = comments[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CircleAvatar(
+                                radius: 16,
+                                backgroundColor: Colors.white10,
+                                backgroundImage: comment.user.profilePhotoUrl != null
+                                    ? NetworkImage(comment.user.profilePhotoUrl!)
+                                    : null,
+                                child: comment.user.profilePhotoUrl == null
+                                    ? const Icon(Icons.person, size: 16, color: Colors.white38)
+                                    : null,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      comment.user.name,
+                                      style: const TextStyle(
+                                          color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      comment.content,
+                                      style: const TextStyle(color: Colors.white70, fontSize: 14),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  });
+                },
+              ),
             ),
             Container(
               padding: const EdgeInsets.all(20),
@@ -304,14 +370,7 @@ class PostCard extends StatelessWidget {
                       if (commentController.text.isNotEmpty) {
                         controller.addComment(post.id, commentController.text);
                         commentController.clear();
-                        Navigator.pop(context); // Close bottom sheet
-                        Get.snackbar(
-                          'Success',
-                          'Comment added!',
-                          backgroundColor: Colors.blue.withOpacity(0.8),
-                          colorText: Colors.white,
-                          snackPosition: SnackPosition.TOP,
-                        );
+                        // We don't pop anymore so they can see the comment
                       }
                     },
                     icon: const Icon(CupertinoIcons.arrow_up_circle_fill, color: AppColor.primary, size: 32),
@@ -325,5 +384,3 @@ class PostCard extends StatelessWidget {
     );
   }
 }
-
-

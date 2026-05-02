@@ -33,7 +33,19 @@ class ImageViewerScreen extends StatelessWidget {
                 minScale: 0.5,
                 maxScale: 4.0,
                 child: imageSource is File
-                    ? Image.file(imageSource, fit: BoxFit.contain)
+                    ? Image.file(
+                        imageSource,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Center(
+                            child: Icon(
+                              Icons.broken_image,
+                              color: Colors.white54,
+                              size: 48,
+                            ),
+                          );
+                        },
+                      )
                     : Image.network(
                         imageSource,
                         fit: BoxFit.contain,

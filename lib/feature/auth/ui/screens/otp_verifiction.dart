@@ -1,6 +1,8 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/auth/logic/controller/otp_controller.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/auth_background.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/otp/otp_input.dart';
+import 'package:egytravel_app/core/widgets/custom_back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,9 +19,9 @@ class OTPVerificationScreen extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Get.back(),
+          leading: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: CustomBackButton(),
           ),
         ),
         body: SingleChildScrollView(
@@ -38,32 +40,16 @@ class OTPVerificationScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  'OTP code has been sent to (316) 555-0116',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[300]),
-                ),
-                const SizedBox(height: 40),
-                Center(
-                  child: Container(
-                    height: 180,
-                    width: 180,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.1),
-                    ),
-                    padding: const EdgeInsets.all(20),
-                    child: Image.asset(
-                      'assets/image/otp_image.jpeg',
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(Icons.lock_clock, size: 80, color: Colors.white);
-                      },
-                    ),
+                Obx(
+                  () => Text(
+                    'OTP code has been sent to ${controller.contact}',
+                    style: TextStyle(fontSize: 14, color: Colors.grey[300]),
                   ),
                 ),
-                const SizedBox(height: 40),
+
+                const SizedBox(height: 50),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     OtpInput(
                       controller: controller.otp1Controller,
@@ -71,24 +57,39 @@ class OTPVerificationScreen extends StatelessWidget {
                       nextFocusNode: controller.focusNode2,
                       autoFocus: true,
                     ),
+                    const SizedBox(width: 6),
                     OtpInput(
                       controller: controller.otp2Controller,
                       focusNode: controller.focusNode2,
                       nextFocusNode: controller.focusNode3,
                     ),
+                    const SizedBox(width: 6),
                     OtpInput(
                       controller: controller.otp3Controller,
                       focusNode: controller.focusNode3,
                       nextFocusNode: controller.focusNode4,
                     ),
+                    const SizedBox(width: 8),
                     OtpInput(
                       controller: controller.otp4Controller,
                       focusNode: controller.focusNode4,
+                      nextFocusNode: controller.focusNode5,
+                    ),
+                    const SizedBox(width: 8),
+                    OtpInput(
+                      controller: controller.otp5Controller,
+                      focusNode: controller.focusNode5,
+                      nextFocusNode: controller.focusNode6,
+                    ),
+                    const SizedBox(width: 8),
+                    OtpInput(
+                      controller: controller.otp6Controller,
+                      focusNode: controller.focusNode6,
                       isLast: true,
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
                 Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -97,18 +98,26 @@ class OTPVerificationScreen extends StatelessWidget {
                         'Resend code ',
                         style: TextStyle(fontSize: 14, color: Colors.grey[300]),
                       ),
-                      TextButton(
-                        onPressed: controller.resendCode,
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: const Size(0, 0),
-                        ),
-                        child: const Text(
-                          '00:50s',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF6C5CE7),
-                            fontWeight: FontWeight.w600,
+                      Obx(
+                        () => TextButton(
+                          onPressed: controller.isTimerRunning.value
+                              ? null
+                              : () => controller.resendCode(context),
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(0, 0),
+                          ),
+                          child: Text(
+                            controller.isTimerRunning.value
+                                ? '00:${controller.timerSeconds.value.toString().padLeft(2, '0')}s'
+                                : 'Resend Now',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: controller.isTimerRunning.value
+                                  ? AppColor.primary
+                                  : Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
@@ -116,25 +125,38 @@ class OTPVerificationScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 40),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: controller.submitOTP,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6C5CE7),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                Obx(
+                  () => SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: controller.isLoading.value
+                          ? null
+                          : () => controller.submitOTP(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColor.primary,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 0,
                       ),
-                      elevation: 0,
-                    ),
-                    child: const Text(
-                      'Submit',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
+                      child: controller.isLoading.value
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Text(
+                              'Submit',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
                   ),
                 ),

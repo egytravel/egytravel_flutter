@@ -1,4 +1,5 @@
 import 'package:egytravel_app/feature/wallet/ui/screens/wallet_screen.dart';
+import 'package:feedback/feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -11,34 +12,53 @@ class ProfileQuickActions extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
-          _buildAction(icon: Icons.edit_outlined, label: 'Edit', onTap: () {}),
+          _buildAction(
+            icon: Icons.wallet_outlined,
+            label: 'Wallet',
+            onTap: () => Get.to(() => const WalletScreen()),
+          ),
           const SizedBox(width: 10),
           _buildAction(
             icon: Icons.share_outlined,
             label: 'Share',
-            onTap: () {},
+            onTap: () {
+              Get.snackbar('Share', 'Sharing functionality coming soon!',
+                  backgroundColor: Colors.white10, colorText: Colors.white);
+            },
           ),
           const SizedBox(width: 10),
           _buildAction(
-            icon: Icons.wallet_outlined,
-            label: 'Wallet',
+            icon: Icons.feedback_outlined,
+            label: 'Feedback',
             onTap: () {
-              Get.to(
-                () => const WalletScreen(),
-                transition: Transition.cupertino,
-                duration: const Duration(milliseconds: 300),
-              );
+              _showFeedbackDialog(context);
             },
           ),
           const SizedBox(width: 10),
           _buildAction(
             icon: Icons.support_agent_outlined,
             label: 'Support',
-            onTap: () {},
+            onTap: () {
+              Get.snackbar('Support', 'Connecting to support...',
+                  backgroundColor: Colors.white10, colorText: Colors.white);
+            },
           ),
         ],
       ),
     );
+  }
+
+  void _showFeedbackDialog(BuildContext context) {
+    BetterFeedback.of(context).show((UserFeedback feedback) {
+      // Do something with the feedback
+      // e.g. upload it to your server
+      Get.snackbar(
+        'Thank You!',
+        'Your feedback and screenshot have been submitted.',
+        backgroundColor: const Color(0xFF10B981),
+        colorText: Colors.white,
+      );
+    });
   }
 
   Widget _buildAction({

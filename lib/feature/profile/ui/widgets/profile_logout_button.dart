@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:egytravel_app/feature/profile/logic/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -141,7 +142,7 @@ class ProfileLogoutButton extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () {
                             Get.back();
-                            // Add logout logic here
+                            Get.find<ProfileController>().logout();
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red[600],

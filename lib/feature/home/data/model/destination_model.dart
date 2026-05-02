@@ -1,3 +1,5 @@
+import 'package:egytravel_app/core/utils/url_cleaner.dart';
+
 class Destination {
   final String id;
   final String name;
@@ -25,7 +27,7 @@ class Destination {
       name: json['name'] ?? '',
       cityCode: json['cityCode'],
       country: json['country'],
-      image: json['coverImage'] ?? '',
+      image: UrlCleaner.clean(json['coverImage'] ?? ''),
       description: json['description'],
       attractionsCount: json['attractionsCount'],
       rating: (json['rating'] ?? 0).toDouble(),

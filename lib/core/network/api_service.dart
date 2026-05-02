@@ -6,30 +6,33 @@ class ApiService {
   final DioFactory _dioFactory = DioFactory();
 
   /// get
-  Future<dynamic> get(String endPoint) async {
+  Future<dynamic> get(String endPoint, {Map<String, dynamic>? queryParameters}) async {
     try {
-      final response = await _dioFactory.dio.get(endPoint);
-      return response;
+      final response = await _dioFactory.dio.get(
+        endPoint,
+        queryParameters: queryParameters,
+      );
+      return response.data;
     } on DioException catch (e) {
       throw ApiExceptions.handleError(e);
     }
   }
 
   /// post
-  Future<dynamic> post(String endPoint, Map<String, dynamic> body) async {
+  Future<dynamic> post(String endPoint, {Map<String, dynamic>? data}) async {
     try {
-      final response = await _dioFactory.dio.post(endPoint, data: body);
-      return response;
+      final response = await _dioFactory.dio.post(endPoint, data: data);
+      return response.data;
     } on DioException catch (e) {
       throw ApiExceptions.handleError(e);
     }
   }
 
   /// put
-  Future<dynamic> put(String endPoint, Map<String, dynamic> body) async {
+  Future<dynamic> put(String endPoint, {Map<String, dynamic>? data}) async {
     try {
-      final response = await _dioFactory.dio.post(endPoint, data: body);
-      return response;
+      final response = await _dioFactory.dio.put(endPoint, data: data);
+      return response.data;
     } on DioException catch (e) {
       throw ApiExceptions.handleError(e);
     }
@@ -39,7 +42,7 @@ class ApiService {
   Future<dynamic> delete(String endPoint) async {
     try {
       final response = await _dioFactory.dio.delete(endPoint);
-      return response;
+      return response.data;
     } on DioException catch (e) {
       throw ApiExceptions.handleError(e);
     }

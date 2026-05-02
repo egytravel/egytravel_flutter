@@ -23,6 +23,20 @@ class Trip {
     required this.source,
   });
 
+  factory Trip.fromJson(Map<String, dynamic> json) {
+    return Trip(
+      id: json['id']?.toString() ?? json['_id']?.toString() ?? '',
+      destination: json['destination'] ?? json['place'] ?? 'Unknown',
+      startDate: DateTime.parse(json['startDate'] ?? json['start_date'] ?? DateTime.now().toIso8601String()),
+      endDate: DateTime.parse(json['endDate'] ?? json['end_date'] ?? DateTime.now().toIso8601String()),
+      budget: json['budget'] ?? 'Medium',
+      interests: (json['interests'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      imageUrl: json['imageUrl'] ?? json['image_url'] ?? '',
+      createdAt: DateTime.parse(json['createdAt'] ?? json['created_at'] ?? DateTime.now().toIso8601String()),
+      source: json['source'] ?? 'Manual',
+    );
+  }
+
   // Calculate trip duration in days
   int get durationInDays => endDate.difference(startDate).inDays + 1;
 

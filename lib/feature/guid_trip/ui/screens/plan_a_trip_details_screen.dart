@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 
-class GuideDetailsScreen extends GetView<GuideTripController> {
-  const GuideDetailsScreen({super.key});
+class PlanATripDetailsScreen extends GetView<GuideTripController> {
+  const PlanATripDetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

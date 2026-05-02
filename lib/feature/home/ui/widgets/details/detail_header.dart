@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:ui';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../logic/controller/place_detail_controller.dart';
+import 'package:egytravel_app/core/widgets/custom_back_button.dart';
+import 'package:egytravel_app/core/widgets/glass_action_button.dart';
 
 class DetailHeader extends StatelessWidget {
   final PlaceDetailController controller;
@@ -10,106 +13,98 @@ class DetailHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        // Main image with Hero animation
-        Hero(
-          tag: 'place_image_${controller.place.id}',
-          child: Container(
-            height: 320,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(30),
-                bottomRight: Radius.circular(30),
-              ),
-              image: DecorationImage(
-                image: NetworkImage(controller.place.image),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-        ),
-        // Gradient Overlay
-        Container(
-          height: 320,
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(30),
-              bottomRight: Radius.circular(30),
-            ),
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.black.withValues(alpha: 0.4),
-                Colors.transparent,
-                Colors.black.withValues(alpha: 0.2),
-              ],
-            ),
-          ),
-        ),
-        // Top bar
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildGlassButton(
-                  icon: Icons.arrow_back_ios_new,
-                  onTap: () => Get.back(),
+    return SliverAppBar(
+      expandedHeight: 320.0,
+      collapsedHeight: 150.0,
+      pinned: true,
+      backgroundColor:
+          Colors.transparent, // Transparent to prevent hiding the image
+      elevation: 0,
+      automaticallyImplyLeading: false, // Custom leading
+      flexibleSpace: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return Hero(
+            tag: 'place_image_${controller.place.id}',
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Color(
+                  0xFF0A1628,
+                ), // Dark background behind image to prevent text bleed
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
                 ),
-                Row(
-                  children: [
-                    Obx(
-                      () => _buildGlassButton(
-                        icon: controller.isFavorite.value
-                            ? Icons.favorite
-                            : Icons.favorite_border,
-                        color: controller.isFavorite.value
-                            ? Colors.red
-                            : Colors.white,
-                        onTap: controller.toggleFavorite,
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+                child: SizedBox(
+                  height: constraints.maxHeight,
+                  width: double.infinity,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: controller.place.image,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) =>
+                            Container(color: Colors.grey[800]),
+                        errorWidget: (context, url, error) => Container(
+                          color: Colors.grey[800],
+                          child: const Center(
+                            child: Icon(
+                              Icons.broken_image,
+                              color: Colors.white,
+                              size: 50,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    _buildGlassButton(icon: Icons.share, onTap: () {}),
-                  ],
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withValues(alpha: 0.4),
+                              Colors.transparent,
+                              Colors.black.withValues(alpha: 0.2),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildGlassButton({
-    required IconData icon,
-    required VoidCallback onTap,
-    Color color = Colors.white,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.3),
               ),
             ),
-            child: Icon(icon, size: 20, color: color),
+          );
+        },
+      ),
+      titleSpacing: 16,
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const CustomBackButton(),
+          Row(
+            children: [
+              Obx(
+                () => GlassActionButton(
+                  icon: controller.isFavorite.value
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  color: controller.isFavorite.value
+                      ? Colors.red
+                      : Colors.white,
+                  onTap: controller.toggleFavorite,
+                ),
+              ),
+            ],
           ),
-        ),
+        ],
       ),
     );
   }
 }
-

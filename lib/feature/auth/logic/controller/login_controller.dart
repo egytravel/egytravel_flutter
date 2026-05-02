@@ -1,3 +1,4 @@
+import 'package:egytravel_app/core/error/api_error.dart';
 import 'package:egytravel_app/core/routes/app_routes.dart';
 import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'package:egytravel_app/feature/auth/data/repo/auth_repo.dart';
@@ -29,69 +30,69 @@ class LoginController extends GetxController {
   }
 
   Future<void> login(BuildContext context) async {
+      // showTopGlassSnackBar(
+      //   context,
+      //   'Login Successful',
+      //   success: true,
+      // );
+      // Get.offAllNamed(Routes.home);
+    if (!formKey.currentState!.validate()) return;
+
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      showTopGlassSnackBar(
+        context,
+        'Please fill in both email and password',
+      );
+      return;
+    }
+
+    if (!_isValidEmail(email)) {
+      showTopGlassSnackBar(
+        context,
+        'Invalid Email',
+      );
+      return;
+    }
+
+    if (password.length < 8) {
+      showTopGlassSnackBar(
+        context,
+        'Password must be at least 8 characters',
+      );
+      return;
+    }
+
+    try {
+      isLoading.value = true;
+
+      final user = await _authRepo.login(email: email, password: password);
+
       showTopGlassSnackBar(
         context,
         'Login Successful',
         success: true,
       );
+
       Get.offAllNamed(Routes.home);
-    // if (!formKey.currentState!.validate()) return;
-    //
-    // final email = emailController.text.trim();
-    // final password = passwordController.text.trim();
-    //
-    // if (email.isEmpty || password.isEmpty) {
-    //   showTopGlassSnackBar(
-    //     context,
-    //     'Please fill in both email and password',
-    //   );
-    //   return;
-    // }
-    //
-    // if (!_isValidEmail(email)) {
-    //   showTopGlassSnackBar(
-    //     context,
-    //     'Invalid Email',
-    //   );
-    //   return;
-    // }
-    //
-    // if (password.length < 8) {
-    //   showTopGlassSnackBar(
-    //     context,
-    //     'Password must be at least 8 characters',
-    //   );
-    //   return;
-    // }
-    //
-    // try {
-    //   isLoading.value = true;
-    //
-    //   final user = await _authRepo.login(email: email, password: password);
-    //
-    //   showTopGlassSnackBar(
-    //     context,
-    //     'Login Successful',
-    //     success: true,
-    //   );
-    //
-    //   Get.offAllNamed(Routes.home);
-    //
-    // } on ApiError catch (e) {
-    //   showTopGlassSnackBar(
-    //     context,
-    //     e.message,
-    //   );
-    //   return;
-    // } catch (e) {
-    //   showTopGlassSnackBar(
-    //     context,
-    //     'An error occurred during login',
-    //   );
-    //   return;
-    // } finally {
-    //   isLoading.value = false;
-    // }
+
+    } on ApiError catch (e) {
+      showTopGlassSnackBar(
+        context,
+        e.message,
+      );
+      return;
+    } catch (e) {
+      showTopGlassSnackBar(
+        context,
+        'An error occurred during login',
+      );
+      return;
+    } finally {
+      isLoading.value = false;
+    }
   }
 
 
@@ -101,11 +102,15 @@ class LoginController extends GetxController {
     super.onInit();
     emailController.addListener(_checkButtonStatus);
     passwordController.addListener(_checkButtonStatus);
+    // Listen to rememberMe changes to update button status
+    ever(rememberMe, (_) => _checkButtonStatus());
   }
 
   void _checkButtonStatus() {
     isButtonEnabled.value =
-        emailController.text.isNotEmpty && passwordController.text.isNotEmpty;
+        emailController.text.isNotEmpty && 
+        passwordController.text.isNotEmpty &&
+        rememberMe.value;
   }
 
   @override

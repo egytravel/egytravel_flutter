@@ -1,5 +1,6 @@
 import 'package:egytravel_app/feature/home/logic/controller/home_controller.dart';
 import 'package:egytravel_app/feature/home/ui/widgets/destinations_section.dart';
+import 'package:egytravel_app/feature/home/ui/widgets/events_section.dart';
 import 'package:egytravel_app/feature/home/ui/widgets/hero_carousel.dart';
 import 'package:egytravel_app/feature/home/ui/widgets/home_app_bar.dart';
 import 'package:egytravel_app/feature/home/ui/widgets/popular_places_section.dart';
@@ -16,22 +17,10 @@ class HomeScreenBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(HomeController());
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            const Color(0xFF0A1628).withOpacity(0.0),
-            const Color(0xFF0A1628),
-            const Color(0xFF0D1B2E),
-          ],
-          stops: const [0.0, 0.5, 1.0],
-        ),
-      ),
-      child: Obx(() {
-        if (controller.isError.value && controller.places.isEmpty) {
-          return Center(
+    return Obx(() {
+      if (controller.isError.value && controller.places.isEmpty) {
+        return Scaffold(
+          body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -49,14 +38,25 @@ class HomeScreenBody extends StatelessWidget {
                 ),
               ],
             ),
-          );
-        }
+          ),
+        );
+      }
 
-        return Scaffold(
-          backgroundColor: Colors.transparent,
-          extendBodyBehindAppBar: true,
-          appBar: HomeAppBar(controller: controller),
-          body: Skeletonizer(
+      return Scaffold(
+        backgroundColor: const Color(0xFF0A1628),
+        // Guarantee opaque background
+        extendBodyBehindAppBar: true,
+        appBar: HomeAppBar(controller: controller),
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFF0A1628), Color(0xFF0A1628), Color(0xFF0D1B2E)],
+              stops: [0.0, 0.5, 1.0],
+            ),
+          ),
+          child: Skeletonizer(
             enabled: controller.isLoading.value,
             child: SingleChildScrollView(
               controller: controller.scrollController,
@@ -70,13 +70,14 @@ class HomeScreenBody extends StatelessWidget {
                   const SizedBox(height: 8),
                   PopularPlacesSection(controller: controller),
                   DestinationsSection(controller: controller),
+                  const EventsSection(),
+                  const SizedBox(height: 70),
                 ],
               ),
             ),
           ),
-        );
-      }),
-    );
+        ),
+      );
+    });
   }
 }
-

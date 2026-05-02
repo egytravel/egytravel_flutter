@@ -29,7 +29,7 @@ class EmailInput extends StatelessWidget {
               return null;
             },
             decoration: InputDecoration(
-              hintText: 'Enter Email Address',
+              hintText: 'email@gmail.com',
               hintStyle: TextStyle(color: Colors.grey[400]),
               filled: true,
               fillColor: Colors.transparent,

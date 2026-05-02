@@ -3,7 +3,7 @@ import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'package:egytravel_app/feature/ai_trip_planner/logic/controller/ai_trip_controller.dart';
 import 'package:egytravel_app/feature/ai_trip_planner/ui/screens/ai_trip_planner_screen.dart';
-import 'package:egytravel_app/feature/guid_trip/ui/screens/guid_trip_screen.dart';
+import 'package:egytravel_app/feature/guid_trip/ui/screens/plan_a_trip_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -58,7 +58,7 @@ class _CustomFloatingMenuState extends State<CustomFloatingMenu>
           AnimatedPositioned(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeOut,
-            bottom: isOpen ? 120 : -150, // يطلع من خارج الشاشة
+            bottom: isOpen ? 150 : -150, // يطلع من خارج الشاشة
             child: AnimatedOpacity(
               opacity: isOpen ? 1 : 0,
               duration: const Duration(milliseconds: 250),
@@ -66,39 +66,29 @@ class _CustomFloatingMenuState extends State<CustomFloatingMenu>
                 scale: isOpen ? 1 : 0, // <<<<<< ZOOM IN / OUT
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeOutBack, // انيميشن نطّة بسيطة (جميل جداً)
-                child: Row(
-                  children: [
-                    _buildMenuButton(
-                      icon: Icons.public,
-                      text: "Trip plan",
-                      onTap: () {
-                        Get.toNamed(Routes.tripPlanner);
-                      },
-                    ),
+                child: Padding(
+                  padding:  EdgeInsets.only(bottom: MediaQuery.of(context).viewPadding.bottom),
+                  child: Row(
+                    children: [
+                      _buildMenuButton(
+                        icon: Icons.smart_toy               ,
+                        text: "AI Plan",
+                        onTap: () {
+                          Get.toNamed(Routes.tripPlanner);
+                        },
+                      ),
 
-                    const SizedBox(width: 16),
+                      const SizedBox(width: 16),
 
-                    _buildMenuButton(
-                      icon: Icons.explore,
-                      text: "Guide",
-                      onTap: () {
-                        Get.to(() => const GuideTripScreen());
-                        showTopGlassSnackBar(context, 'Navigate to Guide screen', success: true);
-                      },
-                    ),
-
-                    const SizedBox(width: 16),
-
-                    _buildMenuButton(
-                      icon: Icons.add_a_photo_rounded,
-                      text: "Post",
-                      onTap: () {
-                        setState(() => isOpen = false);
-                        Get.toNamed(Routes.community);
-                        showTopGlassSnackBar(context, 'Navigate to Community Post', success: true);
-                      },
-                    ),
-                  ],
+                      _buildMenuButton(
+                        icon: Icons.travel_explore   ,
+                        text: "Plan a trip",
+                        onTap: () {
+                          Get.to(() => const PlanATripScreen());
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

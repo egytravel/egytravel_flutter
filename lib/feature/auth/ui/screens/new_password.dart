@@ -1,6 +1,8 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/auth/logic/controller/newPassword_controller.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/auth_background.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/glass_container.dart';
+import 'package:egytravel_app/core/widgets/custom_back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,9 +19,9 @@ class EnterNewPasswordScreen extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Get.back(),
+          leading: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: CustomBackButton(),
           ),
         ),
         body: SingleChildScrollView(
@@ -76,28 +78,39 @@ class EnterNewPasswordScreen extends StatelessWidget {
                   onToggle: controller.toggleRePasswordVisibility,
                 )),
                 const SizedBox(height: 40),
-                SizedBox(
+                Obx(() => SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: controller.submitNewPassword,
+                    onPressed: controller.isLoading.value 
+                        ? null 
+                        : () => controller.submitNewPassword(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6C5CE7),
+                      backgroundColor: AppColor.primary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Submit',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: controller.isLoading.value
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text(
+                            'Submit',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
-                ),
+                )),
                 const SizedBox(height: 40),
               ],
             ),

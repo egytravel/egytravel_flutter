@@ -1,3 +1,5 @@
+import 'package:egytravel_app/core/utils/url_cleaner.dart';
+
 class FlightModel {
   final String id;
   final String fromCity;
@@ -28,6 +30,90 @@ class FlightModel {
     required this.flightNumber,
     required this.baggage,
   });
+
+  static double _parseDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    if (value is Map) {
+      if (value.containsKey('amount')) return _parseDouble(value['amount']);
+      if (value.containsKey('value')) return _parseDouble(value['value']);
+      if (value.containsKey('price')) return _parseDouble(value['price']);
+      if (value.containsKey('totalPrice')) return _parseDouble(value['totalPrice']);
+      if (value.containsKey('score')) return _parseDouble(value['score']);
+      if (value.containsKey('rate')) return _parseDouble(value['rate']);
+    }
+    return 0.0;
+  }
+
+  factory FlightModel.fromJson(Map<String, dynamic> json) {
+    // Handle airline
+    String name = '';
+    String logo = '';
+    if (json['airline'] is Map) {
+      name = json['airline']['name'] ?? '';
+      logo = json['airline']['logo'] ?? '';
+    } else {
+      name = (json['airline'] is String) ? json['airline'] : (json['airlineName'] ?? '');
+      logo = json['airlineLogo'] ?? '';
+    }
+
+    // Handle departure
+    String from = '';
+    String depTime = DateTime.now().toIso8601String();
+    if (json['departure'] is Map) {
+      from = json['departure']['city'] ?? '';
+      depTime = json['departure']['time'] ?? depTime;
+    } else {
+      from = json['departureCity'] ?? json['fromCity'] ?? '';
+      depTime = json['departureDate'] ?? json['departureTime'] ?? depTime;
+    }
+
+    // Handle arrival
+    String to = '';
+    String arrTime = DateTime.now().toIso8601String();
+    if (json['arrival'] is Map) {
+      to = json['arrival']['city'] ?? '';
+      arrTime = json['arrival']['time'] ?? arrTime;
+    } else {
+      to = json['arrivalCity'] ?? json['toCity'] ?? '';
+      arrTime = json['arrivalDate'] ?? json['arrivalTime'] ?? arrTime;
+    }
+
+    return FlightModel(
+      id: (json['id'] ?? json['_id'] ?? json['flightId'] ?? '').toString(),
+      fromCity: from,
+      toCity: to,
+      airlineName: name,
+      airlineLogo: UrlCleaner.clean(logo),
+      departureTime: DateTime.parse(depTime),
+      arrivalTime: DateTime.parse(arrTime),
+      duration: json['duration'] ?? '',
+      price: _parseDouble(json['price'] ?? json['totalPrice']),
+      rating: _parseDouble(json['rating']),
+      flightClass: json['cabinClass'] ?? json['travelClass'] ?? json['flightClass'] ?? 'Economy',
+      flightNumber: json['flightNumber'] ?? '',
+      baggage: json['baggage']?.toString() ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'departureCity': fromCity,
+      'arrivalCity': toCity,
+      'airline': airlineName,
+      'airlineLogo': airlineLogo,
+      'departureDate': departureTime.toIso8601String(),
+      'arrivalDate': arrivalTime.toIso8601String(),
+      'duration': duration,
+      'price': price,
+      'rating': rating,
+      'travelClass': flightClass,
+      'flightNumber': flightNumber,
+      'baggage': baggage,
+    };
+  }
 
   // Mock data generator
   static List<FlightModel> getMockFlights({

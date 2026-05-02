@@ -1,5 +1,7 @@
+import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:egytravel_app/core/widgets/custom_back_button.dart';
 
 
 class PasswordUpdateSuccessScreen extends StatelessWidget {
@@ -12,9 +14,9 @@ class PasswordUpdateSuccessScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Get.back(),
+        leading: const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: CustomBackButton(iconColor: Colors.black),
         ),
       ),
       body: Padding(
@@ -44,7 +46,7 @@ class PasswordUpdateSuccessScreen extends StatelessWidget {
                     width: 100,
                     height: 100,
                     decoration: const BoxDecoration(
-                      color: Color(0xFF6C5CE7),
+                      color: AppColor.primary,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -81,7 +83,7 @@ class PasswordUpdateSuccessScreen extends StatelessWidget {
                   Get.offAllNamed('/home'); // or Get.offAll(() => HomeScreen());
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF6C5CE7),
+                  backgroundColor: AppColor.primary,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),

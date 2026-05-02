@@ -1,3 +1,5 @@
+import 'package:egytravel_app/core/utils/url_cleaner.dart';
+
 class Place {
   final String? id;
   final String name;
@@ -34,23 +36,32 @@ class Place {
     this.featured,
     this.popular,
   });
-
   factory Place.fromJson(Map<String, dynamic> json) {
+    final String mainImage = json['coverImage'] ?? 
+                             json['image'] ?? 
+                             json['imageUrl'] ?? 
+                             json['thumbnail'] ?? 
+                             (json['images'] != null && (json['images'] as List).isNotEmpty ? json['images'][0] : '');
+
     return Place(
       id: json['id'],
       name: json['name'] ?? '',
       location: json['location'] ?? '',
       city: json['city'],
       description: json['description'],
-      image: json['coverImage'] ?? '',
+      image: UrlCleaner.clean(mainImage),
       rating: (json['rating'] ?? 0).toDouble(),
       reviewCount: json['reviewCount'],
       price: json['pricePerPerson'] ?? 0,
       currency: json['currency'],
       category: json['category'],
-      images: json['images'] != null ? List<String>.from(json['images']) : null,
+      images: json['images'] != null
+          ? UrlCleaner.cleanList(List<String>.from(json['images']))
+          : null,
       tags: json['tags'] != null ? List<String>.from(json['tags']) : null,
-      facilities: json['facilities'] != null ? List<String>.from(json['facilities']) : null,
+      facilities: json['facilities'] != null
+          ? List<String>.from(json['facilities'])
+          : null,
       featured: json['featured'],
       popular: json['popular'],
     );
