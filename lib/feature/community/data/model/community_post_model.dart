@@ -29,24 +29,44 @@ class CommunityPost {
     // Handle images array or single media_url
     String? imageUrl;
     if (json['images'] is List && (json['images'] as List).isNotEmpty) {
-      imageUrl = json['images'][0];
+      final firstImage = (json['images'] as List).first;
+      imageUrl = firstImage is String ? firstImage : firstImage?.toString();
     } else {
-      imageUrl = json['media_url'];
+      imageUrl = json['media_url']?.toString();
     }
 
     // Handle author or user object
     final authorData = json['author'] ?? json['user'] ?? {};
 
+    // Safely extract location - may be a String or a Map object
+    String? locationStr;
+    final rawLocation = json['location'] ?? json['place'];
+    if (rawLocation is String) {
+      locationStr = rawLocation;
+    } else if (rawLocation is Map) {
+      locationStr = rawLocation['name']?.toString() ?? rawLocation['city']?.toString();
+    }
+
+    // Try every possible API field name for "liked by current user"
+    bool resolvedIsLiked = false;
+    for (final key in ['liked', 'isLiked', 'is_liked', 'userLiked', 'hasLiked', 'user_liked', 'has_liked', 'likedByMe']) {
+      final val = json[key];
+      if (val != null) {
+        resolvedIsLiked = val == true || val == 1 || val == 'true';
+        break;
+      }
+    }
+
     return CommunityPost(
       id: postId.toString(),
       description: caption,
       mediaUrl: imageUrl,
-      location: json['location'] ?? json['place'],
-      likesCount: json['likesCount'] ?? json['likes_count'] ?? 0,
-      commentsCount: json['commentsCount'] ?? json['comments_count'] ?? 0,
-      isLiked: json['liked'] ?? json['isLiked'] ?? json['is_liked'] ?? false,
-      createdAt: DateTime.parse(json['createdAt'] ?? json['created_at'] ?? DateTime.now().toIso8601String()),
-      user: PostUser.fromJson(authorData),
+      location: locationStr,
+      likesCount: (json['likesCount'] ?? json['likes_count'] ?? 0) as int,
+      commentsCount: (json['commentsCount'] ?? json['comments_count'] ?? 0) as int,
+      isLiked: resolvedIsLiked,
+      createdAt: DateTime.tryParse(json['createdAt'] ?? json['created_at'] ?? '') ?? DateTime.now(),
+      user: PostUser.fromJson(authorData is Map<String, dynamic> ? authorData : {}),
     );
   }
 
@@ -112,8 +132,12 @@ class CommunityComment {
     return CommunityComment(
       id: (json['commentId'] ?? json['comment_id'] ?? '').toString(),
       content: json['content'] ?? json['text'] ?? json['comment'] ?? '',
-      createdAt: DateTime.parse(json['createdAt'] ?? json['created_at'] ?? DateTime.now().toIso8601String()),
-      user: PostUser.fromJson(json['author'] ?? json['user'] ?? {}),
+      createdAt: DateTime.tryParse(json['createdAt'] ?? json['created_at'] ?? '') ?? DateTime.now(),
+      user: PostUser.fromJson(
+        (json['author'] ?? json['user']) is Map<String, dynamic>
+            ? json['author'] ?? json['user']
+            : {},
+      ),
     );
   }
 }

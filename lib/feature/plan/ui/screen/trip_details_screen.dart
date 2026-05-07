@@ -83,7 +83,13 @@ class TripDetailsScreen extends StatelessWidget {
         children: [
           Icon(icon, color: Colors.orange, size: 16),
           const SizedBox(width: 8),
-          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 14)),
+          Flexible(
+            child: Text(
+              label,
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
     );
@@ -109,9 +115,12 @@ class TripDetailsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Text(
-                day.notes ?? 'Daily Itinerary',
-                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+              Expanded(
+                child: Text(
+                  day.notes ?? 'Daily Itinerary',
+                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),
