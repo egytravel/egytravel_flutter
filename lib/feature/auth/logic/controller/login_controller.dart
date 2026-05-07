@@ -30,12 +30,7 @@ class LoginController extends GetxController {
   }
 
   Future<void> login(BuildContext context) async {
-      // showTopGlassSnackBar(
-      //   context,
-      //   'Login Successful',
-      //   success: true,
-      // );
-      // Get.offAllNamed(Routes.home);
+      
     if (!formKey.currentState!.validate()) return;
 
     final email = emailController.text.trim();

@@ -46,12 +46,23 @@ class HotelCard extends StatelessWidget {
                   ),
                   child: Stack(
                     children: [
-                      Center(
-                        child: Text(
-                          hotel.imageUrl,
-                          style: const TextStyle(fontSize: 50),
-                        ),
-                      ),
+                      hotel.imageUrl.startsWith('http')
+                          ? Image.network(
+                              hotel.imageUrl,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Center(
+                                child: Icon(Icons.broken_image,
+                                    color: Colors.white24, size: 40),
+                              ),
+                            )
+                          : Center(
+                              child: Text(
+                                hotel.imageUrl,
+                                style: const TextStyle(fontSize: 50),
+                              ),
+                            ),
                       // Favorite Button
                       Positioned(
                         top: 8,

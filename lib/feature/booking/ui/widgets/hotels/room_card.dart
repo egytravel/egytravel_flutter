@@ -46,10 +46,23 @@ class RoomCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Center(
-                        child: Text(
-                          room.imageUrl,
-                          style: const TextStyle(fontSize: 40),
-                        ),
+                        child: room.imageUrl.startsWith('http')
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.network(
+                                  room.imageUrl,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(Icons.broken_image,
+                                          color: Colors.white24, size: 30),
+                                ),
+                              )
+                            : Text(
+                                room.imageUrl,
+                                style: const TextStyle(fontSize: 40),
+                              ),
                       ),
                     ),
                     const SizedBox(width: 16),

@@ -7,13 +7,14 @@ import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 
 class TripItineraryController extends GetxController {
-  final TripRepo _tripRepo = Get.put(TripRepo());
-  
+  final TripRepo _tripRepo = TripRepo();
+
   late String destination;
   late DateTime startDate;
   late DateTime endDate;
   late String budget;
   late List<String> interests;
+  String tripId = '';
 
   List<DayItinerary> tripDays = [];
   bool isLoading = true;
@@ -34,23 +35,68 @@ class TripItineraryController extends GetxController {
     required DateTime endDate,
     required String budget,
     required List<String> interests,
+    String tripId = '',
   }) {
     this.destination = destination;
     this.startDate = startDate;
     this.endDate = endDate;
     this.budget = budget;
     this.interests = interests;
+    this.tripId = tripId;
     selectedDayIndex = 0;
-    _generateItinerary();
+    _loadItinerary();
   }
 
-  Future<void> _generateItinerary() async {
+  /// Loads itinerary from API if tripId exists, otherwise generates locally.
+  Future<void> _loadItinerary() async {
     isLoading = true;
     update();
 
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      if (tripId.isNotEmpty) {
+        // Try fetching days from the server
+        final days = await _tripRepo.getTripDays(tripId);
+        if (days.isNotEmpty) {
+          tripDays = days
+              .map(
+                (d) => DayItinerary(
+                  dayNumber: d.dayNumber,
+                  date: DateTime.tryParse(d.date ?? '') ?? startDate,
+                  hotel: d.notes ?? '',
+                  activities:
+                      d.activities
+                          ?.map(
+                            (a) => Activity(
+                              time: a.time ?? '',
+                              title: a.title,
+                              icon: Icons.explore,
+                              description: a.description ?? '',
+                            ),
+                          )
+                          .toList() ??
+                      [],
+                ),
+              )
+              .toList();
+        } else {
+          // Server trip exists but has no days yet — generate locally
+          _generateLocalItinerary();
+        }
+      } else {
+        // No server trip — generate locally
+        _generateLocalItinerary();
+      }
+    } catch (e) {
+      // API failed — fallback to local generation
+      _generateLocalItinerary();
+    }
 
+    isLoading = false;
+    update();
+  }
+
+  /// Generates a local mock itinerary based on user inputs.
+  void _generateLocalItinerary() {
     int totalDays = endDate.difference(startDate).inDays + 1;
     List<DayItinerary> days = [];
 
@@ -60,8 +106,6 @@ class TripItineraryController extends GetxController {
     }
 
     tripDays = days;
-    isLoading = false;
-    update();
   }
 
   DayItinerary _generateDayItinerary(
@@ -151,7 +195,6 @@ class TripItineraryController extends GetxController {
   }
 
   List<Activity> _getActivitiesForDay(int dayNumber) {
-    // Different activities based on user interests
     List<Activity> baseActivities = [
       Activity(
         time: '09:00 AM',
@@ -249,40 +292,49 @@ class TripItineraryController extends GetxController {
     update();
   }
 
+  /// Saves the trip to the server (creates trip + adds days).
   Future<void> saveTrip() async {
     try {
       isLoading = true;
       update();
 
-      // 1. Create the main trip
-      final tripToCreate = TripModel(
-        id: '', // Server will generate
-        title: 'Trip to $destination',
-        description: 'AI Generated Trip to $destination with $budget budget',
-        destination: destination,
-        startDate: startDate.toIso8601String(),
-        endDate: endDate.toIso8601String(),
-        budget: 0, // Could be parsed from budget string if needed
-        status: 'planning',
-      );
+      String currentTripId = tripId;
 
-      final createdTrip = await _tripRepo.createTrip(tripToCreate);
+      // If no trip was created yet, create one first
+      if (currentTripId.isEmpty) {
+        final tripToCreate = TripModel(
+          id: '',
+          title: 'Trip to $destination',
+          description: 'Trip to $destination with $budget budget',
+          destination: destination,
+          startDate: _formatDate(startDate),
+          endDate: _formatDate(endDate),
+          budget: 0,
+          status: 'planning',
+        );
 
-      // 2. Add each day and its activities
+        final createdTrip = await _tripRepo.createTrip(tripToCreate);
+        currentTripId = createdTrip.id;
+        tripId = currentTripId;
+      }
+
+      // Add each day — activities must be a list of objects, not strings
       for (var day in tripDays) {
-        final dayData = {
+        final dayData = <String, dynamic>{
           'dayNumber': day.dayNumber,
-          'date': day.date.toIso8601String(),
+          'date': _formatDate(day.date),
           'notes': 'Stay at ${day.hotel}',
-          'activities': day.activities.map((a) => {
-            'title': a.title,
-            'time': a.time,
-            'location': destination,
-            'description': a.description,
-            'cost': 0,
-          }).toList(),
+          'activities': day.activities
+              .map(
+                (a) => <String, dynamic>{
+                  'title': a.title,
+                  'time': a.time,
+                  'description': a.description,
+                },
+              )
+              .toList(),
         };
-        await _tripRepo.addDayToTrip(createdTrip.id, dayData);
+        await _tripRepo.addDayToTrip(currentTripId, dayData);
       }
 
       showSuccess('Trip saved successfully!');
@@ -293,4 +345,8 @@ class TripItineraryController extends GetxController {
       update();
     }
   }
+
+  /// Formats a DateTime as yyyy-MM-dd (API expected format).
+  String _formatDate(DateTime date) =>
+      '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 }

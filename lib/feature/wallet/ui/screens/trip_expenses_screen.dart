@@ -1,4 +1,4 @@
-import 'package:egytravel_app/core/models/trip_model.dart';
+import 'package:egytravel_app/feature/plan/data/model/trip_model.dart';
 import 'package:egytravel_app/core/widgets/custom_back_button.dart';
 import 'package:egytravel_app/core/widgets/glassy_background.dart';
 import 'package:egytravel_app/feature/wallet/logic/controller/wallet_controller.dart';
@@ -8,11 +8,23 @@ import 'package:egytravel_app/feature/wallet/ui/widgets/expense_category_card.da
 import 'package:egytravel_app/feature/wallet/ui/widgets/expense_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class TripExpensesScreen extends StatelessWidget {
-  final Trip trip;
+  final TripModel trip;
 
   const TripExpensesScreen({super.key, required this.trip});
+
+  String get _dateRange {
+    if (trip.startDate == null || trip.endDate == null) return 'Dates TBD';
+    try {
+      final s = DateTime.parse(trip.startDate!);
+      final e = DateTime.parse(trip.endDate!);
+      return '${DateFormat('MMM d').format(s)} - ${DateFormat('MMM d').format(e)}';
+    } catch (_) {
+      return 'Dates TBD';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +60,7 @@ class TripExpensesScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    trip.destination,
+                                    trip.destination ?? trip.title,
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 22,
@@ -58,9 +70,11 @@ class TripExpensesScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    trip.dateRange,
+                                    _dateRange,
                                     style: TextStyle(
-                                      color: Colors.white.withOpacity(0.6),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.6,
+                                      ),
                                       fontSize: 13,
                                     ),
                                   ),

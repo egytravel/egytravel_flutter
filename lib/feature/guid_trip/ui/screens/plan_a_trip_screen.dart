@@ -11,23 +11,24 @@ class PlanATripScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(GuideTripController());
-
-    return GlassyBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Row(
+    return GetBuilder<GuideTripController>(
+      init: GuideTripController(),
+      builder: (controller) {
+        return GlassyBackground(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CustomBackButton(),
-                    SizedBox(width: 12),
-                    Text(
-                      'Create Your Plain a trip',
+                    const Row(
+                      children: [
+                        CustomBackButton(),
+                        SizedBox(width: 12),
+                        Text(
+                          'Create Your Plan a trip',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 24,
@@ -39,7 +40,9 @@ class PlanATripScreen extends StatelessWidget {
                 const SizedBox(height: 32),
                 DestinationInput(controller: controller.destinationController),
                 Obx(() {
-                  if (controller.suggestions.isEmpty) return const SizedBox.shrink();
+                  if (controller.suggestions.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
                   return Container(
                     margin: const EdgeInsets.only(top: 8),
                     decoration: BoxDecoration(
@@ -48,11 +51,18 @@ class PlanATripScreen extends StatelessWidget {
                       border: Border.all(color: Colors.white.withOpacity(0.1)),
                     ),
                     child: Column(
-                      children: controller.suggestions.map((s) => ListTile(
-                        title: Text(s, style: const TextStyle(color: Colors.white)),
-                        onTap: () => controller.selectDestination(s),
-                        dense: true,
-                      )).toList(),
+                      children: controller.suggestions
+                          .map(
+                            (s) => ListTile(
+                              title: Text(
+                                s,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              onTap: () => controller.selectDestination(s),
+                              dense: true,
+                            ),
+                          )
+                          .toList(),
                     ),
                   );
                 }),
@@ -68,24 +78,37 @@ class PlanATripScreen extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: controller.createGuide,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                Obx(
+                  () => SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: controller.isLoading.value
+                          ? null
+                          : controller.createGuide,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                    ),
-                    child: const Text(
-                      'Create Guide',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      child: controller.isLoading.value
+                          ? const SizedBox(
+                              height: 22,
+                              width: 22,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Text(
+                              'Create Guide',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                     ),
                   ),
                 ),
@@ -95,6 +118,8 @@ class PlanATripScreen extends StatelessWidget {
           ),
         ),
       ),
+        );
+      },
     );
   }
 }

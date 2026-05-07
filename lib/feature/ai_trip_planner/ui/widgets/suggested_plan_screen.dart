@@ -13,6 +13,7 @@ class TripItineraryScreen extends StatelessWidget {
   final DateTime endDate;
   final String budget;
   final List<String> interests;
+  final String tripId;
 
   const TripItineraryScreen({
     Key? key,
@@ -21,6 +22,7 @@ class TripItineraryScreen extends StatelessWidget {
     required this.endDate,
     required this.budget,
     required this.interests,
+    this.tripId = '',
   }) : super(key: key);
 
   @override
@@ -36,6 +38,7 @@ class TripItineraryScreen extends StatelessWidget {
         endDate: endDate,
         budget: budget,
         interests: interests,
+        tripId: tripId,
       );
     });
 

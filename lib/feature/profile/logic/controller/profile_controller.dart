@@ -1,6 +1,6 @@
 import 'package:egytravel_app/core/locale_storage/shared_preferences_helper.dart';
-import 'package:egytravel_app/core/models/trip_model.dart';
-import 'package:egytravel_app/feature/ai_trip_planner/ui/widgets/suggested_plan_screen.dart';
+import 'package:egytravel_app/feature/plan/data/model/trip_model.dart';
+import 'package:egytravel_app/feature/plan/ui/screen/trip_details_screen.dart';
 import 'package:egytravel_app/feature/profile/data/model/profile_model.dart';
 import 'package:egytravel_app/feature/profile/data/repo/profile_repo.dart';
 import 'package:flutter/material.dart';
@@ -25,8 +25,8 @@ class ProfileController extends GetxController {
   final emailEnabled = true.obs;
   final isUpdatingNotif = false.obs;
 
-  // ── Trips (local mock until trips API is connected) ──────────────────────
-  final RxList<Trip> userTrips = <Trip>[].obs;
+  // ── Trips ────────────────────────────────────────────────────────────────
+  final RxList<TripModel> userTrips = <TripModel>[].obs;
 
   // ── Favorites, Bookings, Travel History ──────────────────────────────────
   final favorites = <Map<String, dynamic>>[].obs;
@@ -83,8 +83,12 @@ class ProfileController extends GetxController {
       isUpdatingProfile.value = true;
 
       // Only send optional fields if they are not empty to avoid API validation errors
-      final String? trimmedNationality = nationality?.trim().isEmpty ?? true ? null : nationality?.trim();
-      final String? trimmedDob = dateOfBirth?.trim().isEmpty ?? true ? null : dateOfBirth?.trim();
+      final String? trimmedNationality = nationality?.trim().isEmpty ?? true
+          ? null
+          : nationality?.trim();
+      final String? trimmedDob = dateOfBirth?.trim().isEmpty ?? true
+          ? null
+          : dateOfBirth?.trim();
 
       profile.value = await _repo.updateProfile(
         name: name?.trim(),
@@ -232,21 +236,15 @@ class ProfileController extends GetxController {
   Future<void> fetchTrips() async {
     try {
       final tripsData = await _repo.getMyTrips();
-      userTrips.value = tripsData.map((t) => Trip.fromJson(t)).toList();
+      userTrips.value = tripsData.map((t) => TripModel.fromJson(t)).toList();
     } catch (_) {
       // keep empty or previous trips
     }
   }
 
-  void navigateToTripDetails(Trip trip) {
+  void navigateToTripDetails(TripModel trip) {
     Get.to(
-      () => TripItineraryScreen(
-        destination: trip.destination,
-        startDate: trip.startDate,
-        endDate: trip.endDate,
-        budget: trip.budget,
-        interests: trip.interests,
-      ),
+      () => TripDetailsScreen(tripId: trip.id),
       transition: Transition.cupertino,
       duration: const Duration(milliseconds: 300),
     );

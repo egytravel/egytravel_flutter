@@ -22,7 +22,7 @@ class ExploreGrid extends StatelessWidget {
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
-        final String heroTag = 'grid_${item.id}';
+        final String heroTag = 'grid_${item.id}_$index';
         return ExploreCard(
           item: item,
           heroTag: heroTag,
