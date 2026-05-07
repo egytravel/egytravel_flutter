@@ -3,17 +3,21 @@ import 'package:egytravel_app/feature/guid_trip/logic/models/guide_day_model.dar
 import 'package:egytravel_app/feature/guid_trip/ui/screens/plan_a_trip_details_screen.dart';
 import 'package:egytravel_app/feature/plan/data/model/trip_model.dart';
 import 'package:egytravel_app/feature/plan/data/repo/trip_repo.dart';
+import 'package:egytravel_app/feature/plan/logic/controller/saved_trips_controller.dart';
 import 'package:egytravel_app/feature/plan/ui/screen/trip_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class GuideTripController extends GetxController {
   final TripRepo _tripRepo = TripRepo();
 
   final TextEditingController destinationController = TextEditingController();
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
   DateTime? startDate;
   DateTime? endDate;
 
@@ -28,6 +32,12 @@ class GuideTripController extends GetxController {
   final RxBool isFabVisible = true.obs;
 
   String? _createdTripId;
+  String? get createdTripId => _createdTripId;
+
+  // ── MAP ────────────────────────────────────────────────────────────────────
+  GoogleMapController? mapController;
+  final RxSet<Marker> markers = <Marker>{}.obs;
+  final Rx<LatLng> mapCenter = const LatLng(26.8206, 30.8025).obs; // Egypt center
 
   @override
   void onInit() {
@@ -46,18 +56,15 @@ class GuideTripController extends GetxController {
   Future<void> searchDestinations(String query) async {
     try {
       isSearching.value = true;
-      final mockDestinations =
-          [
-            'Cairo',
-            'Alexandria',
-            'Luxor',
-            'Aswan',
-            'Sharm El Sheikh',
-            'Hurghada',
-          ].where((destination) {
-            return destination.toLowerCase().contains(query.toLowerCase());
-          }).toList();
-      suggestions.assignAll(mockDestinations);
+      final results = await _tripRepo.searchPlaces(query);
+      final names = results
+          .map((r) =>
+              (r['name'] ?? r['title'] ?? r['placeName'] ?? '').toString())
+          .where((s) => s.isNotEmpty)
+          .toList();
+      suggestions.assignAll(names);
+    } catch (_) {
+      suggestions.clear();
     } finally {
       isSearching.value = false;
     }
@@ -67,6 +74,57 @@ class GuideTripController extends GetxController {
     destinationController.text = destination;
     suggestions.clear();
     update();
+  }
+
+  // ── Place Management ───────────────────────────────────────────────────────
+
+  Future<void> addPlaceToDay(
+    String tripId,
+    String dayId,
+    Map<String, dynamic> placeData,
+  ) async {
+    try {
+      await _tripRepo.addPlaceToDay(tripId, dayId, placeData);
+      
+      // Add marker to map
+      final lat = placeData['lat'] as double? ?? 0.0;
+      final lng = placeData['lng'] as double? ?? 0.0;
+      if (lat != 0.0 && lng != 0.0) {
+        final point = LatLng(lat, lng);
+        markers.add(Marker(
+          markerId: MarkerId(placeData['placeId'] ?? DateTime.now().toString()),
+          position: point,
+          infoWindow: InfoWindow(title: placeData['name'] ?? 'Place'),
+        ));
+        
+        // Move camera to the new place
+        mapController?.animateCamera(CameraUpdate.newLatLngZoom(point, 12));
+      }
+
+      await _refreshTrip(tripId);
+      showSuccess('Place added!');
+    } catch (error) {
+      showError('Failed to add place: ${_readableError(error)}');
+    }
+  }
+
+  Future<void> removePlaceFromDay(
+    String tripId,
+    String dayId,
+    int placeIndex,
+  ) async {
+    try {
+      await _tripRepo.removePlaceFromDay(tripId, dayId, placeIndex);
+      await _refreshTrip(tripId);
+      showSuccess('Place removed!');
+    } catch (error) {
+      showError('Failed to remove place: ${_readableError(error)}');
+    }
+  }
+
+  void onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+    // Set map style to dark if possible or premium looking
   }
 
   void setStartDate(DateTime date) {
@@ -106,17 +164,17 @@ class GuideTripController extends GetxController {
       _createdTripId = tripId;
       trip.value = createdTrip;
 
-      final refreshed = await _refreshTrip(tripId);
-      _rebuildDays(totalDays);
-
-      if (refreshed) {
-        showSuccess('Trip created successfully!');
-      } else {
-        showError(
-          'Trip created, but latest details could not be refreshed. You can continue editing.',
-        );
+      // The backend auto-creates days based on travel dates.
+      // We either use the days from the response or fetch them if they are missing.
+      List<TripDayModel> serverDays = createdTrip.days ?? [];
+      
+      if (serverDays.isEmpty) {
+        serverDays = await _tripRepo.getTripDays(tripId);
       }
 
+      _rebuildDays(serverDays);
+
+      showSuccess('Trip initialized with ${serverDays.length} days!');
       Get.to(() => const PlanATripDetailsScreen());
     } catch (error) {
       final message = _readableError(error);
@@ -127,8 +185,33 @@ class GuideTripController extends GetxController {
     }
   }
 
-  void addDay() {
-    days.add(GuideDayModel(dayNumber: days.length + 1));
+  Future<void> addDay() async {
+    final tripId = _createdTripId;
+    if (tripId != null && tripId.isNotEmpty) {
+      try {
+        isLoading.value = true;
+        final nextDayNumber = days.length + 1;
+        final dayDate = startDate?.add(Duration(days: nextDayNumber - 1));
+        final dayData = {
+          'dayNumber': nextDayNumber,
+          if (dayDate != null) 'date': _formatDate(dayDate),
+        };
+        final newDay = await _tripRepo.addDayToTrip(tripId, dayData);
+        days.add(GuideDayModel(
+          id: newDay.id,
+          dayNumber: newDay.dayNumber,
+          place: newDay.title ?? '',
+          notes: newDay.notes ?? '',
+        ));
+        showSuccess('Day ${newDay.dayNumber} added');
+      } catch (error) {
+        showError('Failed to add day: ${_readableError(error)}');
+      } finally {
+        isLoading.value = false;
+      }
+    } else {
+      days.add(GuideDayModel(dayNumber: days.length + 1));
+    }
   }
 
   Future<void> saveTrip() async {
@@ -154,19 +237,15 @@ class GuideTripController extends GetxController {
           if (dayDate != null) 'date': _formatDate(dayDate),
           if (day.place.value.isNotEmpty) 'title': day.place.value,
           if (day.notes.value.isNotEmpty) 'notes': day.notes.value,
-          'activities': [
-            {
-              'title': day.place.value.isNotEmpty
-                  ? day.place.value
-                  : 'Activity',
-              'time': 'All Day',
-              if (day.address.value.isNotEmpty) 'location': day.address.value,
-              if (day.notes.value.isNotEmpty) 'description': day.notes.value,
-            },
-          ],
         };
 
-        await _tripRepo.addDayToTrip(tripId, dayData);
+        if (day.id != null && day.id!.isNotEmpty) {
+          await _tripRepo.updateDay(tripId, day.id!, dayData);
+        } else {
+          final newDay = await _tripRepo.addDayToTrip(tripId, dayData);
+          // Update local day with ID from server if we just created it
+          // This is a safety measure in case a day was added locally without API call
+        }
       }
 
       final refreshed = await _refreshTrip(tripId);
@@ -176,10 +255,14 @@ class GuideTripController extends GetxController {
         showError('Trip saved, but latest details could not be refreshed.');
       }
 
-      Get.off(
-        () => TripDetailsScreen(tripId: tripId),
-        transition: Transition.cupertino,
-      );
+      // Pop planning screens and go back to previous main screen (Home/Profile)
+      Get.close(2); 
+      
+      // Refresh SavedTripsController if it exists to show the new trip in the list
+      try {
+        final savedController = Get.find<SavedTripsController>();
+        savedController.fetchTrips();
+      } catch (_) {}
     } catch (error) {
       final message = _readableError(error);
       errorMessage.value = message;
@@ -225,10 +308,13 @@ class GuideTripController extends GetxController {
   }
 
   bool _validateBaseTripInputs() {
-    if (destinationController.text.trim().isEmpty ||
-        startDate == null ||
-        endDate == null) {
-      errorMessage.value = 'Please fill in all fields';
+    if (titleController.text.trim().isEmpty) {
+      errorMessage.value = 'Please enter a trip title';
+      showError(errorMessage.value);
+      return false;
+    }
+    if (startDate == null || endDate == null) {
+      errorMessage.value = 'Please select start and end dates';
       showError(errorMessage.value);
       return false;
     }
@@ -236,12 +322,12 @@ class GuideTripController extends GetxController {
   }
 
   TripModel _buildBaseTrip() {
-    final destination = destinationController.text.trim();
     return TripModel(
       id: '',
-      title: 'Trip to $destination',
-      description: 'Planned trip to $destination',
-      destination: destination,
+      title: titleController.text.trim(),
+      description: descriptionController.text.trim().isNotEmpty
+          ? descriptionController.text.trim()
+          : null,
       startDate: startDate != null ? _formatDate(startDate!) : null,
       endDate: endDate != null ? _formatDate(endDate!) : null,
       budget: 0,
@@ -253,6 +339,11 @@ class GuideTripController extends GetxController {
     try {
       final refreshedTrip = await _tripRepo.getTripDetails(tripId);
       trip.value = refreshedTrip;
+      
+      if (refreshedTrip.days != null) {
+        _syncDays(refreshedTrip.days!);
+      }
+      
       errorMessage.value = '';
       return true;
     } catch (error) {
@@ -261,7 +352,51 @@ class GuideTripController extends GetxController {
     }
   }
 
-  void _rebuildDays(int totalDays) {
+  void _syncDays(List<TripDayModel> serverDays) {
+    for (var sDay in serverDays) {
+      // Find existing day by ID or dayNumber
+      final existingDay = days.firstWhereOrNull(
+        (d) => d.id == sDay.id || d.dayNumber == sDay.dayNumber,
+      );
+
+      if (existingDay != null) {
+        // Update existing day without disposing controllers
+        if (sDay.title != null && sDay.title != existingDay.place.value) {
+          existingDay.place.value = sDay.title!;
+          existingDay.placeController.text = sDay.title!;
+        }
+        if (sDay.notes != null && sDay.notes != existingDay.notes.value) {
+          existingDay.notes.value = sDay.notes!;
+          existingDay.notesController.text = sDay.notes!;
+        }
+        
+        // Update address from first location if available
+        if (sDay.locations != null && sDay.locations!.isNotEmpty) {
+          final firstLoc = sDay.locations!.first.name;
+          if (firstLoc != existingDay.address.value) {
+            existingDay.address.value = firstLoc;
+            existingDay.addressController.text = firstLoc;
+          }
+        }
+      } else {
+        // If it's a completely new day, add it
+        days.add(GuideDayModel(
+          id: sDay.id,
+          dayNumber: sDay.dayNumber,
+          place: sDay.title ?? '',
+          notes: sDay.notes ?? '',
+          address: (sDay.locations != null && sDay.locations!.isNotEmpty)
+              ? sDay.locations!.first.name
+              : '',
+        ));
+      }
+    }
+    
+    // Sort days to ensure they stay in order
+    days.sort((a, b) => a.dayNumber.compareTo(b.dayNumber));
+  }
+
+  void _rebuildDays(List<TripDayModel> serverDays) {
     // Clear the list first to notify observers (UI) to stop using these models
     final oldDays = List<GuideDayModel>.from(days);
     days.clear();
@@ -271,8 +406,19 @@ class GuideTripController extends GetxController {
       day.dispose();
     }
 
-    for (int index = 0; index < totalDays; index++) {
-      days.add(GuideDayModel(dayNumber: index + 1));
+    for (var sDay in serverDays) {
+      String initialAddress = '';
+      if (sDay.locations != null && sDay.locations!.isNotEmpty) {
+        initialAddress = sDay.locations!.first.name;
+      }
+
+      days.add(GuideDayModel(
+        id: sDay.id,
+        dayNumber: sDay.dayNumber,
+        place: sDay.title ?? '',
+        notes: sDay.notes ?? '',
+        address: initialAddress,
+      ));
     }
   }
 
@@ -296,6 +442,8 @@ class GuideTripController extends GetxController {
 
     scrollController.dispose();
     destinationController.dispose();
+    titleController.dispose();
+    descriptionController.dispose();
     super.onClose();
   }
 }

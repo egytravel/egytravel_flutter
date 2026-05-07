@@ -6,11 +6,28 @@ import 'package:intl/intl.dart';
 class ProfileTripCard extends StatelessWidget {
   final TripModel trip;
   final VoidCallback onTap;
+  final int index;
 
-  const ProfileTripCard({super.key, required this.trip, required this.onTap});
+  const ProfileTripCard({
+    super.key,
+    required this.trip,
+    required this.onTap,
+    required this.index,
+  });
+
+  Color _getCardColor(int index) {
+    final List<Color> darkColors = [
+      const Color(0xFF1A4B8F), // royalBlue
+      const Color.fromARGB(255, 101, 32, 88), // midnightBlueDark
+      const Color.fromARGB(255, 116, 36, 36), // deepNavy
+    ];
+    return darkColors[index % darkColors.length];
+  }
 
   @override
   Widget build(BuildContext context) {
+    final cardPrimaryColor = _getCardColor(index);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -22,13 +39,16 @@ class ProfileTripCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // Background gradient (no image URL in TripModel)
+              // Background gradient
               Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [Color(0xFF1E3A5F), Color(0xFF0A1628)],
+                    colors: [
+                      cardPrimaryColor,
+                      const Color(0xFF0A1628), // Always fade to very dark
+                    ],
                   ),
                 ),
               ),

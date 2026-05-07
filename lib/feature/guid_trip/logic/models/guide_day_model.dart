@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class GuideDayModel {
+  final String? id;
   final int dayNumber;
   final RxString place;
   final RxString address;
@@ -13,6 +14,7 @@ class GuideDayModel {
   late final TextEditingController notesController;
 
   GuideDayModel({
+    this.id,
     required this.dayNumber,
     String place = '',
     String address = '',
