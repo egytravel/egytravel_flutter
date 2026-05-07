@@ -4,7 +4,6 @@ import 'package:egytravel_app/feature/guid_trip/ui/widgets/day_input_card.dart';
 import 'package:egytravel_app/feature/guid_trip/ui/widgets/guide_app_bar.dart';
 import 'package:egytravel_app/feature/guid_trip/ui/widgets/guide_bottom_action_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 
 class PlanATripDetailsScreen extends GetView<GuideTripController> {

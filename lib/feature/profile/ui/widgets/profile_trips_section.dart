@@ -1,10 +1,10 @@
-import 'package:egytravel_app/core/models/trip_model.dart';
+import 'package:egytravel_app/feature/plan/data/model/trip_model.dart';
 import 'package:egytravel_app/feature/profile/ui/widgets/profile_trip_card.dart';
 import 'package:flutter/material.dart';
 
 class ProfileTripsSection extends StatelessWidget {
-  final List<Trip> trips;
-  final Function(Trip) onTripTap;
+  final List<TripModel> trips;
+  final Function(TripModel) onTripTap;
 
   const ProfileTripsSection({
     super.key,

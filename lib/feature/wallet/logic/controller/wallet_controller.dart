@@ -1,11 +1,11 @@
-import 'package:egytravel_app/core/models/trip_model.dart';
+import 'package:egytravel_app/feature/plan/data/model/trip_model.dart';
 import 'package:egytravel_app/feature/profile/logic/controller/profile_controller.dart';
 import 'package:egytravel_app/feature/wallet/logic/models/expense_model.dart';
 import 'package:get/get.dart';
 
 class WalletController extends GetxController {
   /// Pulls trips from ProfileController so they stay in sync
-  List<Trip> get trips {
+  List<TripModel> get trips {
     try {
       final profileController = Get.find<ProfileController>();
       return profileController.userTrips.toList();

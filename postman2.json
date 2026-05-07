@@ -1,0 +1,804 @@
+﻿{
+    "info":  {
+                 "_postman_id":  "c75795ed-8de9-4af9-859a-4f1ef76a417d",
+                 "name":  "EgyTravel - Plan a Trip",
+                 "description":  "\u003chtml\u003e\u003chead\u003e\u003c/head\u003e\u003cbody\u003e\u003cp\u003eManual trip planning APIs for EgyTravel.\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eFlow:\u003c/strong\u003e\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003eLogin → token auto-saved\u003c/li\u003e\n\u003cli\u003eCreate a trip (title, destination, dates, budget)\u003c/li\u003e\n\u003cli\u003eAdd days to the trip (day 1, day 2, ...)\u003c/li\u003e\n\u003cli\u003eFill each day with activities, locations, notes\u003c/li\u003e\n\u003cli\u003eAttach hotel/flight bookings to the trip\u003c/li\u003e\n\u003cli\u003eView the full trip with all days and bookings\u003c/li\u003e\n\u003c/ol\u003e\n\u003cp\u003e\u003cstrong\u003eVariables auto-saved by test scripts:\u003c/strong\u003e\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003e\u003ccode\u003e\u003c/code\u003e — from login\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e\u003c/code\u003e — from create trip\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e\u003c/code\u003e — from add day\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/body\u003e\u003c/html\u003e",
+                 "schema":  "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+                 "toc":  [
+
+                         ],
+                 "owner":  "48121570",
+                 "collectionId":  "c75795ed-8de9-4af9-859a-4f1ef76a417d",
+                 "publishedId":  "2sBXqKoKgA",
+                 "public":  true,
+                 "customColor":  {
+                                     "top-bar":  "FFFFFF",
+                                     "right-sidebar":  "303030",
+                                     "highlight":  "FF6C37"
+                                 },
+                 "publishDate":  "2026-05-02T03:07:23.000Z"
+             },
+    "item":  [
+                 {
+                     "name":  "0. Login (get token)",
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "const res = pm.response.json();",
+                                                                   "if (res.data \u0026\u0026 res.data.token) {",
+                                                                   "  pm.collectionVariables.set(\u0027token\u0027, res.data.token);",
+                                                                   "  console.log(\u0027Token saved\u0027);",
+                                                                   "}",
+                                                                   "pm.test(\u0027Login successful\u0027, () =\u003e pm.response.to.have.status(200));"
+                                                               ]
+                                                  }
+                                   }
+                               ],
+                     "id":  "984d3c8f-ec89-4cc1-b743-dce9f471348a",
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "body":  {
+                                                  "mode":  "raw",
+                                                  "raw":  "{\n  \"email\": \"your-email@example.com\",\n  \"password\": \"YourPass123!\"\n}"
+                                              },
+                                     "url":  "https://egy-travel-89eca3b6683d.herokuapp.com/api/auth/login",
+                                     "description":  "\u003cp\u003eLogin to get your JWT token. Token auto-saves to .\u003c/p\u003e\n",
+                                     "urlObject":  {
+                                                       "path":  [
+                                                                    "api",
+                                                                    "auth",
+                                                                    "login"
+                                                                ],
+                                                       "host":  [
+                                                                    "https://egy-travel-89eca3b6683d.herokuapp.com"
+                                                                ],
+                                                       "query":  [
+
+                                                                 ],
+                                                       "variable":  [
+
+                                                                    ]
+                                                   }
+                                 },
+                     "response":  [
+
+                                  ],
+                     "_postman_id":  "984d3c8f-ec89-4cc1-b743-dce9f471348a"
+                 },
+                 {
+                     "name":  "1. Create Trip",
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "const res = pm.response.json();",
+                                                                   "pm.test(\u0027Trip created - 201\u0027, () =\u003e pm.response.to.have.status(201));",
+                                                                   "pm.test(\u0027Trip has ID\u0027, () =\u003e pm.expect(res.data).to.have.property(\u0027tripId\u0027));",
+                                                                   "if (res.data \u0026\u0026 res.data.tripId) {",
+                                                                   "  pm.collectionVariables.set(\u0027tripId\u0027, res.data.tripId);",
+                                                                   "  console.log(\u0027tripId saved:\u0027, res.data.tripId);",
+                                                                   "}"
+                                                               ]
+                                                  }
+                                   }
+                               ],
+                     "id":  "88a61279-2679-4f18-ad5d-d0fccc6e7410",
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Authorization",
+                                                        "value":  "Bearer "
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "body":  {
+                                                  "mode":  "raw",
+                                                  "raw":  "{\n  \"title\": \"My Egypt Adventure\",\n  \"description\": \"Exploring ancient wonders and modern Cairo\",\n  \"destination\": \"Cairo, Egypt\",\n  \"startDate\": \"2026-07-01\",\n  \"endDate\": \"2026-07-07\",\n  \"budget\": 2000\n}"
+                                              },
+                                     "url":  "https://egy-travel-89eca3b6683d.herokuapp.com/api/trips",
+                                     "description":  "\u003cp\u003eCreate a new trip. tripId auto-saves to .\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eRequired:\u003c/strong\u003e title\n\u003cstrong\u003eOptional:\u003c/strong\u003e description, destination, startDate, endDate, budget\u003c/p\u003e\n",
+                                     "urlObject":  {
+                                                       "path":  [
+                                                                    "api",
+                                                                    "trips"
+                                                                ],
+                                                       "host":  [
+                                                                    "https://egy-travel-89eca3b6683d.herokuapp.com"
+                                                                ],
+                                                       "query":  [
+
+                                                                 ],
+                                                       "variable":  [
+
+                                                                    ]
+                                                   }
+                                 },
+                     "response":  [
+
+                                  ],
+                     "_postman_id":  "88a61279-2679-4f18-ad5d-d0fccc6e7410"
+                 },
+                 {
+                     "name":  "2. Get All My Trips",
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "const res = pm.response.json();",
+                                                                   "pm.test(\u0027Status 200\u0027, () =\u003e pm.response.to.have.status(200));",
+                                                                   "pm.test(\u0027Returns trips array\u0027, () =\u003e pm.expect(res.data).to.be.an(\u0027array\u0027));"
+                                                               ]
+                                                  }
+                                   }
+                               ],
+                     "id":  "7d066e22-a325-45a0-b173-dc3d414fcb98",
+                     "request":  {
+                                     "method":  "GET",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Authorization",
+                                                        "value":  "Bearer "
+                                                    }
+                                                ],
+                                     "url":  "https://egy-travel-89eca3b6683d.herokuapp.com/api/trips?status=planning",
+                                     "description":  "\u003cp\u003eGet all your trips.\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eOptional filter:\u003c/strong\u003e \u003ccode\u003e?status=planning|confirmed|completed|cancelled\u003c/code\u003e\u003c/p\u003e\n",
+                                     "urlObject":  {
+                                                       "path":  [
+                                                                    "api",
+                                                                    "trips"
+                                                                ],
+                                                       "host":  [
+                                                                    "https://egy-travel-89eca3b6683d.herokuapp.com"
+                                                                ],
+                                                       "query":  [
+                                                                     {
+                                                                         "key":  "status",
+                                                                         "value":  "planning"
+                                                                     }
+                                                                 ],
+                                                       "variable":  [
+
+                                                                    ]
+                                                   }
+                                 },
+                     "response":  [
+
+                                  ],
+                     "_postman_id":  "7d066e22-a325-45a0-b173-dc3d414fcb98"
+                 },
+                 {
+                     "name":  "3. Get Trip Details",
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "const res = pm.response.json();",
+                                                                   "pm.test(\u0027Status 200\u0027, () =\u003e pm.response.to.have.status(200));",
+                                                                   "pm.test(\u0027Trip has days array\u0027, () =\u003e pm.expect(res.data).to.have.property(\u0027days\u0027));",
+                                                                   "pm.test(\u0027Trip has bookings array\u0027, () =\u003e pm.expect(res.data).to.have.property(\u0027bookings\u0027));"
+                                                               ]
+                                                  }
+                                   }
+                               ],
+                     "id":  "8adcadea-ed70-4710-95b7-06b9788540d0",
+                     "request":  {
+                                     "method":  "GET",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Authorization",
+                                                        "value":  "Bearer "
+                                                    }
+                                                ],
+                                     "url":  "https://egy-travel-89eca3b6683d.herokuapp.com/api/trips/",
+                                     "description":  "\u003cp\u003eGet a single trip with all its days and linked bookings.\u003c/p\u003e\n",
+                                     "urlObject":  {
+                                                       "path":  [
+                                                                    "api",
+                                                                    "trips",
+                                                                    ""
+                                                                ],
+                                                       "host":  [
+                                                                    "https://egy-travel-89eca3b6683d.herokuapp.com"
+                                                                ],
+                                                       "query":  [
+
+                                                                 ],
+                                                       "variable":  [
+
+                                                                    ]
+                                                   }
+                                 },
+                     "response":  [
+
+                                  ],
+                     "_postman_id":  "8adcadea-ed70-4710-95b7-06b9788540d0"
+                 },
+                 {
+                     "name":  "4. Update Trip",
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "const res = pm.response.json();",
+                                                                   "pm.test(\u0027Status 200\u0027, () =\u003e pm.response.to.have.status(200));",
+                                                                   "pm.test(\u0027Trip updated\u0027, () =\u003e pm.expect(res.success).to.be.true);"
+                                                               ]
+                                                  }
+                                   }
+                               ],
+                     "id":  "7b4d1d89-1567-44cb-9b6d-93bd485c381a",
+                     "request":  {
+                                     "method":  "PUT",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Authorization",
+                                                        "value":  "Bearer "
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "body":  {
+                                                  "mode":  "raw",
+                                                  "raw":  "{\n  \"title\": \"My Egypt Adventure (Updated)\",\n  \"budget\": 2500,\n  \"status\": \"planning\"\n}"
+                                              },
+                                     "url":  "https://egy-travel-89eca3b6683d.herokuapp.com/api/trips/",
+                                     "description":  "\u003cp\u003eUpdate any trip field.\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eStatus options:\u003c/strong\u003e planning, confirmed, completed, cancelled\u003c/p\u003e\n",
+                                     "urlObject":  {
+                                                       "path":  [
+                                                                    "api",
+                                                                    "trips",
+                                                                    ""
+                                                                ],
+                                                       "host":  [
+                                                                    "https://egy-travel-89eca3b6683d.herokuapp.com"
+                                                                ],
+                                                       "query":  [
+
+                                                                 ],
+                                                       "variable":  [
+
+                                                                    ]
+                                                   }
+                                 },
+                     "response":  [
+
+                                  ],
+                     "_postman_id":  "7b4d1d89-1567-44cb-9b6d-93bd485c381a"
+                 },
+                 {
+                     "name":  "5. Add Day 1 to Trip",
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "const res = pm.response.json();",
+                                                                   "pm.test(\u0027Day created - 201\u0027, () =\u003e pm.response.to.have.status(201));",
+                                                                   "pm.test(\u0027Day has ID\u0027, () =\u003e pm.expect(res.data).to.have.property(\u0027dayId\u0027));",
+                                                                   "if (res.data \u0026\u0026 res.data.dayId) {",
+                                                                   "  pm.collectionVariables.set(\u0027dayId\u0027, res.data.dayId);",
+                                                                   "  console.log(\u0027dayId saved:\u0027, res.data.dayId);",
+                                                                   "}"
+                                                               ]
+                                                  }
+                                   }
+                               ],
+                     "id":  "f04a644b-ca0b-4170-b100-af2704f107bd",
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Authorization",
+                                                        "value":  "Bearer "
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "body":  {
+                                                  "mode":  "raw",
+                                                  "raw":  "{\n  \"dayNumber\": 1,\n  \"date\": \"2026-07-01\",\n  \"title\": \"Arrival \u0026 Giza Pyramids\",\n  \"description\": \"Arrive in Cairo, check in, then head to the Pyramids\",\n  \"activities\": [\n    \"Land at Cairo International Airport\",\n    \"Check in to hotel\",\n    \"Visit Pyramids of Giza\",\n    \"Watch the Sound \u0026 Light Show\"\n  ],\n  \"locations\": [\n    { \"name\": \"Cairo International Airport\", \"lat\": 30.1219, \"lng\": 31.4056 },\n    { \"name\": \"Pyramids of Giza\", \"lat\": 29.9792, \"lng\": 31.1342 }\n  ],\n  \"budget\": 300,\n  \"notes\": \"Book airport transfer in advance\"\n}"
+                                              },
+                                     "url":  "https://egy-travel-89eca3b6683d.herokuapp.com/api/trips//days",
+                                     "description":  "\u003cp\u003eAdd a day to the trip. dayId auto-saves to .\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eRequired:\u003c/strong\u003e dayNumber\n\u003cstrong\u003eOptional:\u003c/strong\u003e date, title, description, activities (array), locations (array), budget, notes\u003c/p\u003e\n\u003cp\u003eActivities = list of strings\nLocations = list of { name, lat, lng }\u003c/p\u003e\n",
+                                     "urlObject":  {
+                                                       "path":  [
+                                                                    "api",
+                                                                    "trips",
+                                                                    "",
+                                                                    "days"
+                                                                ],
+                                                       "host":  [
+                                                                    "https://egy-travel-89eca3b6683d.herokuapp.com"
+                                                                ],
+                                                       "query":  [
+
+                                                                 ],
+                                                       "variable":  [
+
+                                                                    ]
+                                                   }
+                                 },
+                     "response":  [
+
+                                  ],
+                     "_postman_id":  "f04a644b-ca0b-4170-b100-af2704f107bd"
+                 },
+                 {
+                     "name":  "6. Add Day 2 to Trip",
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "const res = pm.response.json();",
+                                                                   "pm.test(\u0027Day 2 created - 201\u0027, () =\u003e pm.response.to.have.status(201));"
+                                                               ]
+                                                  }
+                                   }
+                               ],
+                     "id":  "a3a29407-b4f6-4d4f-81de-30813416a6b7",
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Authorization",
+                                                        "value":  "Bearer "
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "body":  {
+                                                  "mode":  "raw",
+                                                  "raw":  "{\n  \"dayNumber\": 2,\n  \"date\": \"2026-07-02\",\n  \"title\": \"Islamic Cairo \u0026 Khan el-Khalili\",\n  \"description\": \"Explore old Cairo\u0027s historic mosques and bazaars\",\n  \"activities\": [\n    \"Visit Al-Azhar Mosque\",\n    \"Explore Khan el-Khalili bazaar\",\n    \"Lunch at a local restaurant\",\n    \"Visit the Citadel of Saladin\"\n  ],\n  \"locations\": [\n    { \"name\": \"Al-Azhar Mosque\", \"lat\": 30.0459, \"lng\": 31.2626 },\n    { \"name\": \"Khan el-Khalili\", \"lat\": 30.0478, \"lng\": 31.2625 },\n    { \"name\": \"Citadel of Saladin\", \"lat\": 30.0288, \"lng\": 31.2599 }\n  ],\n  \"budget\": 150,\n  \"notes\": \"Dress modestly for mosque visits\"\n}"
+                                              },
+                                     "url":  "https://egy-travel-89eca3b6683d.herokuapp.com/api/trips//days",
+                                     "description":  "\u003cp\u003eAdd day 2 to the trip.\u003c/p\u003e\n",
+                                     "urlObject":  {
+                                                       "path":  [
+                                                                    "api",
+                                                                    "trips",
+                                                                    "",
+                                                                    "days"
+                                                                ],
+                                                       "host":  [
+                                                                    "https://egy-travel-89eca3b6683d.herokuapp.com"
+                                                                ],
+                                                       "query":  [
+
+                                                                 ],
+                                                       "variable":  [
+
+                                                                    ]
+                                                   }
+                                 },
+                     "response":  [
+
+                                  ],
+                     "_postman_id":  "a3a29407-b4f6-4d4f-81de-30813416a6b7"
+                 },
+                 {
+                     "name":  "7. Get All Days",
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "const res = pm.response.json();",
+                                                                   "pm.test(\u0027Status 200\u0027, () =\u003e pm.response.to.have.status(200));",
+                                                                   "pm.test(\u0027Days ordered by day_number\u0027, () =\u003e {",
+                                                                   "  if (res.data.length \u003e 1) {",
+                                                                   "    pm.expect(res.data[0].dayNumber).to.be.lessThan(res.data[1].dayNumber);",
+                                                                   "  }",
+                                                                   "});"
+                                                               ]
+                                                  }
+                                   }
+                               ],
+                     "id":  "1572a6e7-64e4-490c-ac02-59eae9e6a6ad",
+                     "request":  {
+                                     "method":  "GET",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Authorization",
+                                                        "value":  "Bearer "
+                                                    }
+                                                ],
+                                     "url":  "https://egy-travel-89eca3b6683d.herokuapp.com/api/trips//days",
+                                     "description":  "\u003cp\u003eGet all days for a trip, ordered by day number.\u003c/p\u003e\n",
+                                     "urlObject":  {
+                                                       "path":  [
+                                                                    "api",
+                                                                    "trips",
+                                                                    "",
+                                                                    "days"
+                                                                ],
+                                                       "host":  [
+                                                                    "https://egy-travel-89eca3b6683d.herokuapp.com"
+                                                                ],
+                                                       "query":  [
+
+                                                                 ],
+                                                       "variable":  [
+
+                                                                    ]
+                                                   }
+                                 },
+                     "response":  [
+
+                                  ],
+                     "_postman_id":  "1572a6e7-64e4-490c-ac02-59eae9e6a6ad"
+                 },
+                 {
+                     "name":  "8. Get Single Day",
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "const res = pm.response.json();",
+                                                                   "pm.test(\u0027Status 200\u0027, () =\u003e pm.response.to.have.status(200));",
+                                                                   "pm.test(\u0027Day has activities\u0027, () =\u003e pm.expect(res.data.activities).to.be.an(\u0027array\u0027));",
+                                                                   "pm.test(\u0027Day has locations\u0027, () =\u003e pm.expect(res.data.locations).to.be.an(\u0027array\u0027));"
+                                                               ]
+                                                  }
+                                   }
+                               ],
+                     "id":  "1c73f605-0f26-41c9-b956-5ce488a8767f",
+                     "request":  {
+                                     "method":  "GET",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Authorization",
+                                                        "value":  "Bearer "
+                                                    }
+                                                ],
+                                     "url":  "https://egy-travel-89eca3b6683d.herokuapp.com/api/trips//days/",
+                                     "description":  "\u003cp\u003eGet a single day with its activities, locations, and any linked bookings for that date.\u003c/p\u003e\n",
+                                     "urlObject":  {
+                                                       "path":  [
+                                                                    "api",
+                                                                    "trips",
+                                                                    "",
+                                                                    "days",
+                                                                    ""
+                                                                ],
+                                                       "host":  [
+                                                                    "https://egy-travel-89eca3b6683d.herokuapp.com"
+                                                                ],
+                                                       "query":  [
+
+                                                                 ],
+                                                       "variable":  [
+
+                                                                    ]
+                                                   }
+                                 },
+                     "response":  [
+
+                                  ],
+                     "_postman_id":  "1c73f605-0f26-41c9-b956-5ce488a8767f"
+                 },
+                 {
+                     "name":  "9. Update Day (edit activities)",
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "const res = pm.response.json();",
+                                                                   "pm.test(\u0027Status 200\u0027, () =\u003e pm.response.to.have.status(200));",
+                                                                   "pm.test(\u0027Activities updated\u0027, () =\u003e pm.expect(res.data.activities).to.be.an(\u0027array\u0027));"
+                                                               ]
+                                                  }
+                                   }
+                               ],
+                     "id":  "d62e29fa-fc0e-4625-a731-69432b32f604",
+                     "request":  {
+                                     "method":  "PUT",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Authorization",
+                                                        "value":  "Bearer "
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "body":  {
+                                                  "mode":  "raw",
+                                                  "raw":  "{\n  \"title\": \"Arrival \u0026 Giza Pyramids (Updated)\",\n  \"activities\": [\n    \"Land at Cairo International Airport\",\n    \"Check in to hotel\",\n    \"Visit Pyramids of Giza\",\n    \"Visit the Sphinx\",\n    \"Watch the Sound \u0026 Light Show\"\n  ],\n  \"budget\": 350,\n  \"notes\": \"Book airport transfer in advance. Sphinx visit included in Pyramids ticket.\"\n}"
+                                              },
+                                     "url":  "https://egy-travel-89eca3b6683d.herokuapp.com/api/trips//days/",
+                                     "description":  "\u003cp\u003eUpdate any field of a day. Pass only the fields you want to change.\u003c/p\u003e\n",
+                                     "urlObject":  {
+                                                       "path":  [
+                                                                    "api",
+                                                                    "trips",
+                                                                    "",
+                                                                    "days",
+                                                                    ""
+                                                                ],
+                                                       "host":  [
+                                                                    "https://egy-travel-89eca3b6683d.herokuapp.com"
+                                                                ],
+                                                       "query":  [
+
+                                                                 ],
+                                                       "variable":  [
+
+                                                                    ]
+                                                   }
+                                 },
+                     "response":  [
+
+                                  ],
+                     "_postman_id":  "d62e29fa-fc0e-4625-a731-69432b32f604"
+                 },
+                 {
+                     "name":  "10. Delete Day",
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "const res = pm.response.json();",
+                                                                   "pm.test(\u0027Status 200\u0027, () =\u003e pm.response.to.have.status(200));",
+                                                                   "pm.test(\u0027Day deleted\u0027, () =\u003e pm.expect(res.message).to.include(\u0027deleted\u0027));"
+                                                               ]
+                                                  }
+                                   }
+                               ],
+                     "id":  "24046ff5-ecf7-4c6d-b809-5a6415acd610",
+                     "request":  {
+                                     "method":  "DELETE",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Authorization",
+                                                        "value":  "Bearer "
+                                                    }
+                                                ],
+                                     "url":  "https://egy-travel-89eca3b6683d.herokuapp.com/api/trips//days/",
+                                     "description":  "\u003cp\u003eDelete a day from the trip.\u003c/p\u003e\n",
+                                     "urlObject":  {
+                                                       "path":  [
+                                                                    "api",
+                                                                    "trips",
+                                                                    "",
+                                                                    "days",
+                                                                    ""
+                                                                ],
+                                                       "host":  [
+                                                                    "https://egy-travel-89eca3b6683d.herokuapp.com"
+                                                                ],
+                                                       "query":  [
+
+                                                                 ],
+                                                       "variable":  [
+
+                                                                    ]
+                                                   }
+                                 },
+                     "response":  [
+
+                                  ],
+                     "_postman_id":  "24046ff5-ecf7-4c6d-b809-5a6415acd610"
+                 },
+                 {
+                     "name":  "11. Attach Hotel Booking to Trip",
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "const res = pm.response.json();",
+                                                                   "pm.test(\u0027Booking created - 201\u0027, () =\u003e pm.response.to.have.status(201));",
+                                                                   "pm.test(\u0027Booking linked to trip\u0027, () =\u003e pm.expect(res.data.tripId).to.equal(pm.collectionVariables.get(\u0027tripId\u0027)));"
+                                                               ]
+                                                  }
+                                   }
+                               ],
+                     "id":  "762d133e-f233-4f19-adf6-9cb88f2ab960",
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Authorization",
+                                                        "value":  "Bearer "
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "body":  {
+                                                  "mode":  "raw",
+                                                  "raw":  "{\n  \"hotelId\": \"cairo-marriott-hotel\",\n  \"hotelName\": \"Cairo Marriott Hotel\",\n  \"hotelLocation\": \"Cairo, Egypt\",\n  \"checkinDate\": \"2026-07-01\",\n  \"checkoutDate\": \"2026-07-07\",\n  \"guests\": 2,\n  \"rooms\": 1,\n  \"tripId\": ,\n  \"totalPrice\": 840,\n  \"currency\": \"USD\"\n}"
+                                              },
+                                     "url":  "https://egy-travel-89eca3b6683d.herokuapp.com/api/bookings/hotel",
+                                     "description":  "\u003cp\u003eSave a hotel booking and link it to this trip via tripId.\u003c/p\u003e\n\u003cp\u003eThe booking will appear in the trip\u0027s bookings list and in the day details when the check-in date matches.\u003c/p\u003e\n",
+                                     "urlObject":  {
+                                                       "path":  [
+                                                                    "api",
+                                                                    "bookings",
+                                                                    "hotel"
+                                                                ],
+                                                       "host":  [
+                                                                    "https://egy-travel-89eca3b6683d.herokuapp.com"
+                                                                ],
+                                                       "query":  [
+
+                                                                 ],
+                                                       "variable":  [
+
+                                                                    ]
+                                                   }
+                                 },
+                     "response":  [
+
+                                  ],
+                     "_postman_id":  "762d133e-f233-4f19-adf6-9cb88f2ab960"
+                 },
+                 {
+                     "name":  "12. Delete Trip",
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "const res = pm.response.json();",
+                                                                   "pm.test(\u0027Status 200\u0027, () =\u003e pm.response.to.have.status(200));",
+                                                                   "pm.test(\u0027Trip deleted\u0027, () =\u003e pm.expect(res.message).to.include(\u0027deleted\u0027));"
+                                                               ]
+                                                  }
+                                   }
+                               ],
+                     "id":  "1c3f46cf-c549-4bbf-832a-29b228986fc0",
+                     "request":  {
+                                     "method":  "DELETE",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Authorization",
+                                                        "value":  "Bearer "
+                                                    }
+                                                ],
+                                     "url":  "https://egy-travel-89eca3b6683d.herokuapp.com/api/trips/",
+                                     "description":  "\u003cp\u003eDelete the entire trip and all its days.\u003c/p\u003e\n\u003cp\u003e⚠️ This does NOT delete linked bookings — they remain in your bookings list but lose the trip association.\u003c/p\u003e\n",
+                                     "urlObject":  {
+                                                       "path":  [
+                                                                    "api",
+                                                                    "trips",
+                                                                    ""
+                                                                ],
+                                                       "host":  [
+                                                                    "https://egy-travel-89eca3b6683d.herokuapp.com"
+                                                                ],
+                                                       "query":  [
+
+                                                                 ],
+                                                       "variable":  [
+
+                                                                    ]
+                                                   }
+                                 },
+                     "response":  [
+
+                                  ],
+                     "_postman_id":  "1c3f46cf-c549-4bbf-832a-29b228986fc0"
+                 },
+                 {
+                     "name":  "13. Get Trip Map Markers",
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "const res = pm.response.json();",
+                                                                   "pm.test(\u0027Status 200\u0027, () =\u003e pm.response.to.have.status(200));",
+                                                                   "pm.test(\u0027Returns markers array\u0027, () =\u003e {",
+                                                                   "  pm.expect(res.markers).to.be.an(\u0027array\u0027);",
+                                                                   "  pm.expect(res.totalMarkers).to.be.a(\u0027number\u0027);",
+                                                                   "});",
+                                                                   "pm.test(\u0027Map center computed\u0027, () =\u003e {",
+                                                                   "  if (res.totalMarkers \u003e 0) {",
+                                                                   "    pm.expect(res.mapCenter).to.have.property(\u0027lat\u0027);",
+                                                                   "    pm.expect(res.mapCenter).to.have.property(\u0027lng\u0027);",
+                                                                   "  }",
+                                                                   "});",
+                                                                   "if (res.markers.length \u003e 0) {",
+                                                                   "  console.log(\u0027Sample marker:\u0027, JSON.stringify(res.markers[0]));",
+                                                                   "}"
+                                                               ]
+                                                  }
+                                   }
+                               ],
+                     "id":  "34011764-69d5-7b2c-a023-911ce733bf9e",
+                     "request":  {
+                                     "method":  "GET",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Authorization",
+                                                        "value":  "Bearer "
+                                                    }
+                                                ],
+                                     "url":  "https://egy-travel-89eca3b6683d.herokuapp.com/api/trips//map",
+                                     "description":  "\u003cp\u003eReturns all locations from all days of the trip as map markers.\u003c/p\u003e\n\u003cp\u003eFlutter uses this to drop pins on the map showing everywhere the user plans to go.\u003c/p\u003e\n\u003cp\u003eResponse includes:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003emarkers[] — each with dayNumber, dayTitle, date, name, lat, lng\u003c/li\u003e\n\u003cli\u003emapCenter — suggested camera center (average of all locations)\u003c/li\u003e\n\u003cli\u003etotalMarkers — total pin count\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eRequires auth token.\u003c/p\u003e\n",
+                                     "urlObject":  {
+                                                       "path":  [
+                                                                    "api",
+                                                                    "trips",
+                                                                    "",
+                                                                    "map"
+                                                                ],
+                                                       "host":  [
+                                                                    "https://egy-travel-89eca3b6683d.herokuapp.com"
+                                                                ],
+                                                       "query":  [
+
+                                                                 ],
+                                                       "variable":  [
+
+                                                                    ]
+                                                   }
+                                 },
+                     "response":  [
+
+                                  ],
+                     "_postman_id":  "34011764-69d5-7b2c-a023-911ce733bf9e"
+                 }
+             ],
+    "variable":  [
+                     {
+                         "key":  "baseUrl",
+                         "value":  "https://egy-travel-89eca3b6683d.herokuapp.com"
+                     },
+                     {
+                         "key":  "token",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "tripId",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "dayId",
+                         "value":  ""
+                     }
+                 ]
+}

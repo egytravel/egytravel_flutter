@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/community/data/model/community_post_model.dart';
 import 'package:egytravel_app/feature/community/logic/controller/community_controller.dart';
+import 'package:egytravel_app/core/utils/safe_cached_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -49,16 +50,20 @@ class PostCard extends StatelessWidget {
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
                     children: [
-                      CircleAvatar(
-                        radius: 22,
-                        backgroundColor: Colors.white10,
-                        backgroundImage: post.user.profilePhotoUrl != null
-                            ? CachedNetworkImageProvider(post.user.profilePhotoUrl!)
-                            : null,
-                        child: post.user.profilePhotoUrl == null
-                            ? const Icon(Icons.person, color: Colors.white38)
-                            : null,
-                      ),
+                      (() {
+                        final imageProvider = SafeCachedNetworkImageProvider.safe(
+                            post.user.profilePhotoUrl);
+                        return CircleAvatar(
+                          radius: 22,
+                          backgroundColor: Colors.white10,
+                          backgroundImage: imageProvider,
+                          onBackgroundImageError:
+                              imageProvider != null ? (_, __) {} : null,
+                          child: imageProvider == null
+                              ? const Icon(Icons.person, color: Colors.white38)
+                              : null,
+                        );
+                      })(),
                       const SizedBox(width: 12),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,43 +160,26 @@ class PostCard extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                   child: Row(
                     children: [
-                      /// Like Button — fully reactive via Obx
-                      Obx(() {
-                        // Look up the live post from controller by id
-                        final livePost = controller.posts.firstWhereOrNull(
-                          (p) => p.id == post.id,
-                        ) ?? post;
-                        return GestureDetector(
-                          onTap: () => controller.toggleLike(post.id),
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 200),
-                            transitionBuilder: (child, animation) =>
-                                ScaleTransition(scale: animation, child: child),
-                            child: Row(
-                              key: ValueKey(livePost.isLiked),
-                              children: [
-                                Icon(
-                                  livePost.isLiked
-                                      ? CupertinoIcons.heart_fill
-                                      : CupertinoIcons.heart,
-                                  color: livePost.isLiked
-                                      ? Colors.redAccent
-                                      : Colors.white,
-                                  size: 28,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  livePost.likesCount.toString(),
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+                      GestureDetector(
+                        onTap: () => controller.toggleLike(post.id),
+                        child: Row(
+                          children: [
+                            Icon(
+                              post.isLiked ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+                              color: post.isLiked ? Colors.redAccent : Colors.white,
+                              size: 28,
                             ),
-                          ),
-                        );
-                      }),
+                            const SizedBox(width: 8),
+                            Text(
+                              post.likesCount.toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                       const SizedBox(width: 16,),
                       GestureDetector(
                         onTap: () => _showCommentsBottomSheet(context),
@@ -292,68 +280,76 @@ class PostCard extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: GetBuilder<CommunityController>(
-                initState: (_) => controller.fetchComments(post.id),
-                builder: (controller) {
-                  final comments = controller.postComments[post.id] ?? [];
-                  final isLoading = controller.isCommentsLoading[post.id] ?? true;
+              child: Builder(
+                builder: (context) {
+                  Future.microtask(() => controller.fetchComments(post.id));
+                  return Obx(() {
+                    final comments = controller.postComments[post.id] ?? [];
+                    final isLoading = controller.isCommentsLoading[post.id] ?? true;
 
-                  if (isLoading && comments.isEmpty) {
-                    return const Center(
-                      child: CircularProgressIndicator(color: AppColor.primary),
-                    );
-                  }
-
-                  if (comments.isEmpty) {
-                    return const Center(
-                      child: Text('No comments yet. Be the first to comment!',
-                          style: TextStyle(color: Colors.white38)),
-                    );
-                  }
-
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    itemCount: comments.length,
-                    itemBuilder: (context, index) {
-                      final comment = comments[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CircleAvatar(
-                              radius: 16,
-                              backgroundColor: Colors.white10,
-                              backgroundImage: comment.user.profilePhotoUrl != null
-                                  ? NetworkImage(comment.user.profilePhotoUrl!)
-                                  : null,
-                              child: comment.user.profilePhotoUrl == null
-                                  ? const Icon(Icons.person, size: 16, color: Colors.white38)
-                                  : null,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    comment.user.name,
-                                    style: const TextStyle(
-                                        color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    comment.content,
-                                    style: const TextStyle(color: Colors.white70, fontSize: 14),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                    if (isLoading && comments.isEmpty) {
+                      return const Center(
+                        child: CircularProgressIndicator(color: AppColor.primary),
                       );
-                    },
-                  );
+                    }
+
+                    if (comments.isEmpty) {
+                      return const Center(
+                        child: Text('No comments yet. Be the first to comment!',
+                            style: TextStyle(color: Colors.white38)),
+                      );
+                    }
+
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemCount: comments.length,
+                      itemBuilder: (context, index) {
+                        final comment = comments[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              (() {
+                                final imageProvider =
+                                    SafeCachedNetworkImageProvider.safe(
+                                        comment.user.profilePhotoUrl);
+                                return CircleAvatar(
+                                  radius: 16,
+                                  backgroundColor: Colors.white10,
+                                  backgroundImage: imageProvider,
+                                  onBackgroundImageError:
+                                      imageProvider != null ? (_, __) {} : null,
+                                  child: imageProvider == null
+                                      ? const Icon(Icons.person,
+                                          size: 16, color: Colors.white38)
+                                      : null,
+                                );
+                              })(),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      comment.user.name,
+                                      style: const TextStyle(
+                                          color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      comment.content,
+                                      style: const TextStyle(color: Colors.white70, fontSize: 14),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  });
                 },
               ),
             ),

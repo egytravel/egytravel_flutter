@@ -4,11 +4,9 @@ import 'package:egytravel_app/feature/explore/logic/controller/explore_detail_co
 import 'package:egytravel_app/feature/explore/ui/widgets/details/explore_details_action_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:egytravel_app/core/widgets/custom_back_button.dart';
 import 'package:egytravel_app/core/widgets/glass_action_button.dart';
-import 'package:egytravel_app/core/theme/app_color.dart';
 import 'dart:io';
 
 class ExploreDetailsScreen extends StatelessWidget {
@@ -23,6 +21,12 @@ class ExploreDetailsScreen extends StatelessWidget {
     final String heroTag = args is Map
         ? (args['heroTag'] ?? 'explore_image_${item.id}')
         : 'explore_image_${item.id}';
+    final double? originLat = _readDouble(
+      args is Map ? args['originLat'] : null,
+    );
+    final double? originLng = _readDouble(
+      args is Map ? args['originLng'] : null,
+    );
 
     // Use unique tag to prevent reusing old controller data between different items
     final controller = Get.put(ExploreDetailController(item), tag: item.id);
@@ -107,13 +111,23 @@ class ExploreDetailsScreen extends StatelessWidget {
                   Obx(() {
                     switch (controller.selectedTab.value) {
                       case 0:
-                        return _buildDescriptionTab(item, controller);
+                        return _buildDescriptionTab(
+                          item,
+                          controller,
+                          originLat: originLat,
+                          originLng: originLng,
+                        );
                       case 1:
                         return _buildPhotosTab(item);
                       case 2:
                         return _buildReviewsTab(item);
                       default:
-                        return _buildDescriptionTab(item, controller);
+                        return _buildDescriptionTab(
+                          item,
+                          controller,
+                          originLat: originLat,
+                          originLng: originLng,
+                        );
                     }
                   }),
                   // Extra space for the fixed bottom bar
@@ -345,8 +359,10 @@ class ExploreDetailsScreen extends StatelessWidget {
 
   Widget _buildDescriptionTab(
     ExploreItemModel item,
-    ExploreDetailController controller,
-  ) {
+    ExploreDetailController controller, {
+    double? originLat,
+    double? originLng,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -413,7 +429,10 @@ class ExploreDetailsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             GestureDetector(
-              onTap: () => controller.openMap(),
+              onTap: () => controller.openMap(
+                originLat: originLat,
+                originLng: originLng,
+              ),
               child: _buildMapPreview(item),
             ),
           ],
@@ -792,5 +811,15 @@ class ExploreDetailsScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  double? _readDouble(dynamic value) {
+    if (value == null) {
+      return null;
+    }
+    if (value is num) {
+      return value.toDouble();
+    }
+    return double.tryParse(value.toString());
   }
 }
