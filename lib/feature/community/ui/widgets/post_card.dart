@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:egytravel_app/core/theme/app_color.dart';
 import 'package:egytravel_app/feature/community/data/model/community_post_model.dart';
 import 'package:egytravel_app/feature/community/logic/controller/community_controller.dart';
+import 'package:egytravel_app/core/utils/safe_cached_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -49,16 +50,20 @@ class PostCard extends StatelessWidget {
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
                     children: [
-                      CircleAvatar(
-                        radius: 22,
-                        backgroundColor: Colors.white10,
-                        backgroundImage: post.user.profilePhotoUrl != null
-                            ? CachedNetworkImageProvider(post.user.profilePhotoUrl!)
-                            : null,
-                        child: post.user.profilePhotoUrl == null
-                            ? const Icon(Icons.person, color: Colors.white38)
-                            : null,
-                      ),
+                      (() {
+                        final imageProvider = SafeCachedNetworkImageProvider.safe(
+                            post.user.profilePhotoUrl);
+                        return CircleAvatar(
+                          radius: 22,
+                          backgroundColor: Colors.white10,
+                          backgroundImage: imageProvider,
+                          onBackgroundImageError:
+                              imageProvider != null ? (_, __) {} : null,
+                          child: imageProvider == null
+                              ? const Icon(Icons.person, color: Colors.white38)
+                              : null,
+                        );
+                      })(),
                       const SizedBox(width: 12),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -305,16 +310,22 @@ class PostCard extends StatelessWidget {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              CircleAvatar(
-                                radius: 16,
-                                backgroundColor: Colors.white10,
-                                backgroundImage: comment.user.profilePhotoUrl != null
-                                    ? NetworkImage(comment.user.profilePhotoUrl!)
-                                    : null,
-                                child: comment.user.profilePhotoUrl == null
-                                    ? const Icon(Icons.person, size: 16, color: Colors.white38)
-                                    : null,
-                              ),
+                              (() {
+                                final imageProvider =
+                                    SafeCachedNetworkImageProvider.safe(
+                                        comment.user.profilePhotoUrl);
+                                return CircleAvatar(
+                                  radius: 16,
+                                  backgroundColor: Colors.white10,
+                                  backgroundImage: imageProvider,
+                                  onBackgroundImageError:
+                                      imageProvider != null ? (_, __) {} : null,
+                                  child: imageProvider == null
+                                      ? const Icon(Icons.person,
+                                          size: 16, color: Colors.white38)
+                                      : null,
+                                );
+                              })(),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(

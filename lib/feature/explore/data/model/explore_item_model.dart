@@ -107,7 +107,7 @@ class ExploreItemModel {
           json['thumbnail'])),
       rating: _toDouble(json['rating']),
       price: _s(json['priceDisplay'],
-          '${json['price'] ?? 0} ${json['currency'] ?? ''}'),
+          '${_formatPrice(json['price'])} ${json['currency'] ?? ''}'),
       category: _s(json['category']),
       type: ExploreItemType.place,
       description: _sn(json['description']),
@@ -143,7 +143,7 @@ class ExploreItemModel {
     final priceData = json['price'];
     String priceStr = 'N/A';
     if (priceData is Map) {
-      priceStr = '${priceData['amount'] ?? 0} ${priceData['currency'] ?? ''}';
+      priceStr = '${_formatPrice(priceData['amount'])} ${priceData['currency'] ?? ''}';
     }
 
     return ExploreItemModel(
@@ -180,7 +180,7 @@ class ExploreItemModel {
 
     String priceStr = 'N/A';
     if (priceData is Map) {
-      priceStr = '${priceData['amount'] ?? 0} ${priceData['currency'] ?? ''}';
+      priceStr = '${_formatPrice(priceData['amount'])} ${priceData['currency'] ?? ''}';
     }
 
     return ExploreItemModel(
@@ -196,6 +196,14 @@ class ExploreItemModel {
       duration: _sn(json['duration']),
       date: departure is Map ? _sn(departure['time']) : null,
     );
+  }
+
+  static String _formatPrice(dynamic value) {
+    if (value == null) return '0';
+    double val = _toDouble(value);
+    if (val == 0) return '0';
+    // Round to 1 decimal place as requested (e.g. 12.6)
+    return val.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '');
   }
 
   static double _toDouble(dynamic value) {

@@ -1,5 +1,6 @@
 import 'package:egytravel_app/core/widgets/custom_back_button.dart';
 import 'package:egytravel_app/core/widgets/glassy_background.dart';
+import 'package:egytravel_app/feature/plan/data/model/trip_model.dart';
 import 'package:egytravel_app/feature/plan/logic/controller/saved_trips_controller.dart';
 import 'package:egytravel_app/feature/plan/ui/screen/trip_details_screen.dart';
 import 'package:flutter/material.dart';
@@ -32,14 +33,22 @@ class MyTripsScreen extends StatelessWidget {
           ],
         ),
         body: Obx(() {
+          // Loading state
           if (controller.isLoading.value && controller.trips.isEmpty) {
             return const Center(child: CircularProgressIndicator(color: Colors.orange));
           }
 
+          // Error state
+          if (controller.hasError.value && controller.trips.isEmpty) {
+            return _buildErrorState(controller);
+          }
+
+          // Empty state
           if (controller.trips.isEmpty) {
             return _buildEmptyState();
           }
 
+          // Data state
           return RefreshIndicator(
             onRefresh: () => controller.fetchTrips(),
             color: Colors.orange,
@@ -57,7 +66,7 @@ class MyTripsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTripCard(BuildContext context, dynamic trip, SavedTripsController controller) {
+  Widget _buildTripCard(BuildContext context, TripModel trip, SavedTripsController controller) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -74,6 +83,8 @@ class MyTripsScreen extends StatelessWidget {
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,9 +94,13 @@ class MyTripsScreen extends StatelessWidget {
               children: [
                 const Icon(Icons.location_on, color: Colors.orange, size: 16),
                 const SizedBox(width: 4),
-                Text(
-                  trip.destination ?? 'No destination',
-                  style: const TextStyle(color: Colors.white70),
+                Expanded(
+                  child: Text(
+                    trip.destination ?? 'No destination',
+                    style: const TextStyle(color: Colors.white70),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),
@@ -100,6 +115,19 @@ class MyTripsScreen extends StatelessWidget {
                 ),
               ],
             ),
+            if (trip.durationInDays > 0) ...[
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  const Icon(Icons.timelapse, color: Colors.white24, size: 16),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${trip.durationInDays} day${trip.durationInDays > 1 ? 's' : ''}',
+                    style: const TextStyle(color: Colors.white24, fontSize: 12),
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
         trailing: IconButton(
@@ -148,7 +176,32 @@ class MyTripsScreen extends StatelessWidget {
     );
   }
 
-  void _showDeleteDialog(BuildContext context, dynamic trip, SavedTripsController controller) {
+  Widget _buildErrorState(SavedTripsController controller) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.cloud_off, size: 64, color: Colors.redAccent),
+          const SizedBox(height: 16),
+          Text(
+            controller.errorMessage.value.isNotEmpty
+                ? controller.errorMessage.value
+                : 'Failed to load trips',
+            style: const TextStyle(color: Colors.white70, fontSize: 16),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton(
+            onPressed: () => controller.fetchTrips(),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+            child: const Text('Retry', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context, TripModel trip, SavedTripsController controller) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:egytravel_app/core/utils/safe_cached_image.dart';
 import 'package:egytravel_app/feature/profile/data/model/profile_model.dart';
 import 'package:egytravel_app/generated/assets.dart';
 import 'package:flutter/material.dart';
@@ -53,13 +53,12 @@ class ProfileHeader extends StatelessWidget {
                     child: CircleAvatar(
                       radius: 55,
                       backgroundColor: const Color(0xFF1E293B),
-                      backgroundImage: (profile?.profilePhotoUrl != null &&
-                              profile!.profilePhotoUrl!.isNotEmpty &&
-                              profile!.profilePhotoUrl!.startsWith('http'))
-                          ? CachedNetworkImageProvider(
-                              profile!.profilePhotoUrl!)
-                          : const AssetImage(Assets.iconsProfile)
-                              as ImageProvider,
+                      backgroundImage:
+                          SafeCachedNetworkImageProvider.safe(
+                                  profile?.profilePhotoUrl) ??
+                              const AssetImage(Assets.iconsProfile)
+                                  as ImageProvider,
+                      onBackgroundImageError: (_, __) {},
                     ),
                   ),
                   // Online badge

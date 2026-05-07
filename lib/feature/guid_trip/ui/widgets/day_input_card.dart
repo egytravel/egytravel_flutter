@@ -197,6 +197,7 @@ class DayInputCard extends StatelessWidget {
                       ),
                       onTap: () {
                         day.addressController.text = place;
+                        searchController.dispose(); // Dispose before popping
                         Navigator.pop(context);
                       },
                     );
