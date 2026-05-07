@@ -55,15 +55,46 @@ class CommunityRepo {
   }
 
   // ── GET Comments ─────────────────────────────────────────────────────────
+  // Tries the dedicated /comments endpoint first, then falls back to post details
   Future<List<CommunityComment>> getPostComments(String id) async {
-    final response = await _api.get(EndPoint.communityPostComments(id));
-    
-    if (response is Map<String, dynamic> && response['data'] is List) {
-      return (response['data'] as List)
-          .map((c) => CommunityComment.fromJson(c))
-          .toList();
+    try {
+      // 1. Try the dedicated comments endpoint first (usually returns ALL comments)
+      final commentsResponse = await _api.get(EndPoint.communityPostComments(id));
+      if (commentsResponse is Map<String, dynamic> && commentsResponse['data'] is List) {
+        return (commentsResponse['data'] as List)
+            .whereType<Map<String, dynamic>>()
+            .map((c) => CommunityComment.fromJson(c))
+            .toList();
+      } else if (commentsResponse is List) {
+        return commentsResponse
+            .whereType<Map<String, dynamic>>()
+            .map((c) => CommunityComment.fromJson(c))
+            .toList();
+      }
+    } catch (e) {
+      print('DEBUG: Dedicated comments endpoint failed, falling back: $e');
     }
-    return [];
+
+    // 2. Fallback to post details (your debug log confirmed this works but might be limited to 3 recent ones)
+    final response = await _api.get(EndPoint.communityPostById(id));
+    print('DEBUG: Fallback Comments response for post $id: $response');
+
+    List rawComments = [];
+    if (response is Map<String, dynamic>) {
+      final inner = response['data'] ?? response;
+      if (inner is Map<String, dynamic>) {
+        // Try every possible key for comments list
+        rawComments = inner['recentComments'] ?? 
+                      inner['comments'] ?? 
+                      (inner['post'] is Map ? (inner['post']['recentComments'] ?? inner['post']['comments']) : null) ?? 
+                      [];
+      }
+    }
+
+    return rawComments
+        .whereType<Map<String, dynamic>>()
+        .map((c) => CommunityComment.fromJson(c))
+        .toList();
   }
 
   // ── ADD Comment ──────────────────────────────────────────────────────────
@@ -73,6 +104,33 @@ class CommunityRepo {
     });
     final data = _extractData(response);
     return CommunityComment.fromJson(data['comment'] ?? data);
+  }
+
+  // ── DELETE Comment ───────────────────────────────────────────────────────
+  Future<void> deleteComment(String commentId) async {
+    await _api.delete(EndPoint.communityCommentById(commentId));
+  }
+
+  // ── GET User Posts ────────────────────────────────────────────────────────
+  Future<List<CommunityPost>> getUserPosts(String userId) async {
+    final response = await _api.get(EndPoint.communityUserPosts(userId));
+    List data = [];
+    if (response is Map<String, dynamic> && response['data'] is List) {
+      data = response['data'];
+    } else if (response is List) {
+      data = response;
+    }
+    return data.map((p) => CommunityPost.fromJson(p as Map<String, dynamic>)).toList();
+  }
+
+  // ── GET Feed for Specific Place ───────────────────────────────────────────
+  Future<List<CommunityPost>> getFeedForPlace(String placeId) async {
+    final response = await _api.get('${EndPoint.communityFeed}?place=$placeId');
+    List data = [];
+    if (response is Map<String, dynamic> && response['data'] is List) {
+      data = response['data'];
+    }
+    return data.map((p) => CommunityPost.fromJson(p as Map<String, dynamic>)).toList();
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────

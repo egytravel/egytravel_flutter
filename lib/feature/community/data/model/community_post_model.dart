@@ -37,6 +37,25 @@ class CommunityPost {
     // Handle author or user object
     final authorData = json['author'] ?? json['user'] ?? {};
 
+    // Safely extract location - may be a String or a Map object
+    String? locationStr;
+    final rawLocation = json['location'] ?? json['place'];
+    if (rawLocation is String) {
+      locationStr = rawLocation;
+    } else if (rawLocation is Map) {
+      locationStr = rawLocation['name']?.toString() ?? rawLocation['city']?.toString();
+    }
+
+    // Try every possible API field name for "liked by current user"
+    bool resolvedIsLiked = false;
+    for (final key in ['liked', 'isLiked', 'is_liked', 'userLiked', 'hasLiked', 'user_liked', 'has_liked', 'likedByMe']) {
+      final val = json[key];
+      if (val != null) {
+        resolvedIsLiked = val == true || val == 1 || val == 'true';
+        break;
+      }
+    }
+
     return CommunityPost(
       id: _s(postId),
       description: _s(caption),

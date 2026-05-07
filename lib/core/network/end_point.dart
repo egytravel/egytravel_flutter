@@ -21,7 +21,7 @@ class EndPoint {
   static const communityPosts = '/api/community/posts';
   static String communityPostById(String id) => '/api/community/posts/$id';
   static String communityPostLikes(String id) => '/api/community/posts/$id/like';
-  static String communityPostComments(String id) => '/api/community/posts/$id/comments/';
+  static String communityPostComments(String id) => '/api/community/posts/$id/comments';
   static String communityCommentById(String id) => '/api/community/comments/$id';
   static String communityUserPosts(String id) => '/api/community/users/$id/posts';
 

@@ -1,4 +1,5 @@
 import 'package:egytravel_app/core/theme/app_color.dart';
+import 'package:egytravel_app/feature/ai_trip_planner/ui/widgets/show_data_picker.dart';
 import 'package:egytravel_app/feature/booking/data/models/flight_location_model.dart';
 import 'package:egytravel_app/feature/booking/logic/controller/booking_controller.dart';
 import 'package:flutter/material.dart';
@@ -62,81 +63,62 @@ class FlightSearchForm extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
 
-                // Dates
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildDateField(
-                        label: 'Departure',
-                        icon: Icons.calendar_today,
-                        onTap: () async {
-                          final date = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now().add(
-                              const Duration(days: 1),
-                            ),
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime.now().add(
-                              const Duration(days: 365),
-                            ),
-                            builder: (context, child) {
-                              return Theme(
-                                data: ThemeData.dark().copyWith(
-                                  colorScheme: const ColorScheme.dark(
-                                    primary: AppColor.primaryColor,
-                                  ),
-                                ),
-                                child: child!,
-                              );
-                            },
-                          );
-                          if (date != null) {
-                            controller.flightDepartureDate.value = date;
-                          }
+                // Dates — Premium Range Picker
+                Obx(() {
+                  final dep = controller.flightDepartureDate.value;
+                  final ret = controller.flightReturnDate.value;
+                  return GestureDetector(
+                    onTap: () => showDialog(
+                      context: context,
+                      barrierColor: Colors.black.withOpacity(0.7),
+                      builder: (_) => DatePickerWidget(
+                        onSave: (start, end) {
+                          if (start != null) controller.flightDepartureDate.value = start;
+                          if (end != null) controller.flightReturnDate.value = end;
                         },
-                        controller: controller,
-                        dateValue: controller.flightDepartureDate,
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildDateField(
-                        label: 'Return (Optional)',
-                        icon: Icons.calendar_today,
-                        onTap: () async {
-                          final date = await showDatePicker(
-                            context: context,
-                            initialDate:
-                                controller.flightDepartureDate.value?.add(
-                                      const Duration(days: 1),
-                                    ) ??
-                                    DateTime.now().add(const Duration(days: 2)),
-                            firstDate: controller.flightDepartureDate.value ??
-                                DateTime.now(),
-                            lastDate: DateTime.now().add(
-                              const Duration(days: 365),
-                            ),
-                            builder: (context, child) {
-                              return Theme(
-                                data: ThemeData.dark().copyWith(
-                                  colorScheme: const ColorScheme.dark(
-                                    primary: AppColor.primaryColor,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.calendar_month_rounded,
+                              color: AppColor.primaryColor, size: 22),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('Departure → Return (optional)',
+                                    style: TextStyle(color: Colors.white54, fontSize: 11)),
+                                const SizedBox(height: 4),
+                                Text(
+                                  dep != null && ret != null
+                                      ? '${dep.day}/${dep.month}/${dep.year}  →  ${ret.day}/${ret.month}/${ret.year}'
+                                      : dep != null
+                                          ? '${dep.day}/${dep.month}/${dep.year}  →  One way'
+                                          : 'Tap to select dates',
+                                  style: TextStyle(
+                                    color: dep != null ? Colors.white : Colors.white54,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                child: child!,
-                              );
-                            },
-                          );
-                          if (date != null) {
-                            controller.flightReturnDate.value = date;
-                          }
-                        },
-                        controller: controller,
-                        dateValue: controller.flightReturnDate,
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.chevron_right_rounded,
+                              color: Colors.white38, size: 20),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  );
+                }),
                 const SizedBox(height: 12),
 
                 // Travelers & Class
@@ -444,8 +426,13 @@ class FlightSearchForm extends StatelessWidget {
                   child: Row(
                     children: [
                       Icon(icon, color: AppColor.primaryColor, size: 20),
-                      const SizedBox(width: 12),
-                      Text(item),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          item,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ],
                   ),
                 );
