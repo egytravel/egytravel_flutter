@@ -110,17 +110,14 @@ class TripRepo {
     await _apiService.delete(EndPoint.tripDayById(tripId, dayId));
   }
 
-  // ── HOTEL BOOKING ──────────────────────────────────────────────────────────
+  // ── BOOKING ATTACHMENT ────────────────────────────────────────────────────
 
-  /// POST /api/bookings/hotel  (#11)
-  Future<Map<String, dynamic>> attachHotel(
-    Map<String, dynamic> hotelData,
-  ) async {
-    final response = await _apiService.post(
-      EndPoint.tripAttachHotel,
-      data: hotelData,
-    );
-    return response is Map<String, dynamic> ? response : {};
+  Future<void> attachHotel(Map<String, dynamic> bookingData) async {
+    await _apiService.post(EndPoint.bookingHotel, data: bookingData);
+  }
+
+  Future<void> attachFlight(Map<String, dynamic> bookingData) async {
+    await _apiService.post(EndPoint.bookingFlight, data: bookingData);
   }
 
   // ── MAP ────────────────────────────────────────────────────────────────────

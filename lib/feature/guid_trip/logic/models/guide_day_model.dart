@@ -1,3 +1,4 @@
+import 'package:egytravel_app/feature/plan/data/model/trip_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -8,6 +9,7 @@ class GuideDayModel {
   final RxString address;
   final RxString notes;
   final RxBool isExpanded;
+  final RxList<TripBookingModel> bookings;
 
   late final TextEditingController placeController;
   late final TextEditingController addressController;
@@ -20,16 +22,17 @@ class GuideDayModel {
     String address = '',
     String notes = '',
     bool isExpanded = true,
+    List<TripBookingModel> bookings = const [],
   })  : place = place.obs,
         address = address.obs,
         notes = notes.obs,
-        isExpanded = isExpanded.obs {
+        isExpanded = isExpanded.obs,
+        bookings = bookings.obs {
     placeController = TextEditingController(text: place);
     addressController = TextEditingController(text: address);
     notesController = TextEditingController(text: notes);
 
-    // Sync controllers with Rx variables if needed, or just use controllers directly in UI
-    // For now, we update Rx variables when controller changes to keep reactivity if used elsewhere
+    // Sync controllers with Rx variables
     placeController.addListener(() => this.place.value = placeController.text);
     addressController.addListener(() => this.address.value = addressController.text);
     notesController.addListener(() => this.notes.value = notesController.text);

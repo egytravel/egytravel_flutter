@@ -57,11 +57,49 @@ class PlanATripScreen extends StatelessWidget {
 
                     const SizedBox(height: 12),
 
+                    // ── Destination field ───────────────────────────────────────────
+                    _GlassTextField(
+                      controller: controller.destinationController,
+                      label: 'Destination',
+                      hint: 'Where are you going? (e.g. Cairo)',
+                      icon: Icons.location_on_outlined,
+                      maxLines: 1,
+                    ),
+
+                    // ── Suggestions List ──────────────────────────────────────────
+                    Obx(() => controller.suggestions.isEmpty
+                        ? const SizedBox.shrink()
+                        : Container(
+                            margin: const EdgeInsets.only(top: 4),
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                  color: Colors.white.withOpacity(0.2)),
+                            ),
+                            child: Column(
+                              children: controller.suggestions
+                                  .map((s) => ListTile(
+                                        title: Text(s,
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 14)),
+                                        onTap: () =>
+                                            controller.selectDestination(s),
+                                        dense: true,
+                                      ))
+                                  .toList(),
+                            ),
+                          )),
+
+                    const SizedBox(height: 14),
+
                     // ── Title field ─────────────────────────────────────────
                     _GlassTextField(
                       controller: controller.titleController,
                       label: 'Trip Title',
-                      hint: 'e.g. Summer Adventure in Cairo',
+                      hint: 'e.g. My Cairo Adventure',
                       icon: Icons.title_rounded,
                       maxLines: 1,
                     ),
