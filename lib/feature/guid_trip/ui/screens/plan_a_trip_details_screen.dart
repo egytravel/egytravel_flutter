@@ -2,6 +2,9 @@ import 'package:egytravel_app/core/widgets/glassy_background.dart';
 import 'package:egytravel_app/feature/guid_trip/logic/controller/guide_trip_controller.dart';
 import 'package:egytravel_app/feature/guid_trip/ui/widgets/day_input_card.dart';
 import 'package:egytravel_app/feature/guid_trip/ui/widgets/guide_app_bar.dart';
+import 'package:egytravel_app/feature/guid_trip/ui/widgets/hotel_selection_sheet.dart';
+import 'package:egytravel_app/feature/guid_trip/ui/widgets/flight_selection_sheet.dart';
+import 'package:egytravel_app/feature/auth/ui/widgets/glass_container.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -65,6 +68,10 @@ class PlanATripDetailsScreen extends GetView<GuideTripController> {
                       children: [
                         // ── Hotel Card ──────────────────────────────────────
                         _HotelSelectionCard(),
+                        
+                        const SizedBox(height: 16),
+
+                        _FlightBookingCard(),
                         
                         const SizedBox(height: 16),
                         
@@ -150,12 +157,65 @@ class _HotelSelectionCard extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              // TODO: Implement hotel selection
-              Get.snackbar('Coming Soon', 'Hotel booking integration is on the way!',
-                  backgroundColor: Colors.orange.withOpacity(0.8),
-                  colorText: Colors.white);
+              Get.bottomSheet(
+                const HotelSelectionSheet(),
+                isScrollControlled: true,
+              );
             },
             child: const Text('Add', style: TextStyle(color: Colors.orange)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FlightBookingCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return GlassContainer(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.blueAccent.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.flight_takeoff_rounded, color: Colors.blueAccent),
+          ),
+          const SizedBox(width: 16),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Flights',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  'Book a flight for your trip',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Get.bottomSheet(
+                const FlightSelectionSheet(),
+                isScrollControlled: true,
+              );
+            },
+            child: const Text('Add', style: TextStyle(color: Colors.blueAccent)),
           ),
         ],
       ),

@@ -1,4 +1,7 @@
 import 'package:egytravel_app/core/widgets/snack_bar.dart';
+import 'package:egytravel_app/feature/booking/data/models/flight_model.dart';
+import 'package:egytravel_app/feature/booking/data/models/hotel_model.dart';
+import 'package:egytravel_app/feature/explore/data/repo/explore_repo.dart';
 import 'package:egytravel_app/feature/guid_trip/logic/models/guide_day_model.dart';
 import 'package:egytravel_app/feature/guid_trip/ui/screens/plan_a_trip_details_screen.dart';
 import 'package:egytravel_app/feature/plan/data/model/trip_model.dart';
@@ -14,6 +17,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class GuideTripController extends GetxController {
   final TripRepo _tripRepo = TripRepo();
+  final ExploreRepo _exploreRepo = ExploreRepo();
 
   final TextEditingController destinationController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
@@ -27,6 +31,14 @@ class GuideTripController extends GetxController {
   final RxBool isLoading = false.obs;
   final Rxn<TripModel> trip = Rxn<TripModel>();
   final RxString errorMessage = ''.obs;
+
+  // ── HOTELS ────────────────────────────────────────────────────────────────
+  final RxList<HotelModel> hotelResults = <HotelModel>[].obs;
+  final RxBool isSearchingHotels = false.obs;
+
+  // ── FLIGHTS ───────────────────────────────────────────────────────────────
+  final RxList<FlightModel> flightResults = <FlightModel>[].obs;
+  final RxBool isSearchingFlights = false.obs;
 
   final ScrollController scrollController = ScrollController();
   final RxBool isFabVisible = true.obs;
@@ -74,6 +86,184 @@ class GuideTripController extends GetxController {
     destinationController.text = destination;
     suggestions.clear();
     update();
+  }
+
+  // ── Hotel Management ───────────────────────────────────────────────────────
+
+  Future<void> searchHotelsForTrip({
+    String? city,
+    DateTime? checkin,
+    DateTime? checkout,
+    int guests = 2,
+  }) async {
+    try {
+      isSearchingHotels.value = true;
+      hotelResults.clear();
+
+      final searchCity = city ?? destinationController.text;
+      if (searchCity.isEmpty) {
+        showError('Please enter a city to search hotels');
+        return;
+      }
+
+      final dateIn = checkin ?? startDate ?? DateTime.now();
+      final dateOut = checkout ?? endDate ?? dateIn.add(const Duration(days: 1));
+
+      final results = await _exploreRepo.exploreHotels(
+        city: searchCity,
+        checkin: _formatDate(dateIn),
+        checkout: _formatDate(dateOut),
+        guests: guests,
+      );
+
+      hotelResults.assignAll(results);
+      if (results.isEmpty) {
+        showError('No hotels found for the selected criteria');
+      }
+    } catch (error) {
+      showError('Failed to search hotels: ${_readableError(error)}');
+    } finally {
+      isSearchingHotels.value = false;
+    }
+  }
+
+  Future<void> addHotelToTripDay(
+    String tripId,
+    String dayId,
+    HotelModel hotel,
+  ) async {
+    try {
+      isLoading.value = true;
+
+      // 1. Attach/Book the hotel for the trip using the requested endpoint /api/bookings/hotel
+      final bookingData = {
+        'tripId': tripId,
+        'hotelId': hotel.id,
+        'hotelName': hotel.name.isNotEmpty ? hotel.name : 'Hotel ${hotel.id}',
+        'hotelLocation': hotel.location,
+        'checkinDate': _formatDate(startDate ?? DateTime.now()),
+        'checkoutDate': _formatDate(endDate ?? DateTime.now().add(const Duration(days: 1))),
+        'guests': 2,
+        'price': hotel.pricePerNight,
+        'totalPrice': hotel.pricePerNight,
+        'currency': 'USD',
+      };
+
+      await _tripRepo.attachHotel(bookingData);
+
+      // 2. Also add it as a place/pin for that specific day if needed
+      final hotelPlaceData = {
+        'name': hotel.name,
+        'address': hotel.location,
+        'type': 'hotel',
+        'hotelId': hotel.id,
+        'price': hotel.pricePerNight,
+        'image': hotel.imageUrl,
+        'lat': 0.0, 
+        'lng': 0.0,
+      };
+
+      await _tripRepo.addPlaceToDay(tripId, dayId, hotelPlaceData);
+      
+      await _refreshTrip(tripId);
+      showSuccess('${hotel.name} added and booked for your trip!');
+    } catch (error) {
+      showError('Failed to add accommodation: ${_readableError(error)}');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // ── Flight Management ──────────────────────────────────────────────────────
+
+  Future<void> searchFlightsForTrip({
+    String? from,
+    String? to,
+    DateTime? date,
+    String flightClass = 'Economy',
+  }) async {
+    try {
+      isSearchingFlights.value = true;
+      flightResults.clear();
+
+      final searchFrom = from ?? 'Cairo'; // Default origin
+      final searchTo = to ?? destinationController.text;
+      
+      if (searchTo.isEmpty) {
+        showError('Please enter a destination to search flights');
+        return;
+      }
+
+      final searchDate = date ?? startDate ?? DateTime.now();
+
+      final results = await _exploreRepo.exploreFlights(
+        from: searchFrom,
+        to: searchTo,
+        date: _formatDate(searchDate),
+        flightClass: flightClass,
+      );
+
+      flightResults.assignAll(results);
+      if (results.isEmpty) {
+        showError('No flights found for the selected criteria');
+      }
+    } catch (error) {
+      showError('Failed to search flights: ${_readableError(error)}');
+    } finally {
+      isSearchingFlights.value = false;
+    }
+  }
+
+  Future<void> addFlightToTripDay(
+    String tripId,
+    String dayId,
+    FlightModel flight,
+  ) async {
+    try {
+      isLoading.value = true;
+
+      // 1. Attach/Book the flight for the trip - Updated to match backend requirement
+      final bookingData = {
+        'tripId': tripId,
+        'flightId': flight.id,
+        'airline': flight.airlineName,
+        'flightNumber': flight.flightNumber,
+        'departureAirport': flight.fromCode,
+        'arrivalAirport': flight.toCode,
+        'departureCity': flight.fromCity,
+        'arrivalCity': flight.toCity,
+        'departureDate': flight.departureTime.toIso8601String(),
+        'arrivalDate': flight.arrivalTime.toIso8601String(),
+        'passengers': 1,
+        'cabinClass': flight.flightClass.toUpperCase(),
+        'totalPrice': flight.price,
+        'currency': 'USD',
+        'bookingUrl': 'https://www.google.com/travel/flights',
+        'type': 'flight',
+      };
+
+      await _tripRepo.attachFlight(bookingData);
+
+      // 2. Add it as a record for that specific day
+      final flightPlaceData = {
+        'name': '${flight.airlineName} (${flight.flightNumber})',
+        'address': 'From ${flight.fromCity} to ${flight.toCity}',
+        'type': 'flight',
+        'flightId': flight.id,
+        'price': flight.price,
+        'lat': 0.0, 
+        'lng': 0.0,
+      };
+
+      await _tripRepo.addPlaceToDay(tripId, dayId, flightPlaceData);
+      
+      await _refreshTrip(tripId);
+      showSuccess('Flight ${flight.flightNumber} added to your trip!');
+    } catch (error) {
+      showError('Failed to add flight: ${_readableError(error)}');
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   // ── Place Management ───────────────────────────────────────────────────────
@@ -308,6 +498,11 @@ class GuideTripController extends GetxController {
   }
 
   bool _validateBaseTripInputs() {
+    if (destinationController.text.trim().isEmpty) {
+      errorMessage.value = 'Please pick a destination city';
+      showError(errorMessage.value);
+      return false;
+    }
     if (titleController.text.trim().isEmpty) {
       errorMessage.value = 'Please enter a trip title';
       showError(errorMessage.value);
@@ -325,6 +520,7 @@ class GuideTripController extends GetxController {
     return TripModel(
       id: '',
       title: titleController.text.trim(),
+      destination: destinationController.text.trim(),
       description: descriptionController.text.trim().isNotEmpty
           ? descriptionController.text.trim()
           : null,
@@ -370,13 +566,21 @@ class GuideTripController extends GetxController {
           existingDay.notesController.text = sDay.notes!;
         }
         
-        // Update address from first location if available
+        // Update address from first location if available (excluding hotels which have their own cards)
         if (sDay.locations != null && sDay.locations!.isNotEmpty) {
-          final firstLoc = sDay.locations!.first.name;
-          if (firstLoc != existingDay.address.value) {
-            existingDay.address.value = firstLoc;
-            existingDay.addressController.text = firstLoc;
+          final nonHotelLocations = sDay.locations!.where((loc) => (loc.type ?? '').toLowerCase() != 'hotel').toList();
+          if (nonHotelLocations.isNotEmpty) {
+            final firstLoc = nonHotelLocations.first.name;
+            if (firstLoc != existingDay.address.value) {
+              existingDay.address.value = firstLoc;
+              existingDay.addressController.text = firstLoc;
+            }
           }
+        }
+
+        // Sync Bookings (Hotels, etc.)
+        if (sDay.bookings != null) {
+          existingDay.bookings.assignAll(sDay.bookings!);
         }
       } else {
         // If it's a completely new day, add it
@@ -388,6 +592,7 @@ class GuideTripController extends GetxController {
           address: (sDay.locations != null && sDay.locations!.isNotEmpty)
               ? sDay.locations!.first.name
               : '',
+          bookings: sDay.bookings ?? [],
         ));
       }
     }
@@ -418,6 +623,7 @@ class GuideTripController extends GetxController {
         place: sDay.title ?? '',
         notes: sDay.notes ?? '',
         address: initialAddress,
+        bookings: sDay.bookings ?? [],
       ));
     }
   }

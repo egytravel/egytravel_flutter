@@ -4,6 +4,7 @@ import 'package:egytravel_app/feature/guid_trip/logic/models/guide_day_model.dar
 import 'package:egytravel_app/feature/plan/data/repo/trip_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:collection/collection.dart';
 
 class DayInputCard extends StatelessWidget {
   final GuideDayModel day;
@@ -12,6 +13,7 @@ class DayInputCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<GuideTripController>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -61,6 +63,91 @@ class DayInputCard extends StatelessWidget {
                       onTap: () => _showPlaceSearchSheet(context),
                       onChanged: (_) {},
                     ),
+                    
+                    // ── Accommodations (Hotels) ─────────────────────────────
+                    Obx(() {
+                      // 1. Get from bookings list
+                      final hotelsFromBookings = day.bookings.where((b) => b.type.toLowerCase() == 'hotel').map((b) => {
+                        'title': b.displayTitle,
+                        'subtitle': b.displayLocation,
+                        'price': b.displayPrice,
+                      }).toList();
+
+                      // 2. Get from locations list (if added via addPlaceToDay)
+                      final hotelsFromLocations = controller.trip.value?.days
+                          ?.firstWhereOrNull((d) => d.id == day.id || d.dayNumber == day.dayNumber)
+                          ?.locations
+                          ?.where((loc) => (loc.type ?? '').toLowerCase() == 'hotel')
+                          .map((loc) => {
+                            'title': loc.name,
+                            'subtitle': 'Accommodation',
+                            'price': '', // Locations might not have price in the same way
+                          })
+                          .toList() ?? [];
+
+                      final allHotels = [...hotelsFromBookings, ...hotelsFromLocations];
+                      
+                      if (allHotels.isEmpty) return const SizedBox.shrink();
+                      
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 20),
+                          _SectionHeader(label: 'Accommodation', icon: Icons.hotel_rounded),
+                          const SizedBox(height: 10),
+                          ...allHotels.map((h) => _BookingCard(
+                            title: h['title'] ?? 'Hotel',
+                            subtitle: h['subtitle'] ?? '',
+                            price: h['price'] ?? '',
+                            icon: Icons.hotel_rounded,
+                            color: Colors.orange,
+                          )),
+                        ],
+                      );
+                    }),
+
+                    // ── Flights ─────────────────────────────────────────────
+                    Obx(() {
+                      // 1. Get from bookings list
+                      final flightsFromBookings = day.bookings.where((b) => b.type.toLowerCase() == 'flight').map((b) => {
+                        'title': b.displayTitle,
+                        'subtitle': 'Flight to ${b.displayLocation}',
+                        'price': b.displayPrice,
+                      }).toList();
+
+                      // 2. Get from locations list (if added via addPlaceToDay)
+                      final flightsFromLocations = controller.trip.value?.days
+                          ?.firstWhereOrNull((d) => d.id == day.id || d.dayNumber == day.dayNumber)
+                          ?.locations
+                          ?.where((loc) => (loc.type ?? '').toLowerCase() == 'flight')
+                          .map((loc) => {
+                            'title': loc.name,
+                            'subtitle': loc.address ?? '',
+                            'price': '',
+                          })
+                          .toList() ?? [];
+
+                      final allFlights = [...flightsFromBookings, ...flightsFromLocations];
+
+                      if (allFlights.isEmpty) return const SizedBox.shrink();
+                      
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 20),
+                          _SectionHeader(label: 'Flights', icon: Icons.flight_takeoff_rounded),
+                          const SizedBox(height: 10),
+                          ...allFlights.map((f) => _BookingCard(
+                            title: f['title'] ?? 'Flight',
+                            subtitle: f['subtitle'] ?? '',
+                            price: f['price'] ?? '',
+                            icon: Icons.flight_takeoff_rounded,
+                            color: Colors.blueAccent,
+                          )),
+                        ],
+                      );
+                    }),
+
                     const SizedBox(height: 12),
                     _buildTextField(
                       label: 'Notes',
@@ -436,6 +523,116 @@ class _EmptyState extends StatelessWidget {
             style: TextStyle(
                 color: Colors.white.withOpacity(0.25), fontSize: 13),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  final String label;
+  final IconData icon;
+
+  const _SectionHeader({required this.label, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.orange, size: 16),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.orange,
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BookingCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final String price;
+  final IconData icon;
+  final Color color;
+
+  const _BookingCard({
+    required this.title,
+    required this.subtitle,
+    required this.price,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (subtitle.isNotEmpty)
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.5),
+                      fontSize: 11,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+              ],
+            ),
+          ),
+          if (price.isNotEmpty)
+            Text(
+              price,
+              style: const TextStyle(
+                color: Colors.orange,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
         ],
       ),
     );

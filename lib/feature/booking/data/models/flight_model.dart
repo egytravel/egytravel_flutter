@@ -4,6 +4,8 @@ class FlightModel {
   final String id;
   final String fromCity;
   final String toCity;
+  final String fromCode;
+  final String toCode;
   final String airlineName;
   final String airlineLogo;
   final DateTime departureTime;
@@ -19,6 +21,8 @@ class FlightModel {
     required this.id,
     required this.fromCity,
     required this.toCity,
+    required this.fromCode,
+    required this.toCode,
     required this.airlineName,
     required this.airlineLogo,
     required this.departureTime,
@@ -60,30 +64,42 @@ class FlightModel {
 
     // Handle departure
     String from = '';
+    String fCode = '';
     String depTime = DateTime.now().toIso8601String();
     if (json['departure'] is Map) {
       from = json['departure']['city'] ?? '';
+      fCode = json['departure']['code'] ?? json['departure']['airport'] ?? '';
       depTime = json['departure']['time'] ?? depTime;
     } else {
-      from = json['departureCity'] ?? json['fromCity'] ?? '';
+      from = json['departureCity'] ?? json['fromCity'] ?? json['origin'] ?? '';
+      fCode = json['departureAirport'] ?? json['fromCode'] ?? json['originCode'] ?? '';
       depTime = json['departureDate'] ?? json['departureTime'] ?? depTime;
     }
 
     // Handle arrival
     String to = '';
+    String tCode = '';
     String arrTime = DateTime.now().toIso8601String();
     if (json['arrival'] is Map) {
       to = json['arrival']['city'] ?? '';
+      tCode = json['arrival']['code'] ?? json['arrival']['airport'] ?? '';
       arrTime = json['arrival']['time'] ?? arrTime;
     } else {
-      to = json['arrivalCity'] ?? json['toCity'] ?? '';
+      to = json['arrivalCity'] ?? json['toCity'] ?? json['destination'] ?? '';
+      tCode = json['arrivalAirport'] ?? json['toCode'] ?? json['destinationCode'] ?? '';
       arrTime = json['arrivalDate'] ?? json['arrivalTime'] ?? arrTime;
     }
+
+    // Fallback for codes if they are empty but city looks like a code
+    if (fCode.isEmpty && from.length == 3) fCode = from;
+    if (tCode.isEmpty && to.length == 3) tCode = to;
 
     return FlightModel(
       id: (json['id'] ?? json['_id'] ?? json['flightId'] ?? '').toString(),
       fromCity: from,
       toCity: to,
+      fromCode: fCode,
+      toCode: tCode,
       airlineName: name,
       airlineLogo: UrlCleaner.clean(logo),
       departureTime: DateTime.parse(depTime),
@@ -102,6 +118,8 @@ class FlightModel {
       'id': id,
       'departureCity': fromCity,
       'arrivalCity': toCity,
+      'departureAirport': fromCode,
+      'arrivalAirport': toCode,
       'airline': airlineName,
       'airlineLogo': airlineLogo,
       'departureDate': departureTime.toIso8601String(),
@@ -126,6 +144,8 @@ class FlightModel {
         id: '1',
         fromCity: from ?? 'Cairo',
         toCity: to ?? 'London',
+        fromCode: 'CAI',
+        toCode: 'LHR',
         airlineName: 'EgyptAir',
         airlineLogo: '✈️',
         departureTime: DateTime.now().add(const Duration(days: 7, hours: 10)),
@@ -141,6 +161,8 @@ class FlightModel {
         id: '2',
         fromCity: from ?? 'Cairo',
         toCity: to ?? 'London',
+        fromCode: 'CAI',
+        toCode: 'LHR',
         airlineName: 'British Airways',
         airlineLogo: '🛫',
         departureTime: DateTime.now().add(const Duration(days: 7, hours: 14)),
@@ -156,6 +178,8 @@ class FlightModel {
         id: '3',
         fromCity: from ?? 'Cairo',
         toCity: to ?? 'London',
+        fromCode: 'CAI',
+        toCode: 'LHR',
         airlineName: 'Lufthansa',
         airlineLogo: '🛩️',
         departureTime: DateTime.now().add(const Duration(days: 7, hours: 8)),
@@ -171,6 +195,8 @@ class FlightModel {
         id: '4',
         fromCity: from ?? 'Cairo',
         toCity: to ?? 'London',
+        fromCode: 'CAI',
+        toCode: 'LHR',
         airlineName: 'Emirates',
         airlineLogo: '🛫',
         departureTime: DateTime.now().add(const Duration(days: 7, hours: 16)),

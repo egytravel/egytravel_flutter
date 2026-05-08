@@ -74,11 +74,13 @@ class EndPoint {
       '/api/trips/$tripId/days/$dayId/places/$index';
 
   // ── Flights ───────────────────────────────────────────────────────────────
-  static const flightSearch = '/api/flights/search';
+  static const exploreFlightsApi = '/api/explore/flights';
+  static const flightSearch = '/api/flights/search'; // Keep old one if needed, or replace
   static const flightLocations = '/api/flights/locations';
 
   // ── Hotels ────────────────────────────────────────────────────────────────
   static const hotelSearch = '/api/hotels/search';
+  static const exploreHotels = '/api/explore/hotels';
 
   // ── Bookings ──────────────────────────────────────────────────────────────
   static const bookings = '/api/bookings';
