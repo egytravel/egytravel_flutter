@@ -57,13 +57,18 @@ class SearchScreen extends GetView<AppSearchController> {
                                   color: Colors.white70,
                                   size: 22,
                                 ),
-                                suffixIcon: Obx(() => controller.isSearching.value
-                                    ? IconButton(
-                                        icon: const Icon(Icons.close,
-                                            color: Colors.white60, size: 20),
-                                        onPressed: controller.clearSearch,
-                                      )
-                                    : const SizedBox.shrink()),
+                                suffixIcon: Obx(
+                                  () => controller.isSearching.value
+                                      ? IconButton(
+                                          icon: const Icon(
+                                            Icons.close,
+                                            color: Colors.white60,
+                                            size: 20,
+                                          ),
+                                          onPressed: controller.clearSearch,
+                                        )
+                                      : const SizedBox.shrink(),
+                                ),
                                 border: InputBorder.none,
                                 contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 20,
@@ -127,15 +132,17 @@ class SearchScreen extends GetView<AppSearchController> {
         if (controller.recentSearches.isNotEmpty) ...[
           _buildSectionTitle('Recent Searches'),
           const SizedBox(height: 12),
-          ...controller.recentSearches.map((query) => _buildSearchResultItem(
-                query,
-                'Recent search',
-                Icons.history,
-                onTap: () {
-                  controller.searchTextField.text = query;
-                  controller.onSearchChanged(query);
-                },
-              )),
+          ...controller.recentSearches.map(
+            (query) => _buildSearchResultItem(
+              query,
+              'Recent search',
+              Icons.history,
+              onTap: () {
+                controller.searchTextField.text = query;
+                controller.onSearchChanged(query);
+              },
+            ),
+          ),
           const SizedBox(height: 24),
         ],
         _buildSectionTitle('Popular Destinations'),
@@ -167,8 +174,11 @@ class SearchScreen extends GetView<AppSearchController> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.search_off_rounded,
-              size: 80, color: Colors.white.withValues(alpha: 0.2)),
+          Icon(
+            Icons.search_off_rounded,
+            size: 80,
+            color: Colors.white.withValues(alpha: 0.2),
+          ),
           const SizedBox(height: 16),
           Text(
             'No results found',
@@ -204,8 +214,13 @@ class SearchScreen extends GetView<AppSearchController> {
     );
   }
 
-  Widget _buildSearchResultItem(String title, String subtitle, IconData icon,
-      {String? imageUrl, required VoidCallback onTap}) {
+  Widget _buildSearchResultItem(
+    String title,
+    String subtitle,
+    IconData icon, {
+    String? imageUrl,
+    required VoidCallback onTap,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: ClipRRect(

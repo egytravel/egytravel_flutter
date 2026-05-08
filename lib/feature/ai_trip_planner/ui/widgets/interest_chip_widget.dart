@@ -10,8 +10,8 @@ class InterestChip extends StatelessWidget {
     required this.label,
     required this.icon,
     required this.controller,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

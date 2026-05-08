@@ -4,6 +4,7 @@ import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'package:egytravel_app/feature/auth/data/repo/auth_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:geolocator/geolocator.dart';
 
 class LoginController extends GetxController {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -71,13 +72,24 @@ class LoginController extends GetxController {
         success: true,
       );
 
+      // Request location permission
+      try {
+        await Geolocator.requestPermission();
+      } catch (e) {
+        print("Error requesting location permission: $e");
+      }
+
       Get.offAllNamed(Routes.home);
 
     } on ApiError catch (e) {
-      showTopGlassSnackBar(
-        context,
-        e.message,
-      );
+      if (e.message.toLowerCase().contains('verify')) {
+        Get.toNamed(Routes.verifyEmail, arguments: email);
+      } else {
+        showTopGlassSnackBar(
+          context,
+          e.message,
+        );
+      }
       return;
     } catch (e) {
       showTopGlassSnackBar(

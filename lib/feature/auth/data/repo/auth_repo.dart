@@ -90,4 +90,31 @@ class AuthRepo {
       throw ApiError(message: e.toString());
     }
   }
+
+  ///Verify Email
+  Future<void> verifyEmail({required String email, required String otp}) async {
+    try {
+      await _apiService.post(EndPoint.verifyOtp, data: {
+        'email': email.trim(),
+        'otp': otp,
+      });
+    } on ApiError catch (_) {
+      rethrow;
+    } catch (e) {
+      throw ApiError(message: e.toString());
+    }
+  }
+
+  ///Resend OTP
+  Future<void> resendOtp({required String email}) async {
+    try {
+      await _apiService.post(EndPoint.resendOtp, data: {
+        'email': email.trim(),
+      });
+    } on ApiError catch (_) {
+      rethrow;
+    } catch (e) {
+      throw ApiError(message: e.toString());
+    }
+  }
 }

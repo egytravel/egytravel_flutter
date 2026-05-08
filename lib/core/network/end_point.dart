@@ -7,6 +7,7 @@ class EndPoint {
   static const resetPassword = '/api/auth/reset-password';
   static const forgotPassword = '/api/auth/forgot-password';
   static const verifyOtp = '/api/auth/verify-email';
+  static const resendOtp = '/api/auth/resend-otp';
 
   // ── Home / Explore / Booking / AI ────────────────────────────────────────
   static const home = '/api/home/';
@@ -55,6 +56,11 @@ class EndPoint {
   static const bookings = '/api/bookings';
   static const bookingHotel = '/api/bookings/hotel';
   static const bookingFlight = '/api/bookings/flight';
+
+  // ── AI Trip Planner ──────────────────────────────────────────────────────────
+  static const aiBaseUrl = 'https://fronic-egydocker.hf.space';
+  static const aiPlan = '/plan';
+  static const aiChat = '/chat';
 
   // ── Favorites ─────────────────────────────────────────────────────────────
   static const favorites = '/api/favorites';

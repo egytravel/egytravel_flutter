@@ -12,9 +12,9 @@ class StartPlanningButton extends StatelessWidget {
       width: double.infinity,
       child: Obx(
         () => ElevatedButton(
-          onPressed: controller.isLoading.value
+          onPressed: controller.status.isLoading
               ? null
-              : () => controller.createAndNavigate(context),
+              : () => controller.generateTrip(),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.orange,
             padding: const EdgeInsets.symmetric(vertical: 18),
@@ -24,7 +24,7 @@ class StartPlanningButton extends StatelessWidget {
             elevation: 8,
             shadowColor: Colors.orange.withOpacity(0.5),
           ),
-          child: controller.isLoading.value
+          child: controller.status.isLoading
               ? const SizedBox(
                   height: 22,
                   width: 22,
