@@ -43,8 +43,8 @@ class HotelModel {
   }
 
   factory HotelModel.fromJson(Map<String, dynamic> json) {
-    final String parsedName = json['name'] ?? json['hotelName'] ?? '';
-    final String parsedCity = json['city'] ?? json['location'] ?? '';
+    final String parsedName = json['hotelName'] ?? json['name'] ?? json['title'] ?? json['hotel_name'] ?? json['hotel'] ?? '';
+    final String parsedCity = json['city'] ?? json['location'] ?? json['destination'] ?? '';
     final String parsedAddress = json['address'] ?? '';
     
     final String finalLocation = parsedAddress.isNotEmpty && parsedCity.isNotEmpty 

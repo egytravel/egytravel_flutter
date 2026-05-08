@@ -172,24 +172,36 @@ class TripActivityModel {
 
 class TripLocationModel {
   final String name;
+  final String? address;
   final double? lat;
   final double? lng;
+  final String? type;
 
-  TripLocationModel({required this.name, this.lat, this.lng});
+  TripLocationModel({
+    required this.name,
+    this.address,
+    this.lat,
+    this.lng,
+    this.type,
+  });
 
   factory TripLocationModel.fromJson(Map<String, dynamic> json) {
     return TripLocationModel(
       name: _readString(json, ['name', 'title'], fallback: 'Location'),
+      address: _nullableString(json['address']),
       lat: _nullableDouble(json['lat'] ?? json['latitude']),
       lng: _nullableDouble(json['lng'] ?? json['longitude']),
+      type: _nullableString(json['type']),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'name': name,
+      if (address != null) 'address': address,
       if (lat != null) 'lat': lat,
       if (lng != null) 'lng': lng,
+      if (type != null) 'type': type,
     };
   }
 }

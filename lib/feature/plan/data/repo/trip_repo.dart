@@ -110,27 +110,58 @@ class TripRepo {
     await _apiService.delete(EndPoint.tripDayById(tripId, dayId));
   }
 
-  // ── HOTEL BOOKING ──────────────────────────────────────────────────────────
+  // ── BOOKING ATTACHMENT ────────────────────────────────────────────────────
 
-  /// POST /trips/{tripId}/hotel
-  Future<Map<String, dynamic>> attachHotel(
-    String tripId,
-    Map<String, dynamic> hotelData,
-  ) async {
-    final response = await _apiService.post(
-      EndPoint.tripAttachHotel(tripId),
-      data: hotelData,
-    );
-    return response is Map<String, dynamic> ? response : {};
+  Future<void> attachHotel(Map<String, dynamic> bookingData) async {
+    await _apiService.post(EndPoint.bookingHotel, data: bookingData);
+  }
+
+  Future<void> attachFlight(Map<String, dynamic> bookingData) async {
+    await _apiService.post(EndPoint.bookingFlight, data: bookingData);
   }
 
   // ── MAP ────────────────────────────────────────────────────────────────────
 
-  /// GET /trips/{tripId}/map
+  /// GET /api/trips/{tripId}/map  (#13)
   Future<List<TripMapMarker>> getTripMapMarkers(String tripId) async {
     final response = await _apiService.get(EndPoint.tripMapMarkers(tripId));
     final data = _extractList(response);
     return data.map((e) => TripMapMarker.fromJson(e)).toList();
+  }
+
+  // ── SEARCH ─────────────────────────────────────────────────────────────────
+
+  /// GET /api/home/search?q=<query>  (#5)
+  Future<List<Map<String, dynamic>>> searchPlaces(String query) async {
+    if (query.trim().isEmpty) return [];
+    final response = await _apiService.get(EndPoint.searchPlaces(query));
+    return _extractList(response);
+  }
+
+  // ── PLACES ─────────────────────────────────────────────────────────────────
+
+  /// POST /api/trips/{tripId}/days/{dayId}/places  (#14)
+  Future<Map<String, dynamic>> addPlaceToDay(
+    String tripId,
+    String dayId,
+    Map<String, dynamic> placeData,
+  ) async {
+    final response = await _apiService.post(
+      EndPoint.tripDayPlaces(tripId, dayId),
+      data: placeData,
+    );
+    return response is Map<String, dynamic> ? response : {};
+  }
+
+  /// DELETE /api/trips/{tripId}/days/{dayId}/places/{index}  (#15)
+  Future<void> removePlaceFromDay(
+    String tripId,
+    String dayId,
+    int placeIndex,
+  ) async {
+    await _apiService.delete(
+      EndPoint.tripDayPlaceByIndex(tripId, dayId, placeIndex),
+    );
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────

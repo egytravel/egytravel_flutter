@@ -2,9 +2,12 @@ import 'package:egytravel_app/core/widgets/glassy_background.dart';
 import 'package:egytravel_app/feature/guid_trip/logic/controller/guide_trip_controller.dart';
 import 'package:egytravel_app/feature/guid_trip/ui/widgets/day_input_card.dart';
 import 'package:egytravel_app/feature/guid_trip/ui/widgets/guide_app_bar.dart';
-import 'package:egytravel_app/feature/guid_trip/ui/widgets/guide_bottom_action_bar.dart';
+import 'package:egytravel_app/feature/guid_trip/ui/widgets/hotel_selection_sheet.dart';
+import 'package:egytravel_app/feature/guid_trip/ui/widgets/flight_selection_sheet.dart';
+import 'package:egytravel_app/feature/auth/ui/widgets/glass_container.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class PlanATripDetailsScreen extends GetView<GuideTripController> {
   const PlanATripDetailsScreen({super.key});
@@ -17,7 +20,41 @@ class PlanATripDetailsScreen extends GetView<GuideTripController> {
         body: SafeArea(
           child: Column(
             children: [
-              GuideAppBar(destination: controller.destinationController.text),
+              GuideAppBar(destination: controller.titleController.text),
+              
+              // ── Map Container ─────────────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.white.withOpacity(0.2)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 15,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Obx(() => GoogleMap(
+                      onMapCreated: controller.onMapCreated,
+                      initialCameraPosition: CameraPosition(
+                        target: controller.mapCenter.value,
+                        zoom: 5,
+                      ),
+                      markers: controller.markers.value,
+                      myLocationButtonEnabled: false,
+                      zoomControlsEnabled: false,
+                      mapType: MapType.normal,
+                    )),
+                  ),
+                ),
+              ),
+
               Expanded(
                 child: Obx(
                   () => NotificationListener<UserScrollNotification>(
@@ -25,21 +62,35 @@ class PlanATripDetailsScreen extends GetView<GuideTripController> {
                       controller.updateFabVisibility(notification.direction);
                       return true;
                     },
-                    child: ListView.builder(
+                    child: ListView(
                       controller: controller.scrollController,
                       padding: const EdgeInsets.all(16),
-                      itemCount: controller.days.length,
-                      itemBuilder: (context, index) {
-                        return DayInputCard(day: controller.days[index]);
-                      },
+                      children: [
+                        // ── Hotel Card ──────────────────────────────────────
+                        _HotelSelectionCard(),
+                        
+                        const SizedBox(height: 16),
+
+                        _FlightBookingCard(),
+                        
+                        const SizedBox(height: 16),
+                        
+                        // ── Days List ───────────────────────────────────────
+                        ...controller.days.map((day) => DayInputCard(day: day)).toList(),
+                        
+                        const SizedBox(height: 100), // Bottom padding
+                      ],
                     ),
                   ),
                 ),
               ),
-              const GuideBottomActionBar(),
             ],
           ),
         ),
+        
+        // ── Bottom Action Bar (Confirm Button) ───────────────────────────────
+        bottomSheet: _ConfirmActionBar(controller: controller),
+
         floatingActionButton: Obx(
           () => AnimatedScale(
             scale: controller.isFabVisible.value ? 1.0 : 0.0,
@@ -50,12 +101,160 @@ class PlanATripDetailsScreen extends GetView<GuideTripController> {
               child: FloatingActionButton(
                 onPressed: controller.addDay,
                 backgroundColor: Colors.orange,
+                elevation: 10,
                 child: const Icon(Icons.add, color: Colors.white),
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _HotelSelectionCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.orange.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.hotel_rounded, color: Colors.orange),
+          ),
+          const SizedBox(width: 16),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Accomodation',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  'Add a hotel to your trip',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Get.bottomSheet(
+                const HotelSelectionSheet(),
+                isScrollControlled: true,
+              );
+            },
+            child: const Text('Add', style: TextStyle(color: Colors.orange)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FlightBookingCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return GlassContainer(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.blueAccent.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.flight_takeoff_rounded, color: Colors.blueAccent),
+          ),
+          const SizedBox(width: 16),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Flights',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  'Book a flight for your trip',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Get.bottomSheet(
+                const FlightSelectionSheet(),
+                isScrollControlled: true,
+              );
+            },
+            child: const Text('Add', style: TextStyle(color: Colors.blueAccent)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ConfirmActionBar extends StatelessWidget {
+  final GuideTripController controller;
+
+  const _ConfirmActionBar({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E1E).withOpacity(0.95),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        border: Border(top: BorderSide(color: Colors.white.withOpacity(0.1))),
+      ),
+      child: Obx(() => ElevatedButton(
+        onPressed: controller.isLoading.value ? null : controller.saveTrip,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.orange,
+          minimumSize: const Size(double.infinity, 56),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
+        child: controller.isLoading.value
+            ? const CircularProgressIndicator(color: Colors.white)
+            : const Text(
+                'Confirm Trip',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+      )),
     );
   }
 }

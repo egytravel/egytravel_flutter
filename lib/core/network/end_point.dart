@@ -38,19 +38,50 @@ class EndPoint {
   static const travelHistory = '/api/users/travel-history';
 
   // ── Trips ─────────────────────────────────────────────────────────────────
+  // 1. Create Trip          → POST   /api/trips
+  // 2. Get All My Trips     → GET    /api/trips
+  // 3. Get Trip Details     → GET    /api/trips/:id
+  // 4. Update Trip          → PUT    /api/trips/:id
+  // 12. Delete Trip         → DELETE /api/trips/:id
   static const trips = '/api/trips';
   static String tripById(String id) => '/api/trips/$id';
+
+  // 5. Search Places for Trip → GET /api/home/search?q=<query>
+  static String searchPlaces(String query) =>
+      '/api/home/search?q=${Uri.encodeQueryComponent(query)}';
+
+  // 6. Add Extra Day to Trip  → POST   /api/trips/:id/days
+  // 7. Get All Days           → GET    /api/trips/:id/days
   static String tripDays(String id) => '/api/trips/$id/days';
-  static String tripDayById(String tripId, String dayId) => '/api/trips/$tripId/days/$dayId';
+
+  // 8. Get Single Day         → GET    /api/trips/:tripId/days/:dayId
+  // 9. Update Day             → PUT    /api/trips/:tripId/days/:dayId
+  // 10. Delete Day            → DELETE /api/trips/:tripId/days/:dayId
+  static String tripDayById(String tripId, String dayId) =>
+      '/api/trips/$tripId/days/$dayId';
+
+  // 13. Get Trip Map Markers  → GET  /api/trips/:id/map
   static String tripMapMarkers(String id) => '/api/trips/$id/map';
-  static String tripAttachHotel(String id) => '/api/trips/$id/hotel';
+
+  // 11. Attach Hotel Booking to Trip → POST /api/bookings/hotel
+  static const tripAttachHotel = '/api/bookings/hotel';
+
+  // 14. Add Place to Day (map pin) → POST /api/trips/:tripId/days/:dayId/places
+  static String tripDayPlaces(String tripId, String dayId) =>
+      '/api/trips/$tripId/days/$dayId/places';
+
+  // 15. Remove Place from Day → DELETE /api/trips/:tripId/days/:dayId/places/:index
+  static String tripDayPlaceByIndex(String tripId, String dayId, int index) =>
+      '/api/trips/$tripId/days/$dayId/places/$index';
 
   // ── Flights ───────────────────────────────────────────────────────────────
-  static const flightSearch = '/api/flights/search';
+  static const exploreFlightsApi = '/api/explore/flights';
+  static const flightSearch = '/api/flights/search'; // Keep old one if needed, or replace
   static const flightLocations = '/api/flights/locations';
 
   // ── Hotels ────────────────────────────────────────────────────────────────
   static const hotelSearch = '/api/hotels/search';
+  static const exploreHotels = '/api/explore/hotels';
 
   // ── Bookings ──────────────────────────────────────────────────────────────
   static const bookings = '/api/bookings';
