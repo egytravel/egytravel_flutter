@@ -18,23 +18,25 @@ class CustomBackButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onPressed ?? () => Get.back(),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.3),
+      child: Center( // Center to prevent it from stretching in AppBar
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              padding: const EdgeInsets.all(7), // Reduced from 10
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.25),
+                ),
               ),
-            ),
-            child: Icon(
-              Icons.arrow_back_ios_new,
-              color: iconColor,
-              size: size,
+              child: Icon(
+                Icons.arrow_back_ios_new,
+                color: iconColor,
+                size: size - 2, // Slightly smaller icon
+              ),
             ),
           ),
         ),

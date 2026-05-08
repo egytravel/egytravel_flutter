@@ -1,5 +1,6 @@
 import 'package:egytravel_app/core/locale_storage/shared_preferences_helper.dart';
 import 'package:egytravel_app/feature/plan/data/model/trip_model.dart';
+import 'package:egytravel_app/feature/plan/data/repo/trip_repo.dart';
 import 'package:egytravel_app/feature/plan/ui/screen/trip_details_screen.dart';
 import 'package:egytravel_app/feature/profile/data/model/profile_model.dart';
 import 'package:egytravel_app/feature/profile/data/repo/profile_repo.dart';
@@ -8,6 +9,7 @@ import 'package:get/get.dart';
 
 class ProfileController extends GetxController {
   final ProfileRepo _repo = ProfileRepo();
+  final TripRepo _tripRepo = TripRepo();
 
   // ── Scroll ──────────────────────────────────────────────────────────────
   final scrollController = ScrollController();
@@ -235,8 +237,8 @@ class ProfileController extends GetxController {
   // ── Trips ────────────────────────────────────────────────────────────────
   Future<void> fetchTrips() async {
     try {
-      final tripsData = await _repo.getMyTrips();
-      userTrips.value = tripsData.map((t) => TripModel.fromJson(t)).toList();
+      final fetchedTrips = await _tripRepo.getAllTrips();
+      userTrips.value = fetchedTrips;
     } catch (_) {
       // keep empty or previous trips
     }
