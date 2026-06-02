@@ -1,9 +1,13 @@
 import 'dart:async';
 import 'package:egytravel_app/core/routes/app_routes.dart';
+import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'package:egytravel_app/feature/ai_trip_planner/data/models/trip_plan_model.dart';
 import 'package:egytravel_app/feature/ai_trip_planner/data/repo/ai_trip_repo.dart';
 import 'package:egytravel_app/feature/home/data/model/destination_model.dart';
 import 'package:egytravel_app/feature/home/data/repo/home_repo.dart';
+import 'package:egytravel_app/feature/plan/data/model/trip_model.dart';
+import 'package:egytravel_app/feature/plan/data/repo/trip_repo.dart';
+import 'package:egytravel_app/feature/plan/logic/controller/saved_trips_controller.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -25,6 +29,7 @@ class TripController extends GetxController with StateMixin<TripPlanModel> {
   final RxInt selectedDayIndex = 0.obs;
   final RxString selectedCity = ''.obs;
   final RxBool isLoading = false.obs;
+  final RxBool isSavingTrip = false.obs;
   final Rx<DateTime?> startDate = Rx<DateTime?>(null);
   final Rx<DateTime?> endDate = Rx<DateTime?>(null);
 
@@ -228,6 +233,76 @@ class TripController extends GetxController with StateMixin<TripPlanModel> {
     selectedCity.value = '';
     selectedInterests.clear();
   }
+
+  // ── Save AI Trip ────────────────────────────────────────────────────────
+  final TripRepo _tripRepo = TripRepo();
+
+  Future<void> saveAiTrip() async {
+    final tripData = state;
+    if (tripData == null) {
+      Get.snackbar('Error', 'No trip data to save');
+      return;
+    }
+
+    try {
+      isSavingTrip.value = true;
+
+      // 1. Create the trip on the server
+      final tripToCreate = TripModel(
+        id: '',
+        title: 'AI Trip to ${selectedCity.value}',
+        description:
+            'AI-generated trip to ${selectedCity.value} with ${selectedBudget.value} budget',
+        destination: selectedCity.value,
+        startDate: startDate.value != null ? _formatDate(startDate.value!) : null,
+        endDate: endDate.value != null ? _formatDate(endDate.value!) : null,
+        budget: 0,
+        status: 'planning',
+      );
+
+      final createdTrip = await _tripRepo.createTrip(tripToCreate);
+      final tripId = createdTrip.id.trim();
+
+      if (tripId.isEmpty) {
+        throw Exception('Trip created but no trip ID was returned.');
+      }
+
+      // 2. Add each day with its activities
+      for (int i = 0; i < tripData.data.days.length; i++) {
+        final day = tripData.data.days[i];
+        final dayDate = startDate.value?.add(Duration(days: i));
+
+        final dayData = <String, dynamic>{
+          'dayNumber': day.day,
+          if (dayDate != null) 'date': _formatDate(dayDate),
+          'activities': day.activities
+              .map((a) => <String, dynamic>{
+                    'title': a.title,
+                    'time': a.time,
+                    'description': a.description,
+                  })
+              .toList(),
+        };
+
+        await _tripRepo.addDayToTrip(tripId, dayData);
+      }
+
+      showSuccess('Trip saved successfully!');
+
+      // Refresh saved trips if controller exists
+      try {
+        final savedController = Get.find<SavedTripsController>();
+        savedController.fetchTrips();
+      } catch (_) {}
+    } catch (e) {
+      showError('Failed to save trip: ${e.toString().replaceAll('Exception: ', '')}');
+    } finally {
+      isSavingTrip.value = false;
+    }
+  }
+
+  String _formatDate(DateTime date) =>
+      '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 
   @override
   void onClose() {

@@ -95,14 +95,24 @@ class AiActivityModel {
   final String time;
   final String title;
   final String description;
+  final double? lat;
+  final double? lon;
 
-  AiActivityModel({required this.time, required this.title, required this.description});
+  AiActivityModel({
+    required this.time,
+    required this.title,
+    required this.description,
+    this.lat,
+    this.lon,
+  });
 
   factory AiActivityModel.fromJson(Map<String, dynamic> json) {
     return AiActivityModel(
       time: json['time'] ?? '',
       title: json['title'] ?? '',
       description: json['description'] ?? '',
+      lat: (json['lat'] as num?)?.toDouble(),
+      lon: (json['lon'] as num?)?.toDouble(),
     );
   }
 
@@ -111,6 +121,8 @@ class AiActivityModel {
       'time': time,
       'title': title,
       'description': description,
+      if (lat != null) 'lat': lat,
+      if (lon != null) 'lon': lon,
     };
   }
 }
