@@ -40,6 +40,15 @@ class TripRepo {
     return TripModel.fromJson(data);
   }
 
+  /// POST /api/ai/save-trip
+  Future<Map<String, dynamic>> saveAiTrip(Map<String, dynamic> payload) async {
+    final response = await _apiService.post(
+      EndPoint.saveAiTrip,
+      data: payload,
+    );
+    return response is Map<String, dynamic> ? response : {};
+  }
+
   /// GET /trips/{id}
   Future<TripModel> getTripDetails(String id) async {
     final response = await _apiService.get(EndPoint.tripById(id));

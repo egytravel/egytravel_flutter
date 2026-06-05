@@ -24,17 +24,19 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
       child: Dialog(
         backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 24),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
         ),
         child: Container(
           padding: const EdgeInsets.all(20),
-          height: 500,
+          height: 550,
+          width: double.infinity,
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.7),
+            color: const Color(0xFF0A1628).withOpacity(0.9),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withOpacity(0.1),
               width: 1.5,
             ),
             boxShadow: [

@@ -1,6 +1,8 @@
 import 'package:egytravel_app/core/routes/app_routes.dart';
-import 'package:egytravel_app/feature/ai_trip_planner/logic/binding/trip_binding.dart';
+import 'package:egytravel_app/feature/ai_trip_planner/logic/binding/ai_trip_binding.dart';
 import 'package:egytravel_app/feature/ai_trip_planner/ui/screens/ai_trip_planner_screen.dart';
+import 'package:egytravel_app/feature/ai_trip_planner/ui/screens/trip_result_screen.dart';
+import 'package:egytravel_app/feature/ai_trip_planner/ui/screens/chat_screen.dart';
 import 'package:egytravel_app/feature/auth/logic/binding/login_binding.dart';
 import 'package:egytravel_app/feature/auth/ui/screens/login_view.dart';
 import 'package:egytravel_app/feature/booking/ui/screen/booking_screen.dart';
@@ -15,6 +17,8 @@ import 'package:egytravel_app/feature/explore/ui/screen/map_view_screen.dart';
 import 'package:egytravel_app/feature/explore/ui/screen/explore_details_screen.dart';
 import 'package:egytravel_app/feature/home/logic/binding/search_binding.dart';
 import 'package:egytravel_app/feature/community/ui/screen/community_screen.dart';
+import 'package:egytravel_app/feature/auth/logic/binding/verify_email_binding.dart';
+import 'package:egytravel_app/feature/auth/ui/screens/verify_email_view.dart';
 import 'package:get/get.dart';
 
 class AppPages {
@@ -38,8 +42,13 @@ class AppPages {
     GetPage(name: Routes.home, page: () => const HomeScreen()),
     GetPage(
       name: Routes.tripPlanner,
-      page: () => PlanTripScreen(),
-      binding: TripBinding(),
+      page: () => const AiTripPlannerScreen(),
+      binding:  AiTripBinding(),
+    ),
+    GetPage(
+      name: Routes.aiTripResult,
+      page: () => const TripResultScreen(),
+      binding: AiTripBinding(),
     ),
     GetPage(name: Routes.search, page: () => const SearchScreen(), binding: SearchBinding()),
     GetPage(name: Routes.bookingScreen, page: () => const BookingScreen()),
@@ -59,6 +68,16 @@ class AppPages {
     GetPage(
       name: Routes.eventDetails,
       page: () => const EventDetailsScreen(),
+    ),
+    GetPage(
+      name: Routes.aiChat,
+      page: () => const ChatScreen(),
+      binding: AiTripBinding(),
+    ),
+    GetPage(
+      name: Routes.verifyEmail,
+      page: () => const VerifyEmailScreen(),
+      binding: VerifyEmailBinding(),
     ),
   ];
 }

@@ -5,15 +5,15 @@ class BudgetChip extends StatelessWidget {
   final String label;
   final TripController controller;
 
-  const BudgetChip({required this.label, required this.controller, Key? key}) : super(key: key);
+  const BudgetChip({required this.label, required this.controller, super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isSelected = controller.selectedBudget == label;
+    final isSelected = controller.selectedBudget.value.toLowerCase() == label.toLowerCase();
 
     return GestureDetector(
       onTap: () {
-        controller.setBudget(label); // Function in controller to update selectedBudget
+        controller.updateBudget(label.toLowerCase()); 
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),

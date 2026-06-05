@@ -31,7 +31,7 @@ class AppSearchController extends GetxController {
     }
 
     isSearching.value = true;
-    
+
     // Combine all potential search targets
     final allPlaces = <Place>[
       ..._homeController.places,
@@ -40,28 +40,34 @@ class AppSearchController extends GetxController {
 
     // Simple case-insensitive search
     filteredResults.assignAll(
-      allPlaces.where((place) =>
-          place.name.toLowerCase().contains(query.toLowerCase()) ||
-          place.location.toLowerCase().contains(query.toLowerCase())).toList(),
+      allPlaces
+          .where(
+            (place) =>
+                place.name.toLowerCase().contains(query.toLowerCase()) ||
+                place.location.toLowerCase().contains(query.toLowerCase()),
+          )
+          .toList(),
     );
 
     // Also search in destinations and map them to Place objects if needed
     // (Pattern from DestinationCard)
     for (var dest in _homeController.destinations) {
       if (dest.name.toLowerCase().contains(query.toLowerCase()) ||
-          (dest.country?.toLowerCase().contains(query.toLowerCase()) ?? false)) {
-        
+          (dest.country?.toLowerCase().contains(query.toLowerCase()) ??
+              false)) {
         // Check if already added to results to avoid duplicates
         if (!filteredResults.any((p) => p.name == dest.name)) {
-          filteredResults.add(Place(
-            id: dest.id,
-            name: dest.name,
-            location: dest.country ?? 'Egypt',
-            image: dest.image,
-            rating: dest.rating ?? 4.5,
-            price: 0, // Destination overview doesn't have a single price
-            description: dest.description,
-          ));
+          filteredResults.add(
+            Place(
+              id: dest.id,
+              name: dest.name,
+              location: dest.country ?? 'Egypt',
+              image: dest.image,
+              rating: dest.rating ?? 4.5,
+              price: 0, // Destination overview doesn't have a single price
+              description: dest.description,
+            ),
+          );
         }
       }
     }
