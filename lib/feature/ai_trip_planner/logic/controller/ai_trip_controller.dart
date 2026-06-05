@@ -8,6 +8,7 @@ import 'package:egytravel_app/feature/home/data/repo/home_repo.dart';
 import 'package:egytravel_app/feature/plan/data/model/trip_model.dart';
 import 'package:egytravel_app/feature/plan/data/repo/trip_repo.dart';
 import 'package:egytravel_app/feature/plan/logic/controller/saved_trips_controller.dart';
+import 'package:egytravel_app/feature/profile/logic/controller/profile_controller.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -247,45 +248,19 @@ class TripController extends GetxController with StateMixin<TripPlanModel> {
     try {
       isSavingTrip.value = true;
 
-      // 1. Create the trip on the server
-      final tripToCreate = TripModel(
-        id: '',
-        title: 'AI Trip to ${selectedCity.value}',
-        description:
+      // Prepare payload for single POST /api/ai/save-trip
+      final payload = <String, dynamic>{
+        'title': 'AI Trip to ${selectedCity.value}',
+        'description':
             'AI-generated trip to ${selectedCity.value} with ${selectedBudget.value} budget',
-        destination: selectedCity.value,
-        startDate: startDate.value != null ? _formatDate(startDate.value!) : null,
-        endDate: endDate.value != null ? _formatDate(endDate.value!) : null,
-        budget: 0,
-        status: 'planning',
-      );
+        'destination': selectedCity.value,
+        'startDate': startDate.value != null ? _formatDate(startDate.value!) : null,
+        'endDate': endDate.value != null ? _formatDate(endDate.value!) : null,
+        'budget': selectedBudget.value == 'low' ? 1.0 : (selectedBudget.value == 'high' ? 3.0 : 2.0),
+        'itinerary': tripData.toJson(),
+      };
 
-      final createdTrip = await _tripRepo.createTrip(tripToCreate);
-      final tripId = createdTrip.id.trim();
-
-      if (tripId.isEmpty) {
-        throw Exception('Trip created but no trip ID was returned.');
-      }
-
-      // 2. Add each day with its activities
-      for (int i = 0; i < tripData.data.days.length; i++) {
-        final day = tripData.data.days[i];
-        final dayDate = startDate.value?.add(Duration(days: i));
-
-        final dayData = <String, dynamic>{
-          'dayNumber': day.day,
-          if (dayDate != null) 'date': _formatDate(dayDate),
-          'activities': day.activities
-              .map((a) => <String, dynamic>{
-                    'title': a.title,
-                    'time': a.time,
-                    'description': a.description,
-                  })
-              .toList(),
-        };
-
-        await _tripRepo.addDayToTrip(tripId, dayData);
-      }
+      final response = await _tripRepo.saveAiTrip(payload);
 
       showSuccess('Trip saved successfully!');
 
@@ -293,6 +268,12 @@ class TripController extends GetxController with StateMixin<TripPlanModel> {
       try {
         final savedController = Get.find<SavedTripsController>();
         savedController.fetchTrips();
+      } catch (_) {}
+
+      // Refresh profile controller trips if exists
+      try {
+        final profileController = Get.find<ProfileController>();
+        profileController.fetchTrips();
       } catch (_) {}
     } catch (e) {
       showError('Failed to save trip: ${e.toString().replaceAll('Exception: ', '')}');

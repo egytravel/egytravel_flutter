@@ -92,6 +92,7 @@ class EndPoint {
   static const aiBaseUrl = 'https://fronic-egydocker.hf.space';
   static const aiPlan = '/plan';
   static const aiChat = '/chat';
+  static const saveAiTrip = '/api/ai/save-trip';
 
   // ── Favorites ─────────────────────────────────────────────────────────────
   static const favorites = '/api/favorites';
