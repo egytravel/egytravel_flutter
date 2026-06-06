@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:egytravel_app/core/routes/app_routes.dart';
 import 'package:egytravel_app/feature/guid_trip/ui/screens/plan_a_trip_screen.dart';
-import 'dart:ui';
 
 class QuickActionsSection extends StatelessWidget {
   const QuickActionsSection({super.key});
@@ -110,66 +109,57 @@ class _QuickActionButtonState extends State<_QuickActionButton> {
       child: AnimatedScale(
         scale: _isPressed ? 0.95 : 1.0,
         duration: const Duration(milliseconds: 100),
-        child: ClipRRect(
+        child: Container(
+          clipBehavior: Clip.antiAlias,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: const Color(0xFF16243A),
           borderRadius: BorderRadius.circular(20),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: _isPressed
-                      ? AppColor.primaryColor.withOpacity(0.5)
-                      : Colors.white.withOpacity(0.15),
-                  width: 1.5,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: _isPressed
-                        ? AppColor.primaryColor.withOpacity(0.2)
-                        : Colors.black.withOpacity(0.1),
-                    blurRadius: _isPressed ? 12 : 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: _isPressed
-                          ? AppColor.primaryColor.withOpacity(0.2)
-                          : Colors.white.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      widget.icon,
-                      color: _isPressed
-                          ? AppColor.primaryColor
-                          : Colors.white70,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    widget.label,
-                    style: TextStyle(
-                      color: _isPressed
-                          ? AppColor.primaryColor
-                          : Colors.white70,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.3,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
+            border: Border.all(
+              color: _isPressed
+                  ? AppColor.primaryColor.withOpacity(0.5)
+                  : Colors.white.withOpacity(0.12),
+              width: 1.5,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: _isPressed
+                    ? AppColor.primaryColor.withOpacity(0.2)
+                    : Colors.black.withOpacity(0.1),
+                blurRadius: _isPressed ? 12 : 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: _isPressed
+                      ? AppColor.primaryColor.withOpacity(0.2)
+                      : Colors.white.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  widget.icon,
+                  color: _isPressed ? AppColor.primaryColor : Colors.white70,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                widget.label,
+                style: TextStyle(
+                  color: _isPressed ? AppColor.primaryColor : Colors.white70,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.3,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
         ),
       ),

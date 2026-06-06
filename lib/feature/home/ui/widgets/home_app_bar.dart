@@ -5,7 +5,6 @@ import 'package:egytravel_app/feature/notifications/ui/screen/notifications_scre
 import 'package:egytravel_app/core/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:ui';
 
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   final HomeController controller;
@@ -22,19 +21,13 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
 
       return AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        child: ClipRRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(
-              sigmaX: isScrolled ? 15 : 0,
-              sigmaY: isScrolled ? 15 : 0,
-            ),
-            child: AppBar(
-              forceMaterialTransparency: true,
-              backgroundColor: isScrolled
-                  ? const Color(0xFF0A1628).withOpacity(0.95)
-                  : Colors.transparent,
-              elevation: 0,
-              actions: [
+        child: AppBar(
+          forceMaterialTransparency: true,
+          backgroundColor: isScrolled
+              ? const Color(0xF20A1628)
+              : Colors.transparent,
+          elevation: 0,
+          actions: [
                 /// Community Feed Icon
                 Container(
                   margin: const EdgeInsets.symmetric(vertical: 8),
@@ -110,9 +103,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
+          ],
         ),
       );
     });

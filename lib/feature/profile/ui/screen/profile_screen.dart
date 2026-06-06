@@ -34,8 +34,7 @@ class ProfileScreen extends StatelessWidget {
             stops: [0.0, 0.5, 1.0],
           ),
         ),
-        child: RepaintBoundary(
-          child: Obx(() {
+        child: Obx(() {
             // ── Error state ────────────────────────────────────────────────
             if (controller.hasError.value && !controller.isLoading.value) {
               return Center(
@@ -134,8 +133,7 @@ class ProfileScreen extends StatelessWidget {
 
                   // ── Content ─────────────────────────────────────────────
                   SliverToBoxAdapter(
-                    child: RepaintBoundary(
-                      child: Column(
+                    child: Column(
                         children: [
                           const SizedBox(height: 20),
 
@@ -255,14 +253,12 @@ class ProfileScreen extends StatelessWidget {
                           const ProfileLogoutButton(),
                           const SizedBox(height: 150),
                         ],
-                      ),
                     ),
                   ),
                 ],
               ),
             );
           }),
-        ),
       ),
     );
   }

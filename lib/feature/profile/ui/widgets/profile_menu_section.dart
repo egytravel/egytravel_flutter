@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class ProfileMenuSection extends StatelessWidget {
@@ -43,19 +42,16 @@ class ProfileMenuSection extends StatelessWidget {
           ),
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.15),
-                    width: 1,
-                  ),
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF16243A),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.12),
+                  width: 1,
                 ),
-                child: Column(children: items),
               ),
+              child: Column(children: items),
             ),
           ),
         ],

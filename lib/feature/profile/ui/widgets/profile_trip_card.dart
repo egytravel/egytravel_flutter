@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:egytravel_app/feature/plan/data/model/trip_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -76,10 +75,8 @@ class ProfileTripCard extends StatelessWidget {
                 ),
               ),
               // Content
-              BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
+              Container(
+                padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -192,7 +189,6 @@ class ProfileTripCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                ),
               ),
             ],
           ),

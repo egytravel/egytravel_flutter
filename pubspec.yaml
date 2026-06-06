@@ -36,6 +36,7 @@ dependencies:
   http: ^1.6.0
   google_maps_flutter: ^2.14.2
   geolocator: ^13.0.2
+  connectivity_plus: ^6.0.3
 
 
 dev_dependencies:

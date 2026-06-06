@@ -46,28 +46,28 @@ class TripDetailsScreen extends StatelessWidget {
           ],
         ),
         // FAB: attach hotel to this trip
-        floatingActionButton: Obx(
-          () => FloatingActionButton.extended(
-            onPressed: controller.isSaving.value
-                ? null
-                : () => _showAttachHotelDialog(context, controller),
-            backgroundColor: Colors.orange,
-            icon: controller.isSaving.value
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                  )
-                : const Icon(Icons.hotel, color: Colors.white),
-            label: const Text(
-              'Attach Hotel',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
+        // floatingActionButton: Obx(
+        //   () => FloatingActionButton.extended(
+        //     onPressed: controller.isSaving.value
+        //         ? null
+        //         : () => _showAttachHotelDialog(context, controller),
+        //     backgroundColor: Colors.orange,
+        //     icon: controller.isSaving.value
+        //         ? const SizedBox(
+        //             width: 20,
+        //             height: 20,
+        //             child: CircularProgressIndicator(
+        //               color: Colors.white,
+        //               strokeWidth: 2,
+        //             ),
+        //           )
+        //         : const Icon(Icons.hotel, color: Colors.white),
+        //     label: const Text(
+        //       'Attach Hotel',
+        //       style: TextStyle(color: Colors.white),
+        //     ),
+        //   ),
+        // ),
         body: Obx(() {
           if (controller.isLoading.value) {
             return const Center(

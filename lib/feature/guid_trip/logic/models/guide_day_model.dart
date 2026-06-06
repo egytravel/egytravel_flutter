@@ -10,6 +10,7 @@ class GuideDayModel {
   final RxString notes;
   final RxBool isExpanded;
   final RxList<TripBookingModel> bookings;
+  final RxList<TripLocationModel> locations;
 
   late final TextEditingController placeController;
   late final TextEditingController addressController;
@@ -23,18 +24,22 @@ class GuideDayModel {
     String notes = '',
     bool isExpanded = true,
     List<TripBookingModel> bookings = const [],
-  })  : place = place.obs,
-        address = address.obs,
-        notes = notes.obs,
-        isExpanded = isExpanded.obs,
-        bookings = bookings.obs {
+    List<TripLocationModel> locations = const [],
+  }) : place = place.obs,
+       address = address.obs,
+       notes = notes.obs,
+       isExpanded = isExpanded.obs,
+       bookings = bookings.obs,
+       locations = locations.obs {
     placeController = TextEditingController(text: place);
     addressController = TextEditingController(text: address);
     notesController = TextEditingController(text: notes);
 
     // Sync controllers with Rx variables
     placeController.addListener(() => this.place.value = placeController.text);
-    addressController.addListener(() => this.address.value = addressController.text);
+    addressController.addListener(
+      () => this.address.value = addressController.text,
+    );
     notesController.addListener(() => this.notes.value = notesController.text);
   }
 

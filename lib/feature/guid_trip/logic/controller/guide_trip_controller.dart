@@ -474,8 +474,16 @@ class GuideTripController extends GetxController {
       if (day.place.value.isNotEmpty) {
         buffer.writeln('Title: ${day.place.value}');
       }
-      if (day.address.value.isNotEmpty) {
-        buffer.writeln('Place: ${day.address.value}');
+      final customPlaces = day.locations
+          .where((loc) =>
+              (loc.type ?? '').toLowerCase() != 'hotel' &&
+              (loc.type ?? '').toLowerCase() != 'flight')
+          .toList();
+      if (customPlaces.isNotEmpty) {
+        buffer.writeln('Places:');
+        for (final loc in customPlaces) {
+          buffer.writeln(' - ${loc.name}${loc.address != null ? ' (${loc.address})' : ''}');
+        }
       }
       if (day.notes.value.isNotEmpty) {
         buffer.writeln('Notes: ${day.notes.value}');
@@ -582,6 +590,11 @@ class GuideTripController extends GetxController {
         if (sDay.bookings != null) {
           existingDay.bookings.assignAll(sDay.bookings!);
         }
+
+        // Sync Locations (Places, etc.)
+        if (sDay.locations != null) {
+          existingDay.locations.assignAll(sDay.locations!);
+        }
       } else {
         // If it's a completely new day, add it
         days.add(GuideDayModel(
@@ -593,6 +606,7 @@ class GuideTripController extends GetxController {
               ? sDay.locations!.first.name
               : '',
           bookings: sDay.bookings ?? [],
+          locations: sDay.locations ?? [],
         ));
       }
     }
@@ -624,6 +638,7 @@ class GuideTripController extends GetxController {
         notes: sDay.notes ?? '',
         address: initialAddress,
         bookings: sDay.bookings ?? [],
+        locations: sDay.locations ?? [],
       ));
     }
   }

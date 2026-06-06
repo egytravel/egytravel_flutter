@@ -39,16 +39,16 @@ class ExploreAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ),
-          actions: [
-            IconButton(
-              onPressed: onMapPressed,
-              icon: Icon(
-                Icons.map_rounded,
-                color: isScrolled ? AppColor.primaryColor : Colors.white,
-              ),
-            ),
-            const SizedBox(width: 8),
-          ],
+          // actions: [
+          //   IconButton(
+          //     onPressed: onMapPressed,
+          //     icon: Icon(
+          //       Icons.map_rounded,
+          //       color: isScrolled ? AppColor.primaryColor : Colors.white,
+          //     ),
+          //   ),
+          //   const SizedBox(width: 8),
+          // ],
         ),
       ),
     );

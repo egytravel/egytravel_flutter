@@ -1,6 +1,8 @@
+import 'package:egytravel_app/core/widgets/snack_bar.dart';
 import 'package:egytravel_app/feature/auth/ui/widgets/glass_container.dart';
 import 'package:egytravel_app/feature/guid_trip/logic/controller/guide_trip_controller.dart';
 import 'package:egytravel_app/feature/guid_trip/logic/models/guide_day_model.dart';
+import 'package:egytravel_app/feature/plan/data/model/trip_model.dart';
 import 'package:egytravel_app/feature/plan/data/repo/trip_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -54,15 +56,62 @@ class DayInputCard extends StatelessWidget {
                       controller: day.placeController,
                       onChanged: (value) => day.place.value = value,
                     ),
-                    const SizedBox(height: 12),
-                    _buildTextField(
-                      label: 'Place',
-                      icon: Icons.map,
-                      controller: day.addressController,
-                      readOnly: true,
-                      onTap: () => _showPlaceSearchSheet(context),
-                      onChanged: (_) {},
-                    ),
+                    
+                    // ── Places List (Multiple Places) ─────────────────────────
+                    Obx(() {
+                      final customPlaces = day.locations
+                          .where((loc) =>
+                              (loc.type ?? '').toLowerCase() != 'hotel' &&
+                              (loc.type ?? '').toLowerCase() != 'flight')
+                          .toList();
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 16),
+                          const _SectionHeader(label: 'Places', icon: Icons.map_rounded),
+                          const SizedBox(height: 10),
+                          if (customPlaces.isEmpty)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text(
+                                'No places added yet',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.4),
+                                  fontSize: 13,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            )
+                          else
+                            ...customPlaces.map((loc) {
+                              final originalIndex = day.locations.indexOf(loc);
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: _PlaceCard(
+                                  title: loc.name,
+                                  subtitle: loc.address ?? '',
+                                  onDelete: () {
+                                    final tripId = controller.createdTripId;
+                                    final dayId = day.id;
+                                    if (tripId != null && dayId != null) {
+                                      controller.removePlaceFromDay(
+                                        tripId,
+                                        dayId,
+                                        originalIndex,
+                                      );
+                                    }
+                                  },
+                                ),
+                              );
+                            }),
+                          const SizedBox(height: 10),
+                          _AddPlaceButton(
+                            onTap: () => _showPlaceSearchSheet(context),
+                          ),
+                        ],
+                      );
+                    }),
                     
                     // ── Accommodations (Hotels) ─────────────────────────────
                     Obx(() {
@@ -93,7 +142,7 @@ class DayInputCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 20),
-                          _SectionHeader(label: 'Accommodation', icon: Icons.hotel_rounded),
+                          const _SectionHeader(label: 'Accommodation', icon: Icons.hotel_rounded),
                           const SizedBox(height: 10),
                           ...allHotels.map((h) => _BookingCard(
                             title: h['title'] ?? 'Hotel',
@@ -135,7 +184,7 @@ class DayInputCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 20),
-                          _SectionHeader(label: 'Flights', icon: Icons.flight_takeoff_rounded),
+                          const _SectionHeader(label: 'Flights', icon: Icons.flight_takeoff_rounded),
                           const SizedBox(height: 10),
                           ...allFlights.map((f) => _BookingCard(
                             title: f['title'] ?? 'Flight',
@@ -209,6 +258,18 @@ class DayInputCard extends StatelessWidget {
       builder: (_) => _PlaceSearchSheet(
         onPlaceSelected: (placeData) {
           final name = (placeData['name'] ?? placeData['title'] ?? '').toString();
+          
+          // Check if place is already added to this day (by matching name or non-zero lat/lng)
+          final isDuplicate = day.locations.any((loc) =>
+              loc.name.toLowerCase().trim() == name.toLowerCase().trim() ||
+              (loc.lat != null && loc.lat != 0.0 && loc.lat == placeData['lat'] &&
+               loc.lng != null && loc.lng != 0.0 && loc.lng == placeData['lng']));
+
+          if (isDuplicate) {
+            showError('This place is already added to this day!');
+            return;
+          }
+
           day.addressController.text = name;
           day.address.value = name;
           
@@ -634,6 +695,115 @@ class _BookingCard extends StatelessWidget {
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+class _PlaceCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final VoidCallback onDelete;
+
+  const _PlaceCard({
+    required this.title,
+    required this.subtitle,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.orange.withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.location_on, color: Colors.orange, size: 18),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (subtitle.isNotEmpty)
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.5),
+                      fontSize: 11,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
+            onPressed: onDelete,
+            constraints: const BoxConstraints(),
+            padding: EdgeInsets.zero,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AddPlaceButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _AddPlaceButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.03),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Colors.white.withOpacity(0.15),
+          ),
+        ),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.add_location_alt_outlined, color: Colors.orange, size: 20),
+            SizedBox(width: 8),
+            Text(
+              'Add Place',
+              style: TextStyle(
+                color: Colors.orange,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

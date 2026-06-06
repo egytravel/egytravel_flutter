@@ -69,6 +69,7 @@ class ProfileTripsSection extends StatelessWidget {
               itemCount: trips.length > 3 ? 3 : trips.length,
               itemBuilder: (context, index) {
                 return ProfileTripCard(
+                  key: ValueKey(trips[index].id),
                   trip: trips[index],
                   index: index,
                   onTap: () => onTripTap(trips[index]),
