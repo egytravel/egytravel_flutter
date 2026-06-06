@@ -45,6 +45,8 @@
 		<true/>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>We use your location to show directions to travel destinations.</string>
 		<key>UIStatusBarHidden</key>
 		<false/>
 	</dict>

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:egytravel_app/feature/home/data/model/place_model.dart';
 import 'package:egytravel_app/feature/home/ui/screen/details.dart';
 import 'package:get/get.dart';
-import 'dart:ui';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class DestinationCard extends StatelessWidget {
@@ -98,55 +97,43 @@ class DestinationCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                AppColor.primaryColor,
-                                AppColor.primaryColor.withOpacity(0.85),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: AppColor.primaryColor.withOpacity(0.4),
-                              width: 1.5,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColor.primaryColor.withOpacity(0.3),
-                                blurRadius: 10,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.explore_rounded,
-                                color: Colors.black,
-                                size: 14,
-                              ),
-                              SizedBox(width: 6),
-                              Text(
-                                'Explore Now',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
+                    Container(
+                      clipBehavior: Clip.antiAlias,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColor.primaryColor,
+                            AppColor.primaryColor.withOpacity(0.85),
+                          ],
                         ),
+                      borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppColor.primaryColor.withOpacity(0.4),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.explore_rounded,
+                            color: Colors.black,
+                            size: 14,
+                          ),
+                          SizedBox(width: 6),
+                          Text(
+                            'Explore Now',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

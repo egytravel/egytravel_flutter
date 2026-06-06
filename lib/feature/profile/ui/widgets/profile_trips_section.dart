@@ -1,10 +1,12 @@
-import 'package:egytravel_app/core/models/trip_model.dart';
+import 'package:egytravel_app/feature/plan/data/model/trip_model.dart';
+import 'package:egytravel_app/feature/plan/ui/screen/my_trips_screen.dart';
 import 'package:egytravel_app/feature/profile/ui/widgets/profile_trip_card.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ProfileTripsSection extends StatelessWidget {
-  final List<Trip> trips;
-  final Function(Trip) onTripTap;
+  final List<TripModel> trips;
+  final Function(TripModel) onTripTap;
 
   const ProfileTripsSection({
     super.key,
@@ -40,12 +42,15 @@ class ProfileTripsSection extends StatelessWidget {
                 ),
               ),
               if (trips.isNotEmpty)
-                Text(
-                  '${trips.length} ${trips.length == 1 ? 'trip' : 'trips'}',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white.withOpacity(0.6),
+                GestureDetector(
+                  onTap: () => Get.to(() => const MyTripsScreen()),
+                  child: Text(
+                    'View All',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.indigoAccent.shade100,
+                    ),
                   ),
                 ),
             ],
@@ -61,10 +66,12 @@ class ProfileTripsSection extends StatelessWidget {
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               scrollDirection: Axis.horizontal,
-              itemCount: trips.length,
+              itemCount: trips.length > 3 ? 3 : trips.length,
               itemBuilder: (context, index) {
                 return ProfileTripCard(
+                  key: ValueKey(trips[index].id),
                   trip: trips[index],
+                  index: index,
                   onTap: () => onTripTap(trips[index]),
                 );
               },

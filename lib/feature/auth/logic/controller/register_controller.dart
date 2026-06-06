@@ -98,7 +98,7 @@ class RegisterController extends GetxController {
         success: true,
       );
 
-      Get.offAllNamed(Routes.home);
+      Get.offAllNamed(Routes.verifyEmail, arguments: email);
 
     } on ApiError catch (e) {
       showTopGlassSnackBar(context, e.message);

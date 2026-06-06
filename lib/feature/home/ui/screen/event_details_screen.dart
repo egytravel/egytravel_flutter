@@ -107,11 +107,13 @@ class EventDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      Icon(Icons.location_on_rounded, size: 20, color: AppColor.primaryColor),
+                      const Icon(Icons.location_on_rounded, size: 20, color: AppColor.primaryColor),
                       const SizedBox(width: 8),
-                      Text(
-                        '${event.location}, ${event.city}',
-                        style: const TextStyle(fontSize: 16, color: Colors.white70),
+                      Expanded(
+                        child: Text(
+                          '${event.location}, ${event.city}',
+                          style: const TextStyle(fontSize: 16, color: Colors.white70),
+                        ),
                       ),
                     ],
                   ),

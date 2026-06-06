@@ -18,11 +18,7 @@ class ExploreDetailController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    photoUrls.assignAll([
-      item.image,
-      item.image,
-      item.image,
-    ]);
+    photoUrls.assignAll([item.image, item.image, item.image]);
   }
 
   void changeTab(int index) {
@@ -33,8 +29,17 @@ class ExploreDetailController extends GetxController {
     item.isFavorite.value = !item.isFavorite.value;
   }
 
-  void openMap() {
-    Get.toNamed(Routes.mapView, arguments: item);
+  void openMap({double? originLat, double? originLng}) {
+    Get.toNamed(
+      Routes.mapView,
+      arguments: {
+        'item': item,
+        if (originLat != null) 'originLat': originLat,
+        if (originLng != null) 'originLng': originLng,
+        if (item.lat != null) 'destinationLat': item.lat,
+        if (item.lng != null) 'destinationLng': item.lng,
+      },
+    );
   }
 
   Future<void> pickImage(ImageSource source) async {
@@ -64,12 +69,19 @@ class ExploreDetailController extends GetxController {
           children: [
             const Text(
               'Add Photo',
-              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 20),
             ListTile(
               leading: const Icon(Icons.camera_alt, color: Colors.white),
-              title: const Text('Camera', style: TextStyle(color: Colors.white)),
+              title: const Text(
+                'Camera',
+                style: TextStyle(color: Colors.white),
+              ),
               onTap: () {
                 Get.back();
                 pickImage(ImageSource.camera);
@@ -77,7 +89,10 @@ class ExploreDetailController extends GetxController {
             ),
             ListTile(
               leading: const Icon(Icons.photo_library, color: Colors.white),
-              title: const Text('Gallery', style: TextStyle(color: Colors.white)),
+              title: const Text(
+                'Gallery',
+                style: TextStyle(color: Colors.white),
+              ),
               onTap: () {
                 Get.back();
                 pickImage(ImageSource.gallery);

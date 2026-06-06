@@ -29,25 +29,59 @@ class CommunityPost {
     // Handle images array or single media_url
     String? imageUrl;
     if (json['images'] is List && (json['images'] as List).isNotEmpty) {
-      imageUrl = json['images'][0];
+      imageUrl = _s(json['images'][0]);
     } else {
-      imageUrl = json['media_url'];
+      imageUrl = _sn(json['media_url']);
     }
 
     // Handle author or user object
     final authorData = json['author'] ?? json['user'] ?? {};
 
+    // Safely extract location - may be a String or a Map object
+    String? locationStr;
+    final rawLocation = json['location'] ?? json['place'];
+    if (rawLocation is String) {
+      locationStr = rawLocation;
+    } else if (rawLocation is Map) {
+      locationStr = rawLocation['name']?.toString() ?? rawLocation['city']?.toString();
+    }
+
+    // Try every possible API field name for "liked by current user"
+    bool resolvedIsLiked = false;
+    for (final key in ['liked', 'isLiked', 'is_liked', 'userLiked', 'hasLiked', 'user_liked', 'has_liked', 'likedByMe']) {
+      final val = json[key];
+      if (val != null) {
+        resolvedIsLiked = val == true || val == 1 || val == 'true';
+        break;
+      }
+    }
+
     return CommunityPost(
-      id: postId.toString(),
-      description: caption,
+      id: _s(postId),
+      description: _s(caption),
       mediaUrl: imageUrl,
-      location: json['location'] ?? json['place'],
+      location: _sn(json['location'] ?? json['place']),
       likesCount: json['likesCount'] ?? json['likes_count'] ?? 0,
       commentsCount: json['commentsCount'] ?? json['comments_count'] ?? 0,
       isLiked: json['liked'] ?? json['isLiked'] ?? json['is_liked'] ?? false,
       createdAt: DateTime.parse(json['createdAt'] ?? json['created_at'] ?? DateTime.now().toIso8601String()),
       user: PostUser.fromJson(authorData),
     );
+  }
+
+  // Helper methods for safe parsing
+  static String _s(dynamic value, [String defaultValue = '']) {
+    if (value == null) return defaultValue;
+    if (value is String) return value;
+    if (value is Map) {
+      return (value['name'] ?? value['title'] ?? value['text'] ?? value.toString()).toString();
+    }
+    return value.toString();
+  }
+
+  static String? _sn(dynamic value) {
+    if (value == null) return null;
+    return _s(value);
   }
 
   CommunityPost copyWith({
@@ -89,8 +123,8 @@ class PostUser {
   factory PostUser.fromJson(Map<String, dynamic> json) {
     return PostUser(
       id: json['id'] ?? json['user_id'] ?? 0,
-      name: json['name'] ?? 'Unknown',
-      profilePhotoUrl: json['profile_photo_url'] ?? json['avatar'],
+      name: CommunityPost._s(json['name'] ?? 'Unknown'),
+      profilePhotoUrl: CommunityPost._sn(json['profile_photo_url'] ?? json['avatar']),
     );
   }
 }
@@ -110,8 +144,8 @@ class CommunityComment {
 
   factory CommunityComment.fromJson(Map<String, dynamic> json) {
     return CommunityComment(
-      id: (json['commentId'] ?? json['comment_id'] ?? '').toString(),
-      content: json['content'] ?? json['text'] ?? json['comment'] ?? '',
+      id: CommunityPost._s(json['commentId'] ?? json['comment_id'] ?? ''),
+      content: CommunityPost._s(json['content'] ?? json['text'] ?? json['comment'] ?? ''),
       createdAt: DateTime.parse(json['createdAt'] ?? json['created_at'] ?? DateTime.now().toIso8601String()),
       user: PostUser.fromJson(json['author'] ?? json['user'] ?? {}),
     );

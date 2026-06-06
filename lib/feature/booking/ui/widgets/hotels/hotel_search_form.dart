@@ -1,4 +1,5 @@
 import 'package:egytravel_app/core/theme/app_color.dart';
+import 'package:egytravel_app/feature/ai_trip_planner/ui/widgets/show_data_picker.dart';
 import 'package:egytravel_app/feature/booking/logic/controller/booking_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -47,82 +48,62 @@ class HotelSearchForm extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // Check-in & Check-out Dates
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildDateField(
-                        label: 'Check-in',
-                        icon: Icons.calendar_today,
-                        onTap: () async {
-                          final date = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now().add(
-                              const Duration(days: 1),
-                            ),
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime.now().add(
-                              const Duration(days: 365),
-                            ),
-                            builder: (context, child) {
-                              return Theme(
-                                data: ThemeData.dark().copyWith(
-                                  colorScheme: const ColorScheme.dark(
-                                    primary: AppColor.primaryColor,
-                                  ),
-                                ),
-                                child: child!,
-                              );
-                            },
-                          );
-                          if (date != null) {
-                            controller.hotelCheckInDate.value = date;
-                          }
+                // Check-in & Check-out Dates — Premium Range Picker
+                Obx(() {
+                  final checkIn = controller.hotelCheckInDate.value;
+                  final checkOut = controller.hotelCheckOutDate.value;
+                  return GestureDetector(
+                    onTap: () => showDialog(
+                      context: context,
+                      barrierColor: Colors.black.withOpacity(0.7),
+                      builder: (_) => DatePickerWidget(
+                        onSave: (start, end) {
+                          if (start != null) controller.hotelCheckInDate.value = start;
+                          if (end != null) controller.hotelCheckOutDate.value = end;
                         },
-                        controller: controller,
-                        dateValue: controller.hotelCheckInDate,
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildDateField(
-                        label: 'Check-out',
-                        icon: Icons.calendar_today,
-                        onTap: () async {
-                          final date = await showDatePicker(
-                            context: context,
-                            initialDate:
-                                controller.hotelCheckInDate.value?.add(
-                                  const Duration(days: 1),
-                                ) ??
-                                DateTime.now().add(const Duration(days: 2)),
-                            firstDate:
-                                controller.hotelCheckInDate.value ??
-                                DateTime.now(),
-                            lastDate: DateTime.now().add(
-                              const Duration(days: 365),
-                            ),
-                            builder: (context, child) {
-                              return Theme(
-                                data: ThemeData.dark().copyWith(
-                                  colorScheme: const ColorScheme.dark(
-                                    primary: AppColor.primaryColor,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.calendar_month_rounded,
+                              color: AppColor.primaryColor, size: 22),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('Check-in → Check-out',
+                                    style: TextStyle(color: Colors.white54, fontSize: 11)),
+                                const SizedBox(height: 4),
+                                Text(
+                                  checkIn != null && checkOut != null
+                                      ? '${checkIn.day}/${checkIn.month}/${checkIn.year}  →  ${checkOut.day}/${checkOut.month}/${checkOut.year}'
+                                      : checkIn != null
+                                          ? '${checkIn.day}/${checkIn.month}/${checkIn.year}  →  Select checkout'
+                                          : 'Tap to select dates',
+                                  style: TextStyle(
+                                    color: checkIn != null ? Colors.white : Colors.white54,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                child: child!,
-                              );
-                            },
-                          );
-                          if (date != null) {
-                            controller.hotelCheckOutDate.value = date;
-                          }
-                        },
-                        controller: controller,
-                        dateValue: controller.hotelCheckOutDate,
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.chevron_right_rounded,
+                              color: Colors.white38, size: 20),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  );
+                }),
                 const SizedBox(height: 16),
 
                 // Guests & Rooms
@@ -422,8 +403,10 @@ class HotelSearchForm extends StatelessWidget {
                   child: Row(
                     children: [
                       Icon(icon, color: AppColor.primaryColor, size: 20),
-                      const SizedBox(width: 12),
-                      Text(item),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(item, overflow: TextOverflow.ellipsis),
+                      ),
                     ],
                   ),
                 );

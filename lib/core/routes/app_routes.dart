@@ -13,4 +13,7 @@ class Routes {
   static const String profileScreen = '/profile_screen';
   static const String community = '/community';
   static const String eventDetails = '/eventDetails';
+  static const String aiTripResult = '/ai_trip_result';
+  static const String aiChat = '/ai_chat';
+  static const String verifyEmail = '/verify_email';
 }

@@ -34,8 +34,7 @@ class ProfileScreen extends StatelessWidget {
             stops: [0.0, 0.5, 1.0],
           ),
         ),
-        child: RepaintBoundary(
-          child: Obx(() {
+        child: Obx(() {
             // ── Error state ────────────────────────────────────────────────
             if (controller.hasError.value && !controller.isLoading.value) {
               return Center(
@@ -44,8 +43,11 @@ class ProfileScreen extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.cloud_off_rounded,
-                          color: Colors.white38, size: 64),
+                      const Icon(
+                        Icons.cloud_off_rounded,
+                        color: Colors.white38,
+                        size: 64,
+                      ),
                       const SizedBox(height: 16),
                       Text(
                         controller.errorMessage.value,
@@ -99,9 +101,11 @@ class ProfileScreen extends StatelessWidget {
                           CircleAvatar(
                             radius: 16,
                             backgroundColor: const Color(0xFF1E293B),
-                            backgroundImage: (p?.profilePhotoUrl != null &&
+                            backgroundImage:
+                                (p?.profilePhotoUrl != null &&
                                     p!.profilePhotoUrl!.startsWith('http'))
-                                ? NetworkImage(p.profilePhotoUrl!) as ImageProvider
+                                ? NetworkImage(p.profilePhotoUrl!)
+                                      as ImageProvider
                                 : const AssetImage(Assets.iconsProfile),
                           ),
                           const SizedBox(width: 8),
@@ -129,8 +133,7 @@ class ProfileScreen extends StatelessWidget {
 
                   // ── Content ─────────────────────────────────────────────
                   SliverToBoxAdapter(
-                    child: RepaintBoundary(
-                      child: Column(
+                    child: Column(
                         children: [
                           const SizedBox(height: 20),
 
@@ -139,14 +142,17 @@ class ProfileScreen extends StatelessWidget {
                           const SizedBox(height: 28),
 
                           // My Trips
-                          Obx(() => Skeletonizer(
-                                enabled: controller.isLoading.value &&
-                                    controller.userTrips.isEmpty,
-                                child: ProfileTripsSection(
-                                  trips: controller.userTrips.toList(),
-                                  onTripTap: controller.navigateToTripDetails,
-                                ),
-                              )),
+                          Obx(
+                            () => Skeletonizer(
+                              enabled:
+                                  controller.isLoading.value &&
+                                  controller.userTrips.isEmpty,
+                              child: ProfileTripsSection(
+                                trips: controller.userTrips.toList(),
+                                onTripTap: controller.navigateToTripDetails,
+                              ),
+                            ),
+                          ),
                           const SizedBox(height: 28),
 
                           // Account Settings
@@ -158,14 +164,16 @@ class ProfileScreen extends StatelessWidget {
                                 icon: Icons.badge_outlined,
                                 title: 'Personal Information',
                                 subtitle: 'Manage your personal details',
-                                onTap: () => Get.to(() => const PersonalInfoScreen()),
+                                onTap: () =>
+                                    Get.to(() => const PersonalInfoScreen()),
                               ),
                               const ProfileMenuDivider(),
                               ProfileMenuItem(
                                 icon: Icons.lock_outline_rounded,
                                 title: 'Security',
                                 subtitle: 'Password and authentication',
-                                onTap: () => Get.to(() => const SecurityScreen()),
+                                onTap: () =>
+                                    Get.to(() => const SecurityScreen()),
                               ),
                               const ProfileMenuDivider(),
                               ProfileMenuItem(
@@ -173,12 +181,14 @@ class ProfileScreen extends StatelessWidget {
                                 title: 'Notifications',
                                 subtitle: 'Manage notification preferences',
                                 onTap: () {},
-                                trailing: Obx(() => Switch(
-                                      value: controller.pushEnabled.value,
-                                      onChanged:
-                                          controller.togglePushNotification,
-                                      activeColor: const Color(0xFF6366F1),
-                                    )),
+                                trailing: Obx(
+                                  () => Switch(
+                                    value: controller.pushEnabled.value,
+                                    onChanged:
+                                        controller.togglePushNotification,
+                                    activeColor: const Color(0xFF6366F1),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -193,14 +203,16 @@ class ProfileScreen extends StatelessWidget {
                                 icon: Icons.calendar_today_outlined,
                                 title: 'My Bookings',
                                 subtitle: 'View your upcoming trips',
-                                onTap: () => Get.to(() => const BookingsScreen()),
+                                onTap: () =>
+                                    Get.to(() => const BookingsScreen()),
                               ),
                               const ProfileMenuDivider(),
                               ProfileMenuItem(
                                 icon: Icons.favorite_outline_rounded,
                                 title: 'Saved Places',
                                 subtitle: 'Places you want to visit',
-                                onTap: () => Get.to(() => const FavoritesScreen()),
+                                onTap: () =>
+                                    Get.to(() => const FavoritesScreen()),
                                 badge: '8',
                               ),
                               const ProfileMenuDivider(),
@@ -208,14 +220,16 @@ class ProfileScreen extends StatelessWidget {
                                 icon: Icons.history_rounded,
                                 title: 'Travel History',
                                 subtitle: "Places you've explored",
-                                onTap: () => Get.to(() => const TravelHistoryScreen()),
+                                onTap: () =>
+                                    Get.to(() => const TravelHistoryScreen()),
                               ),
                               const ProfileMenuDivider(),
                               ProfileMenuItem(
                                 icon: Icons.luggage_outlined,
                                 title: 'My Planned Trips',
                                 subtitle: "View and manage your itineraries",
-                                onTap: () => Get.to(() => const MyTripsScreen()),
+                                onTap: () =>
+                                    Get.to(() => const MyTripsScreen()),
                               ),
                             ],
                           ),
@@ -239,14 +253,12 @@ class ProfileScreen extends StatelessWidget {
                           const ProfileLogoutButton(),
                           const SizedBox(height: 150),
                         ],
-                      ),
                     ),
                   ),
                 ],
               ),
             );
           }),
-        ),
       ),
     );
   }

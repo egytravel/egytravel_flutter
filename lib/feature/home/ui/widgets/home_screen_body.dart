@@ -15,28 +15,38 @@ class HomeScreenBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(HomeController());
+    final controller = Get.isRegistered<HomeController>()
+        ? Get.find<HomeController>()
+        : Get.put(HomeController());
 
     return Obx(() {
-      if (controller.isError.value && controller.places.isEmpty) {
+      if (controller.isError.value && !controller.hasHomeData) {
         return Scaffold(
+          backgroundColor: const Color(0xFF0A1628),
           body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error_outline, color: Colors.red, size: 64),
-                const SizedBox(height: 16),
-                Text(
-                  'Error: ${controller.errorMessage.value}',
-                  style: const TextStyle(color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => controller.getHomeData(),
-                  child: const Text('Retry'),
-                ),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 28),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    color: Color(0xFFFF5A4F),
+                    size: 64,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    controller.errorMessage.value,
+                    style: const TextStyle(color: Colors.white),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: controller.getHomeData,
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
             ),
           ),
         );

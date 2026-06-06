@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 
 class HomeController extends GetxController {
   final HomeRepo _homeRepo = HomeRepo();
-  
+
   final pageController = PageController();
   final currentPage = 0.obs;
   Timer? _timer;
@@ -33,6 +33,9 @@ class HomeController extends GetxController {
   final RxList<Place> featuredPlaces = <Place>[].obs;
   final RxList<EventModel> events = <EventModel>[].obs;
 
+  bool get hasHomeData =>
+      places.isNotEmpty || destinations.isNotEmpty || featuredPlaces.isNotEmpty;
+
   @override
   void onInit() {
     super.onInit();
@@ -45,18 +48,18 @@ class HomeController extends GetxController {
     try {
       isLoading.value = true;
       isError.value = false;
-      
+
       final response = await _homeRepo.getHomeData();
-      
+
       places.assignAll(response.popular);
       destinations.assignAll(response.destinations);
       featuredPlaces.assignAll(response.featured);
-      
+
       _startAutoScroll();
     } catch (e) {
       print('HOME DATA ERROR: $e');
       isError.value = true;
-      errorMessage.value = e.toString();
+      errorMessage.value = _cleanErrorMessage(e);
     } finally {
       // If we got home data, we can at least show that
       isLoading.value = false;
@@ -100,8 +103,6 @@ class HomeController extends GetxController {
       }
     } catch (e) {
       print('EVENTS ERROR: $e');
-    } finally {
-      isLoading.value = false;
     }
   }
 
@@ -131,7 +132,7 @@ class HomeController extends GetxController {
   void _startAutoScroll() {
     _timer?.cancel();
     if (featuredPlaces.isEmpty) return;
-    
+
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
       if (!pageController.hasClients) return;
 
@@ -147,6 +148,13 @@ class HomeController extends GetxController {
         curve: Curves.easeInOut,
       );
     });
+  }
+
+  String _cleanErrorMessage(Object error) {
+    return error
+        .toString()
+        .replaceFirst('Exception: ', '')
+        .replaceFirst('Error: ', '');
   }
 
   IconData getCategoryIcon(String category) {

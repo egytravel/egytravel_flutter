@@ -1,36 +1,215 @@
-import 'package:egytravel_app/feature/ai_trip_planner/ui/widgets/suggested_plan_screen.dart';
-import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:egytravel_app/core/routes/app_routes.dart';
+import 'package:egytravel_app/core/widgets/snack_bar.dart';
+import 'package:egytravel_app/feature/ai_trip_planner/data/models/trip_plan_model.dart';
+import 'package:egytravel_app/feature/ai_trip_planner/data/repo/ai_trip_repo.dart';
+import 'package:egytravel_app/feature/home/data/model/destination_model.dart';
+import 'package:egytravel_app/feature/home/data/repo/home_repo.dart';
+import 'package:egytravel_app/feature/plan/data/model/trip_model.dart';
+import 'package:egytravel_app/feature/plan/data/repo/trip_repo.dart';
+import 'package:egytravel_app/feature/plan/logic/controller/saved_trips_controller.dart';
+import 'package:egytravel_app/feature/profile/logic/controller/profile_controller.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:geolocator/geolocator.dart';
 
-class TripController extends GetxController {
-  final TextEditingController destinationController = TextEditingController();
+class TripController extends GetxController with StateMixin<TripPlanModel> {
+  final AiTripRepository _repository;
+  final HomeRepo _homeRepo = HomeRepo();
+  TripController(this._repository);
 
-  DateTime? startDate;
-  DateTime? endDate;
-  String? selectedBudget;
-  List<String> selectedInterests = [];
+  // Input states
+  final TextEditingController cityController = TextEditingController();
+  final RxList<Destination> suggestions = <Destination>[].obs;
+  final RxBool isSearching = false.obs;
+  
+  final RxList<String> selectedInterests = <String>[].obs;
+  final RxString selectedBudget = 'medium'.obs;
+  final RxInt selectedDays = 3.obs;
+  final RxInt selectedDayIndex = 0.obs;
+  final RxString selectedCity = ''.obs;
+  final RxBool isLoading = false.obs;
+  final RxBool isSavingTrip = false.obs;
+  final Rx<DateTime?> startDate = Rx<DateTime?>(null);
+  final Rx<DateTime?> endDate = Rx<DateTime?>(null);
 
-  // ======== SETTERS =========
+  Timer? _debounce;
 
-  void setStartDate(DateTime? date) {
-    startDate = date;
-    update(); // UI UPDATE
+  // Options
+  final List<String> availableInterests = [
+    'Pyramids & Pharaonic',
+    'Museums',
+    'Nightlife & Lounges',
+    'Nature & Parks',
+    'Marina & Sea',
+    'Beaches',
+    'Snorkeling & Diving',
+    'Nile Cruises',
+    'Safari',
+    'Theme Parks',
+  ];
+
+  final List<String> availableBudgets = ['low', 'medium', 'high'];
+
+  @override
+  void onInit() {
+    super.onInit();
+    change(null, status: RxStatus.empty());
   }
 
-  void setEndDate(DateTime? date) {
-    endDate = date;
-    update(); // UI UPDATE
+  void onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    if (query.isEmpty) {
+      suggestions.clear();
+      isSearching.value = false;
+      return;
+    }
+
+    isSearching.value = true;
+    _debounce = Timer(const Duration(milliseconds: 300), () async {
+      try {
+        final allResults = await _homeRepo.searchDestinations(query);
+        
+        // Filter locally to ensure only matches are shown
+        final results = allResults.where((dest) => 
+            dest.name.toLowerCase().contains(query.toLowerCase())).toList();
+        
+        // Sort results by relevance (prefix match first)
+        results.sort((a, b) {
+          final aName = a.name.toLowerCase();
+          final bName = b.name.toLowerCase();
+          final q = query.toLowerCase();
+          
+          final aStarts = aName.startsWith(q);
+          final bStarts = bName.startsWith(q);
+          
+          if (aStarts && !bStarts) return -1;
+          if (!aStarts && bStarts) return 1;
+          return aName.compareTo(bName);
+        });
+        
+        suggestions.assignAll(results);
+      } catch (e) {
+        print('Error searching provinces: $e');
+      } finally {
+        isSearching.value = false;
+      }
+    });
   }
 
-  void setDates(DateTime? start, DateTime? end) {
-    startDate = start;
-    endDate = end;
-    update(); // UI UPDATE
+  void onDateRangeSelected(PickerDateRange range) {
+    startDate.value = range.startDate;
+    endDate.value = range.endDate;
+    _calculateDays();
   }
 
-  void setBudget(String budget) {
-    selectedBudget = budget;
-    update(); // UI UPDATE
+  Future<void> pickStartDate(BuildContext context) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: startDate.value ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (picked != null) {
+      startDate.value = picked;
+      if (endDate.value != null && endDate.value!.isBefore(picked)) {
+        endDate.value = null;
+      }
+      _calculateDays();
+    }
+  }
+
+  Future<void> pickEndDate(BuildContext context) async {
+    if (startDate.value == null) {
+      Get.snackbar('Selection Required', 'Please select a start date first');
+      return;
+    }
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: endDate.value ?? startDate.value!.add(const Duration(days: 1)),
+      firstDate: startDate.value!,
+      lastDate: startDate.value!.add(const Duration(days: 30)),
+    );
+    if (picked != null) {
+      endDate.value = picked;
+      _calculateDays();
+    }
+  }
+
+  void _calculateDays() {
+    if (startDate.value != null && endDate.value != null) {
+      selectedDays.value = endDate.value!.difference(startDate.value!).inDays + 1;
+    }
+  }
+
+  void selectProvince(Destination destination) {
+    selectedCity.value = destination.name;
+    cityController.text = destination.name;
+    suggestions.clear();
+  }
+
+  Future<void> generateTrip() async {
+    if (selectedCity.isEmpty) {
+      Get.snackbar('Selection Required', 'Please select a destination');
+      return;
+    }
+
+    if (startDate.value == null || endDate.value == null) {
+      Get.snackbar('Selection Required', 'Please select start and end dates');
+      return;
+    }
+    
+    if (selectedInterests.isEmpty) {
+      Get.snackbar(
+        'Selection Required',
+        'Please select at least one interest to help us plan your trip',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    isLoading.value = true;
+    change(null, status: RxStatus.loading());
+
+    try {
+      double? lat;
+      double? lon;
+
+      try {
+        final position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high,
+          timeLimit: const Duration(seconds: 5),
+        );
+        lat = position.latitude;
+        lon = position.longitude;
+      } catch (e) {
+        print("Could not get location for trip: $e");
+      }
+
+      final trip = await _repository.generateTrip(
+        city: selectedCity.value,
+        days: selectedDays.value,
+        interests: selectedInterests.toList(),
+        budget: selectedBudget.value,
+        startDate: startDate.value!,
+        endDate: endDate.value!,
+        lat: lat,
+        lon: lon,
+      );
+      
+      if (trip.data.days.isEmpty) {
+        change(trip, status: RxStatus.empty());
+      } else {
+        change(trip, status: RxStatus.success());
+        Get.toNamed(Routes.aiTripResult);
+      }
+    } catch (e) {
+      change(null, status: RxStatus.error(e.toString()));
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   void toggleInterest(String interest) {
@@ -39,71 +218,77 @@ class TripController extends GetxController {
     } else {
       selectedInterests.add(interest);
     }
-    update(); // UI UPDATE
   }
 
-  // ======== VALIDATION =========
-
-  bool validateInputs(BuildContext context) {
-    if (destinationController.text.isEmpty) {
-      _showSnackBar(context, 'Please enter a destination');
-      return false;
-    }
-    if (startDate == null || endDate == null) {
-      _showSnackBar(context, 'Please select travel dates');
-      return false;
-    }
-    if (selectedBudget == null) {
-      _showSnackBar(context, 'Please select your budget');
-      return false;
-    }
-    return true;
+  void updateBudget(String budget) {
+    selectedBudget.value = budget;
   }
 
-  void _showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red.shade600,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-    );
+  void updateDays(int days) {
+    selectedDays.value = days;
   }
 
-  // ======== NAVIGATION =========
-
-  void navigateToTripScreen(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TripItineraryScreen(
-          destination: destinationController.text,
-          startDate: startDate!,
-          endDate: endDate!,
-          budget: selectedBudget!,
-          interests: selectedInterests,
-        ),
-      ),
-    );
-  }
-
-  // ======== CLEAR FORM =========
-
-  void clearAll() {
-    destinationController.clear();
-    startDate = null;
-    endDate = null;
-    selectedBudget = null;
+  void clearTrip() {
+    change(null, status: RxStatus.empty());
+    cityController.clear();
+    selectedCity.value = '';
     selectedInterests.clear();
-    update(); // UI UPDATE
   }
+
+  // ── Save AI Trip ────────────────────────────────────────────────────────
+  final TripRepo _tripRepo = TripRepo();
+
+  Future<void> saveAiTrip() async {
+    final tripData = state;
+    if (tripData == null) {
+      Get.snackbar('Error', 'No trip data to save');
+      return;
+    }
+
+    try {
+      isSavingTrip.value = true;
+
+      // Prepare payload for single POST /api/ai/save-trip
+      final payload = <String, dynamic>{
+        'title': 'AI Trip to ${selectedCity.value}',
+        'description':
+            'AI-generated trip to ${selectedCity.value} with ${selectedBudget.value} budget',
+        'destination': selectedCity.value,
+        'startDate': startDate.value != null ? _formatDate(startDate.value!) : null,
+        'endDate': endDate.value != null ? _formatDate(endDate.value!) : null,
+        'budget': selectedBudget.value == 'low' ? 1.0 : (selectedBudget.value == 'high' ? 3.0 : 2.0),
+        'itinerary': tripData.toJson(),
+      };
+
+      final response = await _tripRepo.saveAiTrip(payload);
+
+      showSuccess('Trip saved successfully!');
+
+      // Refresh saved trips if controller exists
+      try {
+        final savedController = Get.find<SavedTripsController>();
+        savedController.fetchTrips();
+      } catch (_) {}
+
+      // Refresh profile controller trips if exists
+      try {
+        final profileController = Get.find<ProfileController>();
+        profileController.fetchTrips();
+      } catch (_) {}
+    } catch (e) {
+      showError('Failed to save trip: ${e.toString().replaceAll('Exception: ', '')}');
+    } finally {
+      isSavingTrip.value = false;
+    }
+  }
+
+  String _formatDate(DateTime date) =>
+      '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 
   @override
-  void dispose() {
-    destinationController.dispose();
-    super.dispose();
+  void onClose() {
+    cityController.dispose();
+    _debounce?.cancel();
+    super.onClose();
   }
 }
